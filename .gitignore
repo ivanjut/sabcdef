@@ -1,0 +1,6 @@
+node_modules/
+sabcdef.db
+sabcdef.db-shm
+sabcdef.db-wal
+*.log
+.DS_Store
