@@ -2,14 +2,10 @@
   "name": "sabcdef",
   "version": "0.1.0",
   "private": true,
-  "description": "A new category to rank into tiers every day, plus an open forum to debate the rankings.",
+  "description": "A new category to rank into tiers every day, plus a Supabase-backed forum to debate the rankings. Static site, deployable to GitHub Pages.",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
-  },
-  "dependencies": {
-    "better-sqlite3": "^11.8.1",
-    "express": "^4.21.2"
+    "start": "node serve.js",
+    "dev": "node --watch serve.js"
   }
 }

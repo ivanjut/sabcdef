@@ -1,10 +1,11 @@
 // The pool of daily categories. One is selected per day, deterministically,
-// so every visitor sees the same category on the same date (see server.js).
+// so every visitor sees the same category on the same date (see getToday() in
+// app.js).
 //
 // Each item has a stable `id` (used as the key when saving tier placements)
-// and an `emoji` used as its visual. Keeping items emoji-based means v1 needs
-// no image hosting — swap `emoji` for an `img` URL later without touching the
-// tier logic.
+// and an `emoji` used as its visual. Keeping items emoji-based means there's no
+// image hosting to deal with — swap `emoji` for an `img` URL later without
+// touching the tier logic.
 
 export const CATEGORIES = [
   {

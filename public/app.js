@@ -1,7 +1,11 @@
 // sabcdef client. Plain ES modules, no build step.
 // SortableJS is loaded globally from the CDN <script> in index.html.
+import { CATEGORIES } from "./categories.js";
+import { supabase, isConfigured } from "./supabase.js";
 
 const $ = (sel, root = document) => root.querySelector(sel);
+
+const TIER_LABELS = ["S", "A", "B", "C", "D", "E", "F"];
 
 // ---- Small utilities ------------------------------------------------------
 
@@ -29,18 +33,6 @@ function timeAgo(iso) {
     if (secs >= s) return `${Math.floor(secs / s)}${label} ago`;
   }
   return `${secs}s ago`;
-}
-
-async function api(path, opts) {
-  const res = await fetch(path, {
-    headers: { "Content-Type": "application/json" },
-    ...opts
-  });
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || `Request failed (${res.status})`);
-  }
-  return res.status === 204 ? null : res.json();
 }
 
 let toastTimer;
@@ -79,8 +71,8 @@ const store = {
 // ---- App state ------------------------------------------------------------
 
 const state = {
-  today: null, // { day, name, blurb, items, tierLabels, ... }
-  comments: [], // flat list from server
+  today: null, // { day, name, blurb, items, tierLabels }
+  comments: [], // flat list from Supabase
   sort: "top"
 };
 
@@ -89,37 +81,49 @@ const votesKey = "sabcdef:votes";
 const authorKey = "sabcdef:author";
 const themeKey = "sabcdef:theme";
 
+// ---- Daily category (computed client-side) --------------------------------
+// "Today" is the visitor's local date as YYYY-MM-DD. The category is chosen by
+// the number of whole days since the Unix epoch, modulo the category count, so
+// the choice is stable for everyone on a given day and rotates predictably.
+
+function dayString(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function getToday() {
+  const day = dayString();
+  const epochDays = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86_400_000);
+  const index = ((epochDays % CATEGORIES.length) + CATEGORIES.length) % CATEGORIES.length;
+  const cat = CATEGORIES[index];
+  return { day, index, name: cat.name, blurb: cat.blurb, items: cat.items, tierLabels: TIER_LABELS };
+}
+
 // ---- Boot -----------------------------------------------------------------
 
 init().catch((err) => {
   console.error(err);
-  $("#category-name").textContent = "Couldn't load today's category.";
+  $("#category-name").textContent = "Something went wrong loading the app.";
   $("#category-blurb").textContent = err.message;
 });
 
 async function init() {
-  wireThemeToggle(); // before the await so it works even if the API call fails
-  state.today = await api("/api/today");
+  wireThemeToggle(); // independent of everything else
+
+  state.today = getToday();
   renderCategoryHead();
   renderTierList();
   wireToolbar();
 
-  await loadComments();
-  wireComposer();
-  wireSortToggle();
-}
-
-// ---- Category header ------------------------------------------------------
-
-function renderCategoryHead() {
-  const { day, name, blurb } = state.today;
-  $("#category-name").textContent = name;
-  $("#category-blurb").textContent = blurb || "";
-  $("#today-date").textContent = new Date(`${day}T00:00:00`).toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric"
-  });
+  if (isConfigured) {
+    wireComposer();
+    wireSortToggle();
+    await loadComments();
+  } else {
+    showForumOffline();
+  }
 }
 
 // ---- Theme ----------------------------------------------------------------
@@ -154,6 +158,19 @@ function wireThemeToggle() {
   });
 }
 
+// ---- Category header ------------------------------------------------------
+
+function renderCategoryHead() {
+  const { day, name, blurb } = state.today;
+  $("#category-name").textContent = name;
+  $("#category-blurb").textContent = blurb || "";
+  $("#today-date").textContent = new Date(`${day}T00:00:00`).toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  });
+}
+
 // ---- Tier list ------------------------------------------------------------
 
 function renderTierList() {
@@ -162,7 +179,6 @@ function renderTierList() {
   const poolEl = $("#pool");
   tiersEl.innerHTML = "";
 
-  // Map of tierLabel -> hex var, falls back to neutral.
   tierLabels.forEach((label) => {
     const row = document.createElement("div");
     row.className = "tier-row";
@@ -264,11 +280,30 @@ function buildShareText() {
   return lines.join("\n");
 }
 
-// ---- Forum ----------------------------------------------------------------
+// ---- Forum (Supabase) -----------------------------------------------------
+
+function showForumOffline() {
+  const empty = $("#comments-empty");
+  empty.hidden = false;
+  empty.textContent = "Discussion is offline — add your Supabase keys in config.js to enable it.";
+  const form = $("#comment-form");
+  if (form) form.hidden = true;
+  $("#comment-count").textContent = "0";
+}
 
 async function loadComments() {
-  const data = await api(`/api/comments?day=${encodeURIComponent(state.today.day)}`);
-  state.comments = data.comments;
+  const { data, error } = await supabase
+    .from("comments")
+    .select("id,parent_id,author,body,score,created_at")
+    .eq("day", state.today.day)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    $("#comments-empty").hidden = false;
+    $("#comments-empty").textContent = `Couldn't load the discussion: ${error.message}`;
+    return;
+  }
+  state.comments = data || [];
   renderComments();
 }
 
@@ -303,6 +338,7 @@ function renderComments() {
 
   $("#comment-count").textContent = state.comments.length;
   $("#comments-empty").hidden = state.comments.length > 0;
+  if (!state.comments.length) $("#comments-empty").textContent = "No comments yet. Start the debate.";
 
   container.innerHTML = "";
   const votes = store.get(votesKey, {});
@@ -333,12 +369,10 @@ function renderNode(node, votes, depth) {
     </div>
   `;
 
-  // Vote handlers
   el.querySelector(".vote-btn.up").addEventListener("click", () => vote(node.id, 1));
   el.querySelector(".vote-btn.down").addEventListener("click", () => vote(node.id, -1));
   el.querySelector('[data-action="reply"]').addEventListener("click", () => toggleReplyForm(el, node.id));
 
-  // Children
   if (node.children.length) {
     const thread = document.createElement("div");
     // Cap visual indentation so deep chains don't run off a phone screen.
@@ -369,8 +403,12 @@ function toggleReplyForm(commentEl, parentId) {
     e.preventDefault();
     const body = form.querySelector(".body-input").value.trim();
     if (!body) return;
-    await postComment({ parentId, body });
-    form.remove();
+    try {
+      await postComment({ parentId, body });
+      form.remove();
+    } catch (err) {
+      toast(err.message);
+    }
   });
 
   commentEl.querySelector(".comment-actions").after(form);
@@ -381,13 +419,8 @@ async function vote(id, dir) {
   const votes = store.get(votesKey, {});
   const current = votes[id] || 0;
 
-  let next, delta;
-  if (dir === 1) {
-    next = current === 1 ? 0 : 1;
-  } else {
-    next = current === -1 ? 0 : -1;
-  }
-  delta = next - current; // one of -2,-1,1,2 (never 0 here)
+  const next = dir === 1 ? (current === 1 ? 0 : 1) : current === -1 ? 0 : -1;
+  const delta = next - current; // one of -2,-1,1,2 (never 0 here)
   if (delta === 0) return;
 
   // Optimistic UI update
@@ -403,19 +436,16 @@ async function vote(id, dir) {
   if (next === 0) delete votes[id];
   store.set(votesKey, votes);
 
-  try {
-    const res = await api(`/api/comments/${id}/vote`, {
-      method: "POST",
-      body: JSON.stringify({ dir: delta })
-    });
-    // Reconcile with authoritative score and keep our flat copy in sync.
-    if (scoreEl) scoreEl.textContent = res.score;
-    const c = state.comments.find((c) => c.id === id);
-    if (c) c.score = res.score;
-  } catch (err) {
-    toast(err.message);
+  // vote_comment(c_id, delta) is a controlled RPC that returns the new score.
+  const { data, error } = await supabase.rpc("vote_comment", { c_id: id, delta });
+  if (error) {
+    toast(error.message);
     await loadComments(); // resync on failure
+    return;
   }
+  if (scoreEl) scoreEl.textContent = data;
+  const c = state.comments.find((c) => c.id === id);
+  if (c) c.score = data;
 }
 
 function wireComposer() {
@@ -445,22 +475,21 @@ function wireComposer() {
 }
 
 async function postComment({ parentId = null, author, body }) {
-  const savedAuthor = author ?? store.get(authorKey, "");
-  const created = await api("/api/comments", {
-    method: "POST",
-    body: JSON.stringify({
-      day: state.today.day,
-      parentId,
-      author: savedAuthor,
-      body
-    })
-  });
+  const name = ((author ?? store.get(authorKey, "")) || "").trim().slice(0, 32) || "anon";
+  const { data, error } = await supabase
+    .from("comments")
+    .insert({ day: state.today.day, parent_id: parentId, author: name, body })
+    .select("id,parent_id,author,body,score,created_at")
+    .single();
+
+  if (error) throw new Error(error.message);
+
   // The author implicitly upvotes their own comment (score starts at 1).
   const votes = store.get(votesKey, {});
-  votes[created.id] = 1;
+  votes[data.id] = 1;
   store.set(votesKey, votes);
 
-  state.comments.push(created);
+  state.comments.push(data);
   renderComments();
 }
 
