@@ -9,5 +9,5 @@
 // Until these are set to real values, the app still works (tier list, daily
 // category, theme) and the discussion section shows an "offline" notice.
 
-export const SUPABASE_URL = "https://YOUR-PROJECT-REF.supabase.co";
-export const SUPABASE_ANON_KEY = "YOUR-PUBLIC-ANON-KEY";
+export const SUPABASE_URL = "https://jefuceganmxzvdzzmnkz.supabase.co";
+export const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplZnVjZWdhbm14enZkenptbmt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NTkzNzEsImV4cCI6MjA5NzEzNTM3MX0.Nz_jgBTZ0VygOGG6Llgr_dr51KEEXRUugH5qygd_Enc";
