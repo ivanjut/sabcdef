@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0f1115" />
   <meta name="description" content="A new category to rank into tiers every day — then argue about it." />
-  <title>sabcdef</title>
+  <title>Tier Drop</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="preconnect" href="https://esm.sh" />
   <link rel="stylesheet" href="styles.css" />
@@ -28,12 +28,15 @@
   <header class="app-header">
     <div class="wrap">
       <div class="brand">
-        <span class="brand-mark">S</span>
-        <span class="brand-name">sabcdef</span>
+        <!-- <span class="brand-mark">💦</span> -->
+        <span class="brand-name">💧 TierDrop</span>
       </div>
       <div class="today-meta">
+        <button id="profile-btn" class="profile-btn is-empty" type="button" aria-label="Set up your profile">
+          <span class="profile-flag" hidden></span>
+          <span class="profile-name">Set profile</span>
+        </button>
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">🌙</button>
-        <span id="today-date" class="today-date">—</span>
       </div>
     </div>
   </header>
@@ -41,13 +44,12 @@
   <main class="wrap">
     <section class="category-head">
       <h1 id="category-name">Loading today's category…</h1>
-      <p id="category-blurb" class="blurb"></p>
+      <p id="today-date" class="today-date">—</p>
     </section>
 
     <!-- Tier list -->
     <section class="tierlist" aria-label="Tier list">
       <div class="tierlist-toolbar">
-        <span class="hint">Drag items into a tier — or tap one to pick. Saved on this device automatically.</span>
         <div class="toolbar-actions">
           <div class="share-menu">
             <button id="share-btn" class="btn btn-ghost" type="button" aria-haspopup="menu" aria-expanded="false">Share</button>
@@ -85,14 +87,6 @@
       </div>
 
       <form id="comment-form" class="composer">
-        <input
-          id="author-input"
-          class="author-input"
-          type="text"
-          maxlength="32"
-          placeholder="Display name (optional)"
-          autocomplete="nickname"
-        />
         <textarea
           id="body-input"
           class="body-input"
@@ -103,6 +97,9 @@
         ></textarea>
         <div class="composer-actions">
           <span id="composer-error" class="error" role="alert"></span>
+          <span class="composer-identity">Posting as
+            <button type="button" id="composer-identity-btn" class="identity-btn">anon</button>
+          </span>
           <button class="btn btn-primary" type="submit">Post</button>
         </div>
       </form>
@@ -115,6 +112,36 @@
   <footer class="app-footer">
     <div class="wrap">New category every day · rankings saved locally</div>
   </footer>
+
+  <!-- Profile dialog: shown on first visit (onboarding) and reused for editing -->
+  <dialog id="profile-dialog" class="profile-dialog">
+    <form id="profile-form">
+      <h2 id="profile-dialog-title" class="profile-dialog-title">Welcome to sabcdef</h2>
+      <p id="profile-dialog-sub" class="profile-dialog-sub">
+        Set a display name and country, or skip for now — you can change these anytime.
+      </p>
+      <label class="field">
+        <span class="field-label">Display name</span>
+        <input
+          id="profile-name-input"
+          type="text"
+          maxlength="32"
+          placeholder="Optional"
+          autocomplete="nickname"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Country</span>
+        <select id="profile-country-input" class="field-select">
+          <option value="">No country</option>
+        </select>
+      </label>
+      <div class="profile-dialog-actions">
+        <button id="profile-skip-btn" class="btn btn-ghost" type="button">Skip</button>
+        <button id="profile-confirm-btn" class="btn btn-primary" type="submit">Confirm</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <script src="app.js" type="module"></script>

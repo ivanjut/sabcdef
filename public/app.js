@@ -1,6 +1,7 @@
 // sabcdef client. Plain ES modules, no build step.
 // SortableJS is loaded globally from the CDN <script> in index.html.
 import { CATEGORIES } from "./categories.js";
+import { COUNTRIES, flagEmoji } from "./countries.js";
 import { supabase, isConfigured } from "./supabase.js";
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -82,8 +83,8 @@ const state = {
 
 const tiersKey = (day) => `sabcdef:tiers:${day}`;
 const votesKey = "sabcdef:votes";
-const authorKey = "sabcdef:author";
 const themeKey = "sabcdef:theme";
+const profileKey = "sabcdef:profile"; // { name, country } — country is an ISO alpha-2 code
 
 // Timestamp of the most recent drag end, so the synthetic click SortableJS may
 // fire afterwards doesn't pop open the tap-to-assign picker.
@@ -117,11 +118,12 @@ function getToday() {
 init().catch((err) => {
   console.error(err);
   $("#category-name").textContent = "Something went wrong loading the app.";
-  $("#category-blurb").textContent = err.message;
+  $("#today-date").textContent = err.message;
 });
 
 async function init() {
   wireThemeToggle(); // independent of everything else
+  wireProfile();
 
   const shared = getShareParams();
   if (shared && CATEGORIES.length) {
@@ -135,6 +137,10 @@ async function init() {
   wireToolbar();
   wireShareMenu();
   wireChipPicker();
+
+  // First visit (no profile saved on this device): prompt for name + country.
+  // Skipped when viewing someone else's shared ranking.
+  if (!shared && !getProfile()) openProfileDialog("onboarding");
 
   if (isConfigured) {
     wireComposer();
@@ -177,12 +183,121 @@ function wireThemeToggle() {
   });
 }
 
+// ---- Profile (display name + country) -------------------------------------
+// Stored on-device. Prompted for on the first visit (onboarding) and editable
+// afterwards via the chip in the top-right of the header. Both fields optional.
+
+function getProfile() {
+  return store.get(profileKey, null); // null means "never onboarded"
+}
+
+function saveProfile(profile) {
+  store.set(profileKey, { name: profile.name || "", country: profile.country || "" });
+}
+
+function wireProfile() {
+  populateCountrySelect();
+  renderProfile();
+
+  $("#profile-btn").addEventListener("click", () => openProfileDialog("edit"));
+  // The composer's "Posting as <name>" is also a shortcut into the editor.
+  $("#composer-identity-btn")?.addEventListener("click", () => openProfileDialog("edit"));
+
+  const dialog = $("#profile-dialog");
+
+  $("#profile-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    saveProfile({
+      name: $("#profile-name-input").value.trim().slice(0, 32),
+      country: $("#profile-country-input").value
+    });
+    renderProfile();
+    closeProfileDialog();
+    toast("Profile saved");
+  });
+
+  $("#profile-skip-btn").addEventListener("click", () => {
+    ensureOnboarded();
+    closeProfileDialog();
+  });
+
+  // Esc / backdrop dismissal still counts as completing onboarding so the
+  // dialog doesn't reappear on the next load.
+  dialog.addEventListener("cancel", ensureOnboarded);
+}
+
+// Record that onboarding happened (with an empty profile) if nothing is saved
+// yet, so a Skip / dismiss isn't re-prompted on the next visit.
+function ensureOnboarded() {
+  if (!getProfile()) saveProfile({ name: "", country: "" });
+}
+
+function populateCountrySelect() {
+  const select = $("#profile-country-input");
+  if (!select) return;
+  const frag = document.createDocumentFragment();
+  for (const c of COUNTRIES) {
+    const opt = document.createElement("option");
+    opt.value = c.code;
+    opt.textContent = `${flagEmoji(c.code)} ${c.name}`;
+    frag.appendChild(opt);
+  }
+  select.appendChild(frag);
+}
+
+function renderProfile() {
+  const btn = $("#profile-btn");
+  if (!btn) return;
+  const profile = getProfile() || {};
+  const name = (profile.name || "").trim();
+  const flag = profile.country ? flagEmoji(profile.country) : "";
+
+  const flagEl = btn.querySelector(".profile-flag");
+  const nameEl = btn.querySelector(".profile-name");
+  flagEl.textContent = flag;
+  flagEl.hidden = !flag;
+  nameEl.textContent = name || (flag ? "" : "Set profile");
+  nameEl.hidden = !name && !!flag; // flag-only: hide the empty name span
+
+  const hasAny = Boolean(name || flag);
+  btn.classList.toggle("is-empty", !hasAny);
+  btn.setAttribute("aria-label", hasAny ? "Edit your profile" : "Set up your profile");
+
+  // Comments are posted under the profile name (or "anon" if it's blank).
+  const idBtn = $("#composer-identity-btn");
+  if (idBtn) idBtn.textContent = name || "anon";
+}
+
+function openProfileDialog(mode = "edit") {
+  const dialog = $("#profile-dialog");
+  const profile = getProfile() || {};
+  const onboarding = mode === "onboarding";
+
+  $("#profile-name-input").value = profile.name || "";
+  $("#profile-country-input").value = profile.country || "";
+
+  $("#profile-dialog-title").textContent = onboarding ? "Welcome to sabcdef" : "Edit your profile";
+  $("#profile-dialog-sub").textContent = onboarding
+    ? "Set a display name and country, or skip for now — you can change these anytime."
+    : "Update your display name and country. These are saved on this device.";
+  $("#profile-skip-btn").textContent = onboarding ? "Skip" : "Cancel";
+
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+  $("#profile-name-input").focus();
+}
+
+function closeProfileDialog() {
+  const dialog = $("#profile-dialog");
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+}
+
 // ---- Category header ------------------------------------------------------
 
 function renderCategoryHead() {
-  const { day, name, blurb } = state.today;
+  const { day, name } = state.today;
   $("#category-name").textContent = name;
-  $("#category-blurb").textContent = blurb || "";
   $("#today-date").textContent = new Date(`${day}T00:00:00`).toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",
@@ -753,13 +868,10 @@ async function vote(id, dir) {
 
 function wireComposer() {
   const form = $("#comment-form");
-  const authorInput = $("#author-input");
-  authorInput.value = store.get(authorKey, "") || "";
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const body = $("#body-input").value.trim();
-    const author = authorInput.value.trim();
     const errEl = $("#composer-error");
     errEl.textContent = "";
 
@@ -767,9 +879,8 @@ function wireComposer() {
       errEl.textContent = "Write something first.";
       return;
     }
-    store.set(authorKey, author);
     try {
-      await postComment({ author, body });
+      await postComment({ body });
       $("#body-input").value = "";
     } catch (err) {
       errEl.textContent = err.message;
@@ -777,8 +888,9 @@ function wireComposer() {
   });
 }
 
-async function postComment({ parentId = null, author, body }) {
-  const name = ((author ?? store.get(authorKey, "")) || "").trim().slice(0, 32) || "anon";
+async function postComment({ parentId = null, body }) {
+  // The author is the on-device profile name; "anon" when it's unset.
+  const name = ((getProfile()?.name) || "").trim().slice(0, 32) || "anon";
   const { data, error } = await supabase
     .from("comments")
     .insert({ day: state.today.day, parent_id: parentId, author: name, body })
