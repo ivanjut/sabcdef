@@ -276,7 +276,7 @@ function openProfileDialog(mode = "edit") {
   $("#profile-name-input").value = profile.name || "";
   $("#profile-country-input").value = profile.country || "";
 
-  $("#profile-dialog-title").textContent = onboarding ? "Welcome to sabcdef" : "Edit your profile";
+  $("#profile-dialog-title").textContent = onboarding ? "Welcome to TierDrop" : "Edit your profile";
   $("#profile-dialog-sub").textContent = onboarding
     ? "Set a display name and country, or skip for now — you can change these anytime."
     : "Update your display name and country. These are saved on this device.";
