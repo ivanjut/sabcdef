@@ -81,6 +81,10 @@ const votesKey = "sabcdef:votes";
 const authorKey = "sabcdef:author";
 const themeKey = "sabcdef:theme";
 
+// Timestamp of the most recent drag end, so the synthetic click SortableJS may
+// fire afterwards doesn't pop open the tap-to-assign picker.
+let lastDragEndAt = 0;
+
 // ---- Daily category (computed client-side) --------------------------------
 // "Today" is the visitor's local date as YYYY-MM-DD. The category is chosen by
 // the number of whole days since the Unix epoch, modulo the category count, so
@@ -116,6 +120,7 @@ async function init() {
   renderCategoryHead();
   renderTierList();
   wireToolbar();
+  wireChipPicker();
 
   if (isConfigured) {
     wireComposer();
@@ -215,6 +220,11 @@ function makeChip(item) {
   chip.className = "chip";
   chip.dataset.id = item.id;
   chip.title = item.name;
+  // Also operable by tap/click and keyboard (Enter/Space), not just dragging.
+  chip.tabIndex = 0;
+  chip.setAttribute("role", "button");
+  chip.setAttribute("aria-haspopup", "menu");
+  chip.setAttribute("aria-label", `${item.name} — tap to assign a tier`);
   chip.innerHTML = `<span class="emoji">${escapeHtml(item.emoji || "•")}</span><span class="label">${escapeHtml(item.name)}</span>`;
   return chip;
 }
@@ -228,10 +238,15 @@ function initSortable() {
       ghostClass: "sortable-ghost",
       chosenClass: "sortable-chosen",
       dragClass: "sortable-drag",
-      delay: 120, // small hold so page scrolling still works on touch
-      delayOnTouchOnly: true,
-      touchStartThreshold: 4,
-      onSort: saveTierPlacements
+      // No hold-delay: dragging starts the instant you move. A quick tap with no
+      // movement stays a tap (handled by the assign-picker); the threshold gives
+      // a few px of finger tolerance so a tap isn't mistaken for a drag.
+      touchStartThreshold: 5,
+      onSort: saveTierPlacements,
+      onStart: closeTierPicker,
+      onEnd: () => {
+        lastDragEndAt = Date.now();
+      }
     });
   });
 }
@@ -245,6 +260,132 @@ function saveTierPlacements() {
     });
   });
   store.set(tiersKey(state.today.day), placement);
+}
+
+// ---- Tap / click to assign --------------------------------------------------
+// As an alternative to dragging, tapping a chip opens a small popover of tiers;
+// picking one moves the chip there. Wired once via delegation on the (stable)
+// tier-list section, so it survives re-renders from Reset.
+
+let pickerEls = null;
+
+function wireChipPicker() {
+  const section = $(".tierlist");
+
+  section.addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    // Skip the click SortableJS may synthesize at the end of a drag.
+    if (Date.now() - lastDragEndAt < 250) return;
+    openTierPicker(chip);
+  });
+
+  section.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    e.preventDefault();
+    openTierPicker(chip);
+  });
+}
+
+function currentTierOf(chip) {
+  return chip.closest(".tier-dropzone")?.dataset.tier || "pool";
+}
+
+function openTierPicker(chip) {
+  closeTierPicker();
+
+  const item = state.today.items.find((i) => i.id === chip.dataset.id);
+  const current = currentTierOf(chip);
+  const opts = [...state.today.tierLabels, "pool"];
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "tier-picker-backdrop";
+
+  const picker = document.createElement("div");
+  picker.className = "tier-picker";
+  picker.setAttribute("role", "menu");
+  picker.innerHTML = `
+    <div class="tier-picker-head">Assign <strong>${escapeHtml(item?.name || "")}</strong></div>
+    <div class="tier-picker-grid">
+      ${opts
+        .map((t) => {
+          const isPool = t === "pool";
+          const cls = `tier-picker-opt${isPool ? " is-pool" : ""}${t === current ? " is-current" : ""}`;
+          const style = isPool ? "" : ` style="background:var(--tier-${t})"`;
+          return `<button type="button" class="${cls}" data-tier="${t}"${style}>${isPool ? "Unranked" : t}</button>`;
+        })
+        .join("")}
+    </div>
+  `;
+
+  document.body.append(backdrop, picker);
+  positionPicker(picker, chip);
+
+  backdrop.addEventListener("click", closeTierPicker);
+  picker.addEventListener("click", (e) => {
+    const btn = e.target.closest(".tier-picker-opt");
+    if (!btn) return;
+    assignChipToTier(chip, btn.dataset.tier);
+    closeTierPicker();
+  });
+
+  const onKey = (e) => {
+    if (e.key === "Escape") closeTierPicker();
+  };
+  document.addEventListener("keydown", onKey);
+  // The picker is anchored to the chip; if the page moves, just dismiss it.
+  window.addEventListener("scroll", closeTierPicker, true);
+  window.addEventListener("resize", closeTierPicker);
+
+  pickerEls = { backdrop, picker, onKey };
+  picker.querySelector(".tier-picker-opt")?.focus();
+}
+
+function closeTierPicker() {
+  if (!pickerEls) return;
+  const { backdrop, picker, onKey } = pickerEls;
+  document.removeEventListener("keydown", onKey);
+  window.removeEventListener("scroll", closeTierPicker, true);
+  window.removeEventListener("resize", closeTierPicker);
+  backdrop.remove();
+  picker.remove();
+  pickerEls = null;
+}
+
+function positionPicker(picker, chip) {
+  const r = chip.getBoundingClientRect();
+  const pw = picker.offsetWidth;
+  const ph = picker.offsetHeight;
+  const margin = 8;
+
+  let left = r.left + r.width / 2 - pw / 2;
+  left = Math.max(margin, Math.min(left, window.innerWidth - pw - margin));
+
+  let top = r.bottom + margin; // prefer below the chip
+  if (top + ph > window.innerHeight - margin) {
+    top = r.top - ph - margin; // not enough room → place above
+  }
+  top = Math.max(margin, top);
+
+  picker.style.left = `${left}px`;
+  picker.style.top = `${top}px`;
+}
+
+function assignChipToTier(chip, tier) {
+  const target = tier === "pool" ? $("#pool") : $(`.tier-dropzone[data-tier="${tier}"]`);
+  if (!target || chip.parentElement === target) return;
+
+  target.appendChild(chip);
+  saveTierPlacements();
+
+  // Brief flash so the move is visible when the chip lands off-screen-ish.
+  chip.classList.remove("just-assigned");
+  void chip.offsetWidth; // restart the animation
+  chip.classList.add("just-assigned");
+
+  toast(tier === "pool" ? "Moved to Unranked" : `Moved to ${tier}`);
 }
 
 function wireToolbar() {

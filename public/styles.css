@@ -391,6 +391,76 @@ body {
   .chip .label { max-width: 62px; }
 }
 
+/* ---- Tap-to-assign picker ---- */
+.chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.chip.just-assigned {
+  animation: chip-pop 0.28s ease;
+}
+@keyframes chip-pop {
+  0% { transform: scale(0.82); }
+  60% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.tier-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: transparent;
+}
+.tier-picker {
+  position: fixed;
+  z-index: 61;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  padding: 10px;
+  max-width: calc(100vw - 16px);
+}
+.tier-picker-head {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tier-picker-head strong { color: var(--text); }
+.tier-picker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tier-picker-opt {
+  appearance: none;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: #15171c;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: filter 0.12s ease, transform 0.12s ease;
+}
+.tier-picker-opt:hover { filter: brightness(1.08); }
+.tier-picker-opt:active { transform: translateY(1px); }
+.tier-picker-opt.is-pool {
+  background: var(--bg-elev-2);
+  color: var(--text);
+  font-weight: 600;
+}
+.tier-picker-opt.is-current {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .toast {
   position: fixed;
   left: 50%;
