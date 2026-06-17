@@ -49,7 +49,19 @@
       <div class="tierlist-toolbar">
         <span class="hint">Drag items into a tier — or tap one to pick. Saved on this device automatically.</span>
         <div class="toolbar-actions">
-          <button id="share-btn" class="btn btn-ghost" type="button">Copy ranking</button>
+          <div class="share-menu">
+            <button id="share-btn" class="btn btn-ghost" type="button" aria-haspopup="menu" aria-expanded="false">Share</button>
+            <div id="share-menu-list" class="share-menu-list" role="menu" hidden>
+              <button class="share-menu-item" type="button" role="menuitem" data-share="link">
+                <span class="share-menu-title">Share link</span>
+                <span class="share-menu-sub">Opens to a preview of your tiers</span>
+              </button>
+              <button class="share-menu-item" type="button" role="menuitem" data-share="text">
+                <span class="share-menu-title">Copy ranking</span>
+                <span class="share-menu-sub">Plain text of your tier list</span>
+              </button>
+            </div>
+          </div>
           <button id="reset-btn" class="btn btn-ghost" type="button">Reset</button>
         </div>
       </div>

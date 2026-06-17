@@ -73,7 +73,11 @@ const store = {
 const state = {
   today: null, // { day, name, blurb, items, tierLabels }
   comments: [], // flat list from Supabase
-  sort: "top"
+  sort: "top",
+  // When the page is opened from a share link, we render someone else's tiers
+  // read-only instead of the local game.
+  readOnly: false,
+  preview: null // { itemId: tierLabel } decoded from the share link
 };
 
 const tiersKey = (day) => `sabcdef:tiers:${day}`;
@@ -97,12 +101,15 @@ function dayString(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-function getToday() {
-  const day = dayString();
+function categoryForDay(day) {
   const epochDays = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86_400_000);
   const index = ((epochDays % CATEGORIES.length) + CATEGORIES.length) % CATEGORIES.length;
   const cat = CATEGORIES[index];
   return { day, index, name: cat.name, blurb: cat.blurb, items: cat.items, tierLabels: TIER_LABELS };
+}
+
+function getToday() {
+  return categoryForDay(dayString());
 }
 
 // ---- Boot -----------------------------------------------------------------
@@ -116,10 +123,17 @@ init().catch((err) => {
 async function init() {
   wireThemeToggle(); // independent of everything else
 
-  state.today = getToday();
-  renderCategoryHead();
-  renderTierList();
+  const shared = getShareParams();
+  if (shared && CATEGORIES.length) {
+    enterPreview(shared);
+  } else {
+    state.today = getToday();
+    renderCategoryHead();
+    renderTierList();
+  }
+
   wireToolbar();
+  wireShareMenu();
   wireChipPicker();
 
   if (isConfigured) {
@@ -201,8 +215,9 @@ function renderTierList() {
     tiersEl.appendChild(row);
   });
 
-  // Restore saved placements; anything unplaced goes to the pool.
-  const saved = store.get(tiersKey(day), {}); // { itemId: tierLabel }
+  // In preview mode the placements come from the share link; otherwise from
+  // this device's saved ranking. Anything unplaced goes to the pool.
+  const saved = state.readOnly ? state.preview || {} : store.get(tiersKey(day), {}); // { itemId: tierLabel }
   poolEl.innerHTML = "";
 
   for (const item of items) {
@@ -212,7 +227,7 @@ function renderTierList() {
     (target || poolEl).appendChild(chip);
   }
 
-  initSortable();
+  if (!state.readOnly) initSortable();
 }
 
 function makeChip(item) {
@@ -220,11 +235,14 @@ function makeChip(item) {
   chip.className = "chip";
   chip.dataset.id = item.id;
   chip.title = item.name;
-  // Also operable by tap/click and keyboard (Enter/Space), not just dragging.
-  chip.tabIndex = 0;
-  chip.setAttribute("role", "button");
-  chip.setAttribute("aria-haspopup", "menu");
-  chip.setAttribute("aria-label", `${item.name} — tap to assign a tier`);
+  // Outside preview, chips are operable by tap/click and keyboard (Enter/Space),
+  // not just dragging. In a read-only shared preview they're inert.
+  if (!state.readOnly) {
+    chip.tabIndex = 0;
+    chip.setAttribute("role", "button");
+    chip.setAttribute("aria-haspopup", "menu");
+    chip.setAttribute("aria-label", `${item.name} — tap to assign a tier`);
+  }
   chip.innerHTML = `<span class="emoji">${escapeHtml(item.emoji || "•")}</span><span class="label">${escapeHtml(item.name)}</span>`;
   return chip;
 }
@@ -273,6 +291,7 @@ function wireChipPicker() {
   const section = $(".tierlist");
 
   section.addEventListener("click", (e) => {
+    if (state.readOnly) return;
     const chip = e.target.closest(".chip");
     if (!chip) return;
     // Skip the click SortableJS may synthesize at the end of a drag.
@@ -281,6 +300,7 @@ function wireChipPicker() {
   });
 
   section.addEventListener("keydown", (e) => {
+    if (state.readOnly) return;
     if (e.key !== "Enter" && e.key !== " ") return;
     const chip = e.target.closest(".chip");
     if (!chip) return;
@@ -394,16 +414,85 @@ function wireToolbar() {
     renderTierList();
     toast("Ranking reset");
   });
+}
 
-  $("#share-btn").addEventListener("click", async () => {
-    const text = buildShareText();
-    try {
-      await navigator.clipboard.writeText(text);
-      toast("Ranking copied to clipboard");
-    } catch {
-      toast("Couldn't copy — clipboard blocked");
+// ---- Share ------------------------------------------------------------------
+// The "Share" button opens a small menu with two options:
+//   1. Share link — a URL that, when opened, shows the sharer's tiers as a
+//      read-only preview. Placements are encoded positionally into the URL so
+//      no backend is needed (this is a static site).
+//   2. Copy ranking — the existing plain-text summary.
+
+function wireShareMenu() {
+  const btn = $("#share-btn");
+  const list = $("#share-menu-list");
+  if (!btn || !list) return;
+
+  const onDocClick = (e) => {
+    if (!e.target.closest(".share-menu")) closeShareMenu();
+  };
+  const onKey = (e) => {
+    if (e.key === "Escape") {
+      closeShareMenu();
+      btn.focus();
     }
+  };
+
+  function closeShareMenu() {
+    if (list.hidden) return;
+    list.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+    document.removeEventListener("click", onDocClick);
+    document.removeEventListener("keydown", onKey);
+  }
+  function openShareMenu() {
+    list.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+    document.addEventListener("click", onDocClick);
+    document.addEventListener("keydown", onKey);
+  }
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation(); // don't let this same click reach the doc-close handler
+    list.hidden ? openShareMenu() : closeShareMenu();
   });
+
+  list.addEventListener("click", (e) => {
+    const item = e.target.closest(".share-menu-item");
+    if (!item) return;
+    closeShareMenu();
+    if (item.dataset.share === "link") shareLink();
+    else copyRankingText();
+  });
+}
+
+async function shareLink() {
+  const url = buildShareUrl();
+  // Prefer the native share sheet where available (mobile, some desktops).
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "sabcdef", text: `My ${state.today.name} tier ranking`, url });
+      return;
+    } catch (err) {
+      if (err && err.name === "AbortError") return; // user dismissed the sheet
+      // anything else: fall through to clipboard
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    toast("Share link copied to clipboard");
+  } catch {
+    toast("Couldn't copy — clipboard blocked");
+  }
+}
+
+async function copyRankingText() {
+  try {
+    await navigator.clipboard.writeText(buildShareText());
+    toast("Ranking copied to clipboard");
+  } catch {
+    toast("Couldn't copy — clipboard blocked");
+  }
 }
 
 function buildShareText() {
@@ -419,6 +508,79 @@ function buildShareText() {
     if (names.length) lines.push(`${label}: ${names.join(", ")}`);
   }
   return lines.join("\n");
+}
+
+// Encode placements positionally: one char per item (in category order), using
+// the tier letter or "-" for unranked. Compact and stable for a given day.
+function encodeRanking(today, placement) {
+  return today.items.map((item) => (TIER_LABELS.includes(placement[item.id]) ? placement[item.id] : "-")).join("");
+}
+
+function decodeRanking(today, str) {
+  const chars = String(str || "").split("");
+  const placement = {};
+  today.items.forEach((item, i) => {
+    const c = chars[i];
+    if (c && TIER_LABELS.includes(c)) placement[item.id] = c;
+  });
+  return placement;
+}
+
+function buildShareUrl() {
+  const placement = store.get(tiersKey(state.today.day), {});
+  const url = new URL(location.href);
+  url.hash = "";
+  url.search = "";
+  url.searchParams.set("d", state.today.day);
+  url.searchParams.set("r", encodeRanking(state.today, placement));
+  return url.toString();
+}
+
+function getShareParams() {
+  const params = new URLSearchParams(location.search);
+  const day = params.get("d");
+  const ranking = params.get("r");
+  // Day must look like YYYY-MM-DD; otherwise ignore and load the normal game.
+  if (day && ranking != null && /^\d{4}-\d{2}-\d{2}$/.test(day)) return { day, ranking };
+  return null;
+}
+
+// ---- Shared-ranking preview -------------------------------------------------
+
+function enterPreview({ day, ranking }) {
+  state.today = categoryForDay(day);
+  state.readOnly = true;
+  state.preview = decodeRanking(state.today, ranking);
+  document.body.classList.add("preview-mode");
+  renderCategoryHead();
+  renderPreviewBanner();
+  renderTierList();
+}
+
+function exitPreview() {
+  state.readOnly = false;
+  state.preview = null;
+  document.body.classList.remove("preview-mode");
+  // Strip the share params so a refresh / re-share reflects the local game.
+  history.replaceState(null, "", location.pathname);
+  $("#preview-banner")?.remove();
+  state.today = getToday();
+  renderCategoryHead();
+  renderTierList();
+}
+
+function renderPreviewBanner() {
+  $("#preview-banner")?.remove();
+  const banner = document.createElement("div");
+  banner.id = "preview-banner";
+  banner.className = "preview-banner";
+  banner.innerHTML = `
+    <span class="preview-text">You're viewing a shared <strong>${escapeHtml(state.today.name)}</strong> ranking.</span>
+    <button id="exit-preview-btn" class="btn btn-primary" type="button">Make your own</button>
+  `;
+  const section = $(".tierlist");
+  section.insertBefore(banner, section.firstChild);
+  $("#exit-preview-btn").addEventListener("click", exitPreview);
 }
 
 // ---- Forum (Supabase) -----------------------------------------------------

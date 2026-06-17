@@ -139,8 +139,9 @@ body {
   margin-bottom: 10px;
   flex-wrap: wrap;
 }
-.hint { color: var(--text-dim); font-size: 0.8rem; }
-.toolbar-actions { display: flex; gap: 8px; }
+.hint { color: var(--text-dim); font-size: 0.8rem; flex: 1 1 auto; min-width: 0; }
+/* Keep Share + Reset pinned to the right edge, even when the row wraps. */
+.toolbar-actions { display: flex; gap: 8px; margin-left: auto; }
 
 .tiers {
   border: 1px solid var(--border);
@@ -390,6 +391,62 @@ body {
   .chip { width: 66px; }
   .chip .label { max-width: 62px; }
 }
+
+/* ---- Share menu ---- */
+.share-menu { position: relative; }
+.share-menu-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 40;
+  min-width: 200px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+/* `display: flex` above would otherwise override the [hidden] attribute. */
+.share-menu-list[hidden] { display: none; }
+.share-menu-item {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+.share-menu-item:hover { background: var(--bg-elev-2); }
+.share-menu-title { font-size: 0.88rem; font-weight: 600; }
+.share-menu-sub { font-size: 0.74rem; color: var(--text-dim); }
+
+/* ---- Shared-ranking preview ---- */
+.preview-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 14px;
+  flex-wrap: wrap;
+  background: var(--bg-elev);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.preview-banner .preview-text { font-size: 0.9rem; color: var(--text-dim); }
+.preview-banner .preview-text strong { color: var(--text); }
+.preview-banner .btn { flex: 0 0 auto; }
+body.preview-mode .tierlist-toolbar { display: none; }
+body.preview-mode .chip { cursor: default; }
 
 /* ---- Tap-to-assign picker ---- */
 .chip:focus-visible {
