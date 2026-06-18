@@ -74,6 +74,7 @@ const store = {
 const state = {
   today: null, // { day, name, blurb, items, tierLabels }
   comments: [], // flat list from Supabase
+  reactions: {}, // { suggestionCommentId: [ { voter_id, tier, author, country, created_at } ] }
   sort: "top",
   // When the page is opened from a share link, we render someone else's tiers
   // read-only instead of the local game.
@@ -87,6 +88,21 @@ const tiersKey = (day) => `sabcdef:tiers:${day}`;
 const votesKey = "sabcdef:votes";
 const themeKey = "sabcdef:theme";
 const profileKey = "sabcdef:profile"; // { name, country } — country is an ISO alpha-2 code
+const voterIdKey = "sabcdef:voterId"; // anonymous per-device id, used to dedupe suggestion reactions
+
+// A stable, anonymous identifier for this device, minted on first use. It's the
+// key that lets a visitor change/withdraw their tier reaction on a suggestion
+// without anyone signing in (same trust model as the rest of the app).
+function getVoterId() {
+  let id = store.get(voterIdKey, null);
+  if (!id) {
+    id =
+      (typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID()) ||
+      `v_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+    store.set(voterIdKey, id);
+  }
+  return id;
+}
 
 // Timestamp of the most recent drag end, so the synthetic click SortableJS may
 // fire afterwards doesn't pop open the tap-to-assign picker.
@@ -139,14 +155,18 @@ async function init() {
   wireToolbar();
   wireShareMenu();
   wireChipPicker();
-  wireRankingDialog();
+  wireTierListDialog();
+  wireVotesDialog();
+  wireSuggestInfo();
+  startCountdown();
 
   // First visit (no profile saved on this device): prompt for name + country.
-  // Skipped when viewing someone else's shared ranking.
+  // Skipped when viewing someone else's shared tier list.
   if (!shared && !getProfile()) openProfileDialog("onboarding");
 
   if (isConfigured) {
     wireComposer();
+    wireSuggestComposer();
     wireSortToggle();
     await loadComments();
   } else {
@@ -309,6 +329,35 @@ function renderCategoryHead() {
   });
 }
 
+// ---- Next-category countdown ----------------------------------------------
+// The category rotates at local midnight (see dayString/getToday), so we count
+// down to the start of the next local day and tick once a second.
+
+function msUntilNextDay() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+  return next.getTime() - now.getTime();
+}
+
+function formatCountdown(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${pad(Math.floor(total / 3600))}:${pad(Math.floor((total % 3600) / 60))}:${pad(total % 60)}`;
+}
+
+function startCountdown() {
+  const el = $("#countdown");
+  if (!el) return;
+  const tick = () => {
+    el.textContent = formatCountdown(msUntilNextDay());
+    // Rolled past midnight with the page still open (not in a shared preview):
+    // reload so the new day's category + discussion take over.
+    if (!state.readOnly && state.today && dayString() !== state.today.day) location.reload();
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
 // ---- Tier list ------------------------------------------------------------
 
 function renderTierList() {
@@ -335,7 +384,7 @@ function renderTierList() {
   });
 
   // In preview mode the placements come from the share link; otherwise from
-  // this device's saved ranking. Anything unplaced goes to the pool.
+  // this device's saved tier list. Anything unplaced goes to the pool.
   const saved = state.readOnly ? state.preview || {} : store.get(tiersKey(day), {}); // { itemId: tierLabel }
   poolEl.innerHTML = "";
 
@@ -380,7 +429,7 @@ function initSortable() {
       // a few px of finger tolerance so a tap isn't mistaken for a drag.
       touchStartThreshold: 5,
       onSort: saveTierPlacements,
-      onStart: closeTierPicker,
+      onStart: closeMenuPopover,
       onEnd: () => {
         lastDragEndAt = Date.now();
       }
@@ -404,7 +453,100 @@ function saveTierPlacements() {
 // picking one moves the chip there. Wired once via delegation on the (stable)
 // tier-list section, so it survives re-renders from Reset.
 
-let pickerEls = null;
+// A single anchored popover menu at a time (the chip tier-picker and the
+// suggestion reaction-picker share it). Caller supplies the inner HTML; any
+// element inside with a [data-value] attribute becomes a selectable option.
+let menuPopover = null;
+
+function showMenuPopover(anchor, innerHtml, onSelect) {
+  closeMenuPopover();
+  closeInfoPopover();
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "tier-picker-backdrop";
+
+  const picker = document.createElement("div");
+  picker.className = "tier-picker";
+  picker.setAttribute("role", "menu");
+  picker.innerHTML = innerHtml;
+
+  document.body.append(backdrop, picker);
+  positionPicker(picker, anchor);
+
+  backdrop.addEventListener("click", closeMenuPopover);
+  picker.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-value]");
+    if (!btn) return;
+    onSelect(btn.dataset.value);
+    closeMenuPopover();
+  });
+
+  const onKey = (e) => {
+    if (e.key === "Escape") closeMenuPopover();
+  };
+  document.addEventListener("keydown", onKey);
+  // The popover is anchored to an element; if the page moves, just dismiss it.
+  window.addEventListener("scroll", closeMenuPopover, true);
+  window.addEventListener("resize", closeMenuPopover);
+
+  menuPopover = { backdrop, picker, onKey };
+  picker.querySelector("[data-value]")?.focus();
+}
+
+function closeMenuPopover() {
+  if (!menuPopover) return;
+  const { backdrop, picker, onKey } = menuPopover;
+  document.removeEventListener("keydown", onKey);
+  window.removeEventListener("scroll", closeMenuPopover, true);
+  window.removeEventListener("resize", closeMenuPopover);
+  backdrop.remove();
+  picker.remove();
+  menuPopover = null;
+}
+
+// A small anchored info popover (the suggest field's ⓘ widget uses it). Shows
+// static help text and dismisses on outside-click, Escape, scroll, or resize.
+// Reuses positionPicker so it sits right under its trigger.
+let infoPopover = null;
+
+function showInfoPopover(anchor, innerHtml) {
+  closeMenuPopover();
+  closeInfoPopover();
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "tier-picker-backdrop";
+
+  const pop = document.createElement("div");
+  pop.className = "info-popover";
+  pop.setAttribute("role", "tooltip");
+  pop.innerHTML = innerHtml;
+
+  document.body.append(backdrop, pop);
+  positionPicker(pop, anchor);
+
+  backdrop.addEventListener("click", closeInfoPopover);
+  const onKey = (e) => {
+    if (e.key === "Escape") closeInfoPopover();
+  };
+  document.addEventListener("keydown", onKey);
+  window.addEventListener("scroll", closeInfoPopover, true);
+  window.addEventListener("resize", closeInfoPopover);
+
+  anchor.setAttribute("aria-expanded", "true");
+  infoPopover = { backdrop, pop, onKey, anchor };
+}
+
+function closeInfoPopover() {
+  if (!infoPopover) return;
+  const { backdrop, pop, onKey, anchor } = infoPopover;
+  document.removeEventListener("keydown", onKey);
+  window.removeEventListener("scroll", closeInfoPopover, true);
+  window.removeEventListener("resize", closeInfoPopover);
+  backdrop.remove();
+  pop.remove();
+  anchor.setAttribute("aria-expanded", "false");
+  infoPopover = null;
+}
 
 function wireChipPicker() {
   const section = $(".tierlist");
@@ -433,64 +575,25 @@ function currentTierOf(chip) {
 }
 
 function openTierPicker(chip) {
-  closeTierPicker();
-
   const item = state.today.items.find((i) => i.id === chip.dataset.id);
   const current = currentTierOf(chip);
   const opts = [...state.today.tierLabels, "pool"];
 
-  const backdrop = document.createElement("div");
-  backdrop.className = "tier-picker-backdrop";
+  const grid = opts
+    .map((t) => {
+      const isPool = t === "pool";
+      const cls = `tier-picker-opt${isPool ? " is-pool" : ""}${t === current ? " is-current" : ""}`;
+      const style = isPool ? "" : ` style="background:var(--tier-${t})"`;
+      return `<button type="button" class="${cls}" data-value="${t}"${style}>${isPool ? "Unranked" : t}</button>`;
+    })
+    .join("");
 
-  const picker = document.createElement("div");
-  picker.className = "tier-picker";
-  picker.setAttribute("role", "menu");
-  picker.innerHTML = `
-    <div class="tier-picker-head">Assign <strong>${escapeHtml(item?.name || "")}</strong></div>
-    <div class="tier-picker-grid">
-      ${opts
-        .map((t) => {
-          const isPool = t === "pool";
-          const cls = `tier-picker-opt${isPool ? " is-pool" : ""}${t === current ? " is-current" : ""}`;
-          const style = isPool ? "" : ` style="background:var(--tier-${t})"`;
-          return `<button type="button" class="${cls}" data-tier="${t}"${style}>${isPool ? "Unranked" : t}</button>`;
-        })
-        .join("")}
-    </div>
-  `;
-
-  document.body.append(backdrop, picker);
-  positionPicker(picker, chip);
-
-  backdrop.addEventListener("click", closeTierPicker);
-  picker.addEventListener("click", (e) => {
-    const btn = e.target.closest(".tier-picker-opt");
-    if (!btn) return;
-    assignChipToTier(chip, btn.dataset.tier);
-    closeTierPicker();
-  });
-
-  const onKey = (e) => {
-    if (e.key === "Escape") closeTierPicker();
-  };
-  document.addEventListener("keydown", onKey);
-  // The picker is anchored to the chip; if the page moves, just dismiss it.
-  window.addEventListener("scroll", closeTierPicker, true);
-  window.addEventListener("resize", closeTierPicker);
-
-  pickerEls = { backdrop, picker, onKey };
-  picker.querySelector(".tier-picker-opt")?.focus();
-}
-
-function closeTierPicker() {
-  if (!pickerEls) return;
-  const { backdrop, picker, onKey } = pickerEls;
-  document.removeEventListener("keydown", onKey);
-  window.removeEventListener("scroll", closeTierPicker, true);
-  window.removeEventListener("resize", closeTierPicker);
-  backdrop.remove();
-  picker.remove();
-  pickerEls = null;
+  showMenuPopover(
+    chip,
+    `<div class="tier-picker-head">Assign <strong>${escapeHtml(item?.name || "")}</strong></div>
+     <div class="tier-picker-grid">${grid}</div>`,
+    (tier) => assignChipToTier(chip, tier)
+  );
 }
 
 function positionPicker(picker, chip) {
@@ -531,7 +634,7 @@ function wireToolbar() {
   $("#reset-btn").addEventListener("click", () => {
     store.set(tiersKey(state.today.day), {});
     renderTierList();
-    toast("Ranking reset");
+    toast("Tier list reset");
   });
 }
 
@@ -540,7 +643,7 @@ function wireToolbar() {
 //   1. Share link — a URL that, when opened, shows the sharer's tiers as a
 //      read-only preview. Placements are encoded positionally into the URL so
 //      no backend is needed (this is a static site).
-//   2. Copy ranking — the existing plain-text summary.
+//   2. Copy tier list — the existing plain-text summary.
 
 function wireShareMenu() {
   const btn = $("#share-btn");
@@ -581,7 +684,7 @@ function wireShareMenu() {
     if (!item) return;
     closeShareMenu();
     if (item.dataset.share === "link") shareLink();
-    else copyRankingText();
+    else copyTierListText();
   });
 }
 
@@ -590,7 +693,7 @@ async function shareLink() {
   // Prefer the native share sheet where available (mobile, some desktops).
   if (navigator.share) {
     try {
-      await navigator.share({ title: "Tier Drop", text: `My ${state.today.name} tier ranking`, url });
+      await navigator.share({ title: "Tier Drop", text: `My ${state.today.name} tier list`, url });
       return;
     } catch (err) {
       if (err && err.name === "AbortError") return; // user dismissed the sheet
@@ -605,10 +708,10 @@ async function shareLink() {
   }
 }
 
-async function copyRankingText() {
+async function copyTierListText() {
   try {
     await navigator.clipboard.writeText(buildShareText());
-    toast("Ranking copied to clipboard");
+    toast("Tier list copied to clipboard");
   } catch {
     toast("Couldn't copy — clipboard blocked");
   }
@@ -629,13 +732,13 @@ function buildShareText() {
   return lines.join("\n");
 }
 
-// Encode placements positionally: one char per item (in category order), using
+// Encode a tier list positionally: one char per item (in category order), using
 // the tier letter or "-" for unranked. Compact and stable for a given day.
-function encodeRanking(today, placement) {
+function encodeTierList(today, placement) {
   return today.items.map((item) => (TIER_LABELS.includes(placement[item.id]) ? placement[item.id] : "-")).join("");
 }
 
-function decodeRanking(today, str) {
+function decodeTierList(today, str) {
   const chars = String(str || "").split("");
   const placement = {};
   today.items.forEach((item, i) => {
@@ -645,9 +748,9 @@ function decodeRanking(today, str) {
   return placement;
 }
 
-// True when an encoded ranking places at least one item into a tier (i.e. it's
-// not all "-" / empty). Used to decide whether to offer "See Ranking".
-function hasRanking(str) {
+// True when an encoded tier list places at least one item into a tier (i.e. it's
+// not all "-" / empty). Used to decide whether to offer "See Tier List".
+function hasTierList(str) {
   return Boolean(str) && [...str].some((c) => TIER_LABELS.includes(c));
 }
 
@@ -666,7 +769,7 @@ function buildShareUrl() {
   url.hash = "";
   url.search = "";
   url.searchParams.set("d", state.today.day);
-  url.searchParams.set("r", encodeRanking(state.today, placement));
+  url.searchParams.set("r", encodeTierList(state.today, placement));
   // Carry the sharer's display name + country so the preview can attribute it.
   const name = (profile.name || "").trim().slice(0, 32);
   if (name) url.searchParams.set("n", name);
@@ -677,20 +780,20 @@ function buildShareUrl() {
 function getShareParams() {
   const params = new URLSearchParams(location.search);
   const day = params.get("d");
-  const ranking = params.get("r");
+  const tierList = params.get("r");
   // Day must look like YYYY-MM-DD; otherwise ignore and load the normal game.
-  if (day && ranking != null && /^\d{4}-\d{2}-\d{2}$/.test(day)) {
-    return { day, ranking, name: params.get("n") || "", country: params.get("c") || "" };
+  if (day && tierList != null && /^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    return { day, tierList, name: params.get("n") || "", country: params.get("c") || "" };
   }
   return null;
 }
 
-// ---- Shared-ranking preview -------------------------------------------------
+// ---- Shared tier-list preview -----------------------------------------------
 
-function enterPreview({ day, ranking, name, country }) {
+function enterPreview({ day, tierList, name, country }) {
   state.today = categoryForDay(day);
   state.readOnly = true;
-  state.preview = decodeRanking(state.today, ranking);
+  state.preview = decodeTierList(state.today, tierList);
   state.previewAuthor = (name || "").trim().slice(0, 32);
   state.previewCountry = country || "";
   document.body.classList.add("preview-mode");
@@ -721,7 +824,7 @@ function renderPreviewBanner() {
     ? `<strong>${flagPrefix(state.previewCountry)}${escapeHtml(name)}</strong>'s`
     : "a shared";
   banner.innerHTML = `
-    <span class="preview-text">You're viewing ${who} <strong>${escapeHtml(state.today.name)}</strong> ranking.</span>
+    <span class="preview-text">You're viewing ${who} <strong>${escapeHtml(state.today.name)}</strong> tier list.</span>
     <button id="exit-preview-btn" class="btn btn-primary" type="button">Make your own</button>
   `;
   const section = $(".tierlist");
@@ -737,13 +840,16 @@ function showForumOffline() {
   empty.textContent = "Discussion is offline — add your Supabase keys in config.js to enable it.";
   const form = $("#comment-form");
   if (form) form.hidden = true;
+  // Suggestions live in the same backend, so hide the box when it's unavailable.
+  const suggest = $("#suggest");
+  if (suggest) suggest.hidden = true;
   $("#comment-count").textContent = "0";
 }
 
 async function loadComments() {
   const { data, error } = await supabase
     .from("comments")
-    .select("id,parent_id,author,country,body,ranking,score,created_at")
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind")
     .eq("day", state.today.day)
     .order("created_at", { ascending: true });
 
@@ -753,7 +859,21 @@ async function loadComments() {
     return;
   }
   state.comments = data || [];
+  const suggestionIds = state.comments.filter((c) => c.kind === "suggestion").map((c) => c.id);
+  await loadReactions(suggestionIds);
   renderComments();
+}
+
+// Pull the tier reactions for the day's suggestions, grouped by comment id.
+async function loadReactions(commentIds) {
+  state.reactions = {};
+  if (!commentIds.length) return;
+  const { data, error } = await supabase
+    .from("suggestion_reactions")
+    .select("comment_id,voter_id,tier,author,country,created_at")
+    .in("comment_id", commentIds);
+  if (error) return; // reactions are non-essential; the discussion still loads
+  for (const r of data || []) (state.reactions[r.comment_id] ||= []).push(r);
 }
 
 function buildTree(flat) {
@@ -796,6 +916,7 @@ function renderComments() {
 
 function renderNode(node, votes, depth) {
   const myVote = votes[node.id] || 0;
+  const isSuggestion = node.kind === "suggestion";
 
   // A node is a comment plus (optionally) the thread of its replies. The thread
   // is a sibling of the comment — not nested inside its body — so the reply line
@@ -804,8 +925,23 @@ function renderNode(node, votes, depth) {
   wrapper.className = "comment-node";
 
   const el = document.createElement("div");
-  el.className = "comment";
+  el.className = `comment${isSuggestion ? " is-suggestion" : ""}`;
   el.dataset.id = node.id;
+
+  // Suggestions get a badge + a prominent item name, and a "Vote" button that
+  // ranks the item into a tier, plus a "See Rankings" breakdown of those votes.
+  // Everything else (score, reply) works the same as a normal comment.
+  const text = isSuggestion
+    ? `<div class="comment-text"><span class="suggest-item">${escapeHtml(node.body)}</span></div>`
+    : `<div class="comment-text">${escapeHtml(node.body)}</div>`;
+
+  const actions = isSuggestion
+    ? `<button class="reply-btn" data-action="reply">Reply</button>
+       <button class="react-btn" data-action="react">${reactBtnLabel(node.id)}</button>
+       <button class="ranking-btn" data-action="votes">See Rankings <span class="rcount">${reactionCount(node.id)}</span></button>`
+    : `<button class="reply-btn" data-action="reply">Reply</button>
+       ${hasTierList(node.tier_list) ? `<button class="ranking-btn" data-action="tierlist">See Tier List</button>` : ""}`;
+
   el.innerHTML = `
     <div class="votes">
       <button class="vote-btn up ${myVote === 1 ? "is-active" : ""}" data-dir="up" aria-label="Upvote">▲</button>
@@ -815,20 +951,20 @@ function renderNode(node, votes, depth) {
     <div class="comment-body">
       <div class="comment-meta">
         <span class="comment-author">${flagPrefix(node.country)}${escapeHtml(node.author)}</span>
+        ${isSuggestion ? `<span class="suggest-tag">💡 Suggestion</span>` : ""}
         <span class="comment-time">${timeAgo(node.created_at)}</span>
       </div>
-      <div class="comment-text">${escapeHtml(node.body)}</div>
-      <div class="comment-actions">
-        <button class="reply-btn" data-action="reply">Reply</button>
-        ${hasRanking(node.ranking) ? `<button class="ranking-btn" data-action="ranking">See Ranking</button>` : ""}
-      </div>
+      ${text}
+      <div class="comment-actions">${actions}</div>
     </div>
   `;
 
   el.querySelector(".vote-btn.up").addEventListener("click", () => vote(node.id, 1));
   el.querySelector(".vote-btn.down").addEventListener("click", () => vote(node.id, -1));
   el.querySelector('[data-action="reply"]').addEventListener("click", () => toggleReplyForm(el, node.id));
-  el.querySelector('[data-action="ranking"]')?.addEventListener("click", () => openRankingDialog(node));
+  el.querySelector('[data-action="tierlist"]')?.addEventListener("click", () => openTierListDialog(node));
+  el.querySelector('[data-action="react"]')?.addEventListener("click", (e) => openReactionPicker(e.currentTarget, node));
+  el.querySelector('[data-action="votes"]')?.addEventListener("click", () => openVotesDialog(node));
 
   wrapper.appendChild(el);
 
@@ -842,11 +978,11 @@ function renderNode(node, votes, depth) {
   return wrapper;
 }
 
-// ---- Comment ranking popup -------------------------------------------------
-// Each comment carries a snapshot of its author's tier ranking at post time
-// (see postComment). "See Ranking" opens a read-only visual of it in a dialog.
+// ---- Comment tier-list popup ------------------------------------------------
+// Each comment carries a snapshot of its author's whole tier list at post time
+// (see postComment). "See Tier List" opens a read-only visual of it in a dialog.
 
-function rankingTiersHtml(today, placement) {
+function tierListHtml(today, placement) {
   const byTier = Object.fromEntries(today.tierLabels.map((l) => [l, []]));
   for (const item of today.items) {
     const tier = placement[item.id];
@@ -870,35 +1006,252 @@ function rankingTiersHtml(today, placement) {
   return `<div class="tiers">${rows}</div>`;
 }
 
-function openRankingDialog(node) {
-  const dialog = $("#ranking-dialog");
+function openTierListDialog(node) {
+  const dialog = $("#tierlist-dialog");
   if (!dialog) return;
   // Comments are loaded for the current day, so state.today is the right
-  // category to decode the positional ranking against.
-  const placement = decodeRanking(state.today, node.ranking);
+  // category to decode the positional tier list against.
+  const placement = decodeTierList(state.today, node.tier_list);
 
-  $("#ranking-dialog-title").textContent = `${flagPrefix(node.country)}${node.author || "anon"}'s ranking`;
-  $("#ranking-dialog-sub").textContent = `${state.today.name} · ${state.today.day}`;
-  $("#ranking-dialog-body").innerHTML = rankingTiersHtml(state.today, placement);
+  $("#tierlist-dialog-title").textContent = `${flagPrefix(node.country)}${node.author || "anon"}'s tier list`;
+  $("#tierlist-dialog-sub").textContent = `${state.today.name} · ${state.today.day}`;
+  $("#tierlist-dialog-body").innerHTML = tierListHtml(state.today, placement);
 
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
 }
 
-function closeRankingDialog() {
-  const dialog = $("#ranking-dialog");
+function closeTierListDialog() {
+  const dialog = $("#tierlist-dialog");
   if (!dialog) return;
   if (typeof dialog.close === "function") dialog.close();
   else dialog.removeAttribute("open");
 }
 
-function wireRankingDialog() {
-  const dialog = $("#ranking-dialog");
+function wireTierListDialog() {
+  const dialog = $("#tierlist-dialog");
   if (!dialog) return;
-  $("#ranking-dialog-close")?.addEventListener("click", closeRankingDialog);
+  $("#tierlist-dialog-close")?.addEventListener("click", closeTierListDialog);
   // A click on the backdrop reports the dialog itself as the target.
   dialog.addEventListener("click", (e) => {
-    if (e.target === dialog) closeRankingDialog();
+    if (e.target === dialog) closeTierListDialog();
+  });
+}
+
+// ---- Suggestions ------------------------------------------------------------
+// A suggestion is a comment (kind = "suggestion") whose body is a proposed item.
+// Instead of attaching a whole tier list, people give it a single ranking (a tier
+// S–F); "See Rankings" opens that distribution + a log of who ranked it where.
+
+// The blurb explaining suggestions is tucked behind the ⓘ widget inside the
+// suggest field so it doesn't take up space; clicking it pops the text up.
+function wireSuggestInfo() {
+  const btn = $("#suggest-info-btn");
+  const text = $("#suggest-info-text");
+  if (!btn || !text) return;
+  btn.addEventListener("click", () => {
+    if (infoPopover) closeInfoPopover();
+    else showInfoPopover(btn, text.innerHTML);
+  });
+}
+
+function wireSuggestComposer() {
+  const form = $("#suggest-form");
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = $("#suggest-input");
+    const errEl = $("#suggest-error");
+    errEl.textContent = "";
+    const item = input.value.trim().slice(0, 80);
+    if (!item) {
+      errEl.textContent = "Type an item to suggest.";
+      return;
+    }
+    try {
+      await postSuggestion(item);
+      input.value = "";
+      toast("Suggestion posted");
+    } catch (err) {
+      errEl.textContent = err.message;
+    }
+  });
+}
+
+async function postSuggestion(item) {
+  const profile = getProfile() || {};
+  const name = (profile.name || "").trim().slice(0, 32) || "anon";
+  const country = profile.country || null;
+  const { data, error } = await supabase
+    .from("comments")
+    .insert({ day: state.today.day, parent_id: null, author: name, country, body: item, kind: "suggestion" })
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind")
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  // The author implicitly upvotes their own suggestion (score starts at 1).
+  const votes = store.get(votesKey, {});
+  votes[data.id] = 1;
+  store.set(votesKey, votes);
+
+  state.comments.push(data);
+  state.reactions[data.id] = [];
+  renderComments();
+}
+
+// ---- Suggestion tier reactions ----------------------------------------------
+
+function reactionsFor(commentId) {
+  return state.reactions[commentId] || [];
+}
+
+function reactionCount(commentId) {
+  return reactionsFor(commentId).length;
+}
+
+function myReactionTier(commentId) {
+  const voterId = getVoterId();
+  return reactionsFor(commentId).find((r) => r.voter_id === voterId)?.tier || null;
+}
+
+function reactBtnLabel(commentId) {
+  const tier = myReactionTier(commentId);
+  return tier ? `Ranked: ${tier}` : "Vote";
+}
+
+function openReactionPicker(anchorBtn, node) {
+  const mine = myReactionTier(node.id);
+  const grid = TIER_LABELS.map((t) => {
+    const cls = `tier-picker-opt${t === mine ? " is-current" : ""}`;
+    return `<button type="button" class="${cls}" data-value="${t}" style="background:var(--tier-${t})">${t}</button>`;
+  }).join("");
+
+  showMenuPopover(
+    anchorBtn,
+    `<div class="tier-picker-head">Rank <strong>${escapeHtml(node.body)}</strong></div>
+     <div class="tier-picker-grid">${grid}</div>`,
+    (tier) => setReaction(node, tier)
+  );
+}
+
+// Set (or, if you re-pick your current tier, withdraw) this device's reaction.
+async function setReaction(node, tier) {
+  const voterId = getVoterId();
+  const profile = getProfile() || {};
+  const name = (profile.name || "").trim().slice(0, 32) || "anon";
+  const country = profile.country || null;
+
+  const list = reactionsFor(node.id);
+  const mine = list.find((r) => r.voter_id === voterId);
+  const removing = mine && mine.tier === tier;
+
+  // Optimistic update: replace any existing reaction from this device.
+  const others = list.filter((r) => r.voter_id !== voterId);
+  state.reactions[node.id] = removing
+    ? others
+    : [...others, { comment_id: node.id, voter_id: voterId, tier, author: name, country, created_at: new Date().toISOString() }];
+  updateSuggestionMeta(node.id);
+
+  const { error } = removing
+    ? await supabase.rpc("unreact_suggestion", { c_id: node.id, voter: voterId })
+    : await supabase.rpc("react_suggestion", { c_id: node.id, voter: voterId, t: tier, a: name, ctry: country });
+
+  if (error) {
+    toast(error.message);
+    await reloadReactionsFor(node.id); // resync on failure
+    updateSuggestionMeta(node.id);
+    return;
+  }
+  toast(removing ? "Vote removed" : `Ranked ${tier}`);
+}
+
+// Re-pull a single suggestion's reactions (used to recover from a failed write).
+async function reloadReactionsFor(commentId) {
+  const { data, error } = await supabase
+    .from("suggestion_reactions")
+    .select("comment_id,voter_id,tier,author,country,created_at")
+    .eq("comment_id", commentId);
+  if (!error) state.reactions[commentId] = data || [];
+}
+
+// Refresh just the count + "Vote"/"Ranked" label on a suggestion in place, so
+// reacting doesn't blow away open reply forms elsewhere in the thread.
+function updateSuggestionMeta(commentId) {
+  const el = document.querySelector(`.comment[data-id="${commentId}"]`);
+  if (!el) return;
+  const countEl = el.querySelector('[data-action="votes"] .rcount');
+  if (countEl) countEl.textContent = reactionCount(commentId);
+  const reactBtn = el.querySelector('[data-action="react"]');
+  if (reactBtn) reactBtn.textContent = reactBtnLabel(commentId);
+}
+
+// ---- See Rankings dialog -----------------------------------------------------
+
+function openVotesDialog(node) {
+  const dialog = $("#votes-dialog");
+  if (!dialog) return;
+
+  const reactions = reactionsFor(node.id);
+  const counts = Object.fromEntries(TIER_LABELS.map((t) => [t, 0]));
+  reactions.forEach((r) => {
+    if (counts[r.tier] != null) counts[r.tier] += 1;
+  });
+  const total = reactions.length;
+  const max = Math.max(1, ...TIER_LABELS.map((t) => counts[t]));
+
+  const dist = TIER_LABELS.map((t) => {
+    const n = counts[t];
+    const pct = Math.round((n / max) * 100);
+    return `
+      <div class="dist-row">
+        <span class="dist-tier" style="background:var(--tier-${t})">${t}</span>
+        <span class="dist-bar"><span class="dist-fill" style="width:${pct}%;background:var(--tier-${t})"></span></span>
+        <span class="dist-count">${n}</span>
+      </div>`;
+  }).join("");
+
+  const log = reactions
+    .slice()
+    .sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")))
+    .map(
+      (r) => `
+      <div class="vote-log-row">
+        <span class="vote-voter">${flagPrefix(r.country)}${escapeHtml(r.author || "anon")}</span>
+        <span class="vote-tier" style="background:var(--tier-${r.tier})">${escapeHtml(r.tier)}</span>
+        <span class="vote-time">${r.created_at ? timeAgo(r.created_at) : ""}</span>
+      </div>`
+    )
+    .join("");
+
+  $("#votes-dialog-title").textContent = `Rankings for “${node.body}”`;
+  $("#votes-dialog-sub").textContent = `${total} ${total === 1 ? "vote" : "votes"} · ${state.today.name}`;
+  $("#votes-dialog-body").innerHTML = `
+    <div class="dist">${dist}</div>
+    ${
+      total
+        ? `<div class="vote-log"><h3 class="vote-log-title">Who voted</h3>${log}</div>`
+        : `<p class="empty">No votes yet. Be the first to vote.</p>`
+    }
+  `;
+
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+}
+
+function closeVotesDialog() {
+  const dialog = $("#votes-dialog");
+  if (!dialog) return;
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+}
+
+function wireVotesDialog() {
+  const dialog = $("#votes-dialog");
+  if (!dialog) return;
+  $("#votes-dialog-close")?.addEventListener("click", closeVotesDialog);
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) closeVotesDialog();
   });
 }
 
@@ -994,10 +1347,10 @@ async function postComment({ parentId = null, body }) {
   const profile = getProfile() || {};
   const name = (profile.name || "").trim().slice(0, 32) || "anon";
   const country = profile.country || null; // ISO alpha-2; shown as a flag by the name
-  // Snapshot the author's current tier ranking so it can be shown alongside the
-  // comment later. Stored null when nothing is placed yet (no "See Ranking").
+  // Snapshot the author's current tier list so it can be shown alongside the
+  // comment later. Stored null when nothing is placed yet (no "See Tier List").
   const placement = store.get(tiersKey(state.today.day), {});
-  const ranking = encodeRanking(state.today, placement);
+  const tierList = encodeTierList(state.today, placement);
   const { data, error } = await supabase
     .from("comments")
     .insert({
@@ -1006,9 +1359,9 @@ async function postComment({ parentId = null, body }) {
       author: name,
       country,
       body,
-      ranking: hasRanking(ranking) ? ranking : null
+      tier_list: hasTierList(tierList) ? tierList : null
     })
-    .select("id,parent_id,author,country,body,ranking,score,created_at")
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind")
     .single();
 
   if (error) throw new Error(error.message);

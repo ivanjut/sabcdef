@@ -1,7 +1,7 @@
 # sabcdef
 
 A new category every day that you rank into tiers (S → F), with an open
-Reddit-style forum to debate the rankings. Mobile-first, works on any screen.
+Reddit-style forum to debate the tier lists. Mobile-first, works on any screen.
 
 **Live:** https://ivanjut.github.io/sabcdef/
 
@@ -50,8 +50,8 @@ To point Pages at a different folder or repo, edit the `path:` in
 - **Daily category** — chosen deterministically from the date (whole days since
   the epoch, modulo the list in `public/categories.js`), so everyone sees the
   same category each day. Comments are keyed per day.
-- **Tier rankings** — saved to `localStorage` per day (private to each device).
-  "Copy ranking" exports a shareable text version.
+- **Tier lists** — saved to `localStorage` per day (private to each device).
+  "Copy tier list" exports a shareable text version.
 - **Forum** — threaded comments with up/down votes, sortable by Top or New.
   No accounts: an optional display name is stored locally. Votes are tracked
   client-side to limit double-voting on the same device.
@@ -62,7 +62,7 @@ To point Pages at a different folder or repo, edit the `path:` in
   Add Supabase Auth + a per-user votes table before relying on the counts.
 - Items are emoji-based — swap `emoji` for an `img` URL in
   `public/categories.js`; the tier logic doesn't change.
-- Rankings aren't aggregated server-side yet (no "community average" tier list).
+- Tier lists aren't aggregated server-side yet (no "community average" tier list).
 
 ## Layout
 

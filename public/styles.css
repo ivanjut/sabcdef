@@ -157,8 +157,27 @@ body {
 .theme-toggle:active { transform: scale(0.94); }
 
 /* ---- Category head ---- */
-.category-head { padding-top: 22px; }
+.category-head {
+  padding-top: 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.category-head-main { min-width: 0; }
 .category-head h1 { font-size: 1.5rem; margin: 0 0 4px; line-height: 1.2; }
+.next-category {
+  flex: 0 0 auto;
+  margin: 0;
+  padding-top: 4px;
+  text-align: right;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+.countdown { font-variant-numeric: tabular-nums; }
+/* The countdown is about the live daily reset — irrelevant on a shared preview. */
+body.preview-mode .next-category { display: none; }
 .today-date {
   color: var(--text-dim);
   font-size: 0.9rem;
@@ -167,7 +186,9 @@ body {
 }
 
 /* ---- Tier list ---- */
-.tierlist { margin-top: 18px; }
+/* Tight top margin so the toolbar ("View yesterday's results" / Share / Reset)
+   sits just under the date — matching the title→date gap. */
+.tierlist { margin-top: 4px; }
 .tierlist-toolbar {
   display: flex;
   align-items: center;
@@ -178,6 +199,9 @@ body {
 }
 /* Keep Share + Reset pinned to the right edge, even when the row wraps. */
 .toolbar-actions { display: flex; gap: 8px; margin-left: auto; }
+/* Sits to the left of the actions (which carry margin-left:auto). */
+.yesterday-link { color: var(--text-dim); font-size: 0.82rem; }
+.yesterday-link .soon { font-style: italic; }
 
 .tiers {
   border: 1px solid var(--border);
@@ -408,7 +432,8 @@ body {
   margin-top: 4px;
 }
 .reply-btn,
-.ranking-btn {
+.ranking-btn,
+.react-btn {
   background: none;
   border: 0;
   color: var(--text-dim);
@@ -418,7 +443,13 @@ body {
   padding: 2px 0;
 }
 .reply-btn:hover,
-.ranking-btn:hover { color: var(--text); }
+.ranking-btn:hover,
+.react-btn:hover { color: var(--text); }
+.react-btn { color: var(--accent); }
+.ranking-btn .rcount {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
 .reply-form { margin-top: 8px; }
 .reply-form .body-input { font-size: 16px; }
 .reply-form-actions {
@@ -429,6 +460,160 @@ body {
 }
 
 .empty { color: var(--text-dim); text-align: center; padding: 24px 0; }
+
+/* ---- Suggest an item ---- */
+.suggest { margin-top: 26px; }
+.suggest[hidden] { display: none; }
+
+/* The form *is* the text field: a bordered box holding the input plus the info
+   widget and Suggest button, all tucked inside. */
+.suggest-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px 5px 4px 12px;
+}
+.suggest-form:focus-within { border-color: var(--accent); }
+.suggest-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  padding: 7px 0;
+  font: inherit;
+  font-size: 16px; /* >=16px stops iOS Safari from zooming on focus */
+}
+.suggest-input:focus { outline: none; }
+.suggest-submit { flex: 0 0 auto; padding: 7px 14px; border-radius: 8px; }
+.suggest-error { display: block; margin-top: 8px; }
+
+/* Small "ⓘ" widget inside the field: pops the help text up (see .info-popover). */
+.info-btn {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+.info-btn:hover { color: var(--text); border-color: var(--text-dim); }
+.info-btn[aria-expanded="true"] { color: var(--accent); border-color: var(--accent); }
+
+.info-popover {
+  position: fixed;
+  z-index: 61;
+  max-width: 260px;
+  padding: 10px 12px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+/* ---- Suggestion comments ---- */
+.comment.is-suggestion {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin: 2px 0;
+}
+.suggest-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+.suggest-item { font-weight: 700; font-size: 1.02rem; color: var(--text); }
+
+/* ---- Votes dialog (tier-reaction breakdown for a suggestion) ---- */
+.dist { display: flex; flex-direction: column; gap: 6px; }
+.dist-row { display: flex; align-items: center; gap: 10px; }
+.dist-tier {
+  flex: 0 0 28px;
+  display: grid;
+  place-items: center;
+  height: 28px;
+  border-radius: 7px;
+  font-weight: 800;
+  color: #15171c;
+}
+.dist-bar {
+  flex: 1;
+  height: 14px;
+  background: var(--bg-elev-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.dist-fill { display: block; height: 100%; border-radius: 999px; transition: width 0.2s ease; }
+.dist-count {
+  flex: 0 0 24px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.vote-log { margin-top: 18px; }
+.vote-log-title {
+  margin: 0 0 4px;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+.vote-log-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--border);
+}
+.vote-voter {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vote-tier {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 7px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: #15171c;
+}
+.vote-time { flex: 0 0 auto; color: var(--text-dim); font-size: 0.76rem; }
 
 /* ---- Footer ---- */
 .app-footer {
@@ -530,7 +715,7 @@ body {
   margin-top: 20px;
 }
 
-/* ---- Ranking dialog (a commenter's saved tiers) ---- */
+/* ---- Tier list / rankings dialogs (a commenter's saved tiers) ---- */
 .ranking-dialog {
   width: min(560px, calc(100vw - 32px));
   max-height: calc(100vh - 64px);
@@ -585,7 +770,7 @@ body {
 /* Chips inside the dialog are display-only. */
 .ranking-chip { cursor: default; touch-action: auto; }
 
-/* ---- Shared-ranking preview ---- */
+/* ---- Shared tier-list preview ---- */
 .preview-banner {
   display: flex;
   align-items: center;

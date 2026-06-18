@@ -43,13 +43,19 @@
 
   <main class="wrap">
     <section class="category-head">
-      <h1 id="category-name">Loading today's category…</h1>
-      <p id="today-date" class="today-date">—</p>
+      <div class="category-head-main">
+        <h1 id="category-name">Loading today's category…</h1>
+        <p id="today-date" class="today-date">—</p>
+      </div>
+      <p class="next-category">
+        <em>Next category in <span id="countdown" class="countdown">—:—:—</span></em>
+      </p>
     </section>
 
     <!-- Tier list -->
     <section class="tierlist" aria-label="Tier list">
       <div class="tierlist-toolbar">
+        <span class="yesterday-link">View yesterday's results: <span class="soon">soon</span></span>
         <div class="toolbar-actions">
           <div class="share-menu">
             <button id="share-btn" class="btn btn-ghost" type="button" aria-haspopup="menu" aria-expanded="false">Share</button>
@@ -59,7 +65,7 @@
                 <span class="share-menu-sub">Opens to a preview of your tiers</span>
               </button>
               <button class="share-menu-item" type="button" role="menuitem" data-share="text">
-                <span class="share-menu-title">Copy ranking</span>
+                <span class="share-menu-title">Copy tier list</span>
                 <span class="share-menu-sub">Plain text of your tier list</span>
               </button>
             </div>
@@ -74,6 +80,38 @@
         <div class="pool-label">Unranked</div>
         <div id="pool" class="pool tier-dropzone" data-tier="pool"></div>
       </div>
+    </section>
+
+    <!-- Suggest an item: posts a special "suggestion" comment people can rate S–F -->
+    <section id="suggest" class="suggest" aria-label="Suggest an item">
+      <!-- The form is styled as a single text field with the info widget and the
+           Suggest button tucked inside it. -->
+      <form id="suggest-form" class="suggest-form">
+        <input
+          id="suggest-input"
+          class="suggest-input"
+          type="text"
+          maxlength="80"
+          placeholder="Suggest an item…"
+          aria-label="Suggest an item"
+          autocomplete="off"
+          required
+        />
+        <button
+          id="suggest-info-btn"
+          class="info-btn"
+          type="button"
+          aria-label="What's this?"
+          aria-expanded="false"
+        >i</button>
+        <button class="btn btn-primary suggest-submit" type="submit">Suggest</button>
+      </form>
+      <!-- Source for the info-button popover (see wireSuggestInfo in app.js). -->
+      <p id="suggest-info-text" hidden>
+        Suggest an item for today's category. It joins the discussion below as a
+        suggestion others can vote on and rank S–F.
+      </p>
+      <span id="suggest-error" class="error suggest-error" role="alert"></span>
     </section>
 
     <!-- Forum -->
@@ -110,7 +148,7 @@
   </main>
 
   <footer class="app-footer">
-    <div class="wrap">New category every day · rankings saved locally</div>
+    <div class="wrap">New category every day · tier lists saved locally</div>
   </footer>
 
   <!-- Profile dialog: shown on first visit (onboarding) and reused for editing -->
@@ -143,16 +181,28 @@
     </form>
   </dialog>
 
-  <!-- Ranking dialog: shows a commenter's saved tier ranking, populated in app.js -->
-  <dialog id="ranking-dialog" class="ranking-dialog">
+  <!-- Tier list dialog: shows a commenter's saved tier list, populated in app.js -->
+  <dialog id="tierlist-dialog" class="ranking-dialog">
     <div class="ranking-dialog-head">
       <div>
-        <h2 id="ranking-dialog-title" class="ranking-dialog-title">Ranking</h2>
-        <p id="ranking-dialog-sub" class="ranking-dialog-sub"></p>
+        <h2 id="tierlist-dialog-title" class="ranking-dialog-title">Tier List</h2>
+        <p id="tierlist-dialog-sub" class="ranking-dialog-sub"></p>
       </div>
-      <button id="ranking-dialog-close" class="ranking-dialog-close" type="button" aria-label="Close">✕</button>
+      <button id="tierlist-dialog-close" class="ranking-dialog-close" type="button" aria-label="Close">✕</button>
     </div>
-    <div id="ranking-dialog-body" class="ranking-dialog-body"></div>
+    <div id="tierlist-dialog-body" class="ranking-dialog-body"></div>
+  </dialog>
+
+  <!-- Rankings dialog: how people ranked a suggestion (tier distribution + log) -->
+  <dialog id="votes-dialog" class="ranking-dialog">
+    <div class="ranking-dialog-head">
+      <div>
+        <h2 id="votes-dialog-title" class="ranking-dialog-title">Rankings</h2>
+        <p id="votes-dialog-sub" class="ranking-dialog-sub"></p>
+      </div>
+      <button id="votes-dialog-close" class="ranking-dialog-close" type="button" aria-label="Close">✕</button>
+    </div>
+    <div id="votes-dialog-body" class="ranking-dialog-body"></div>
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
