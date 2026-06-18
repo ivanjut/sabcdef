@@ -360,12 +360,12 @@ body {
 .comments { display: flex; flex-direction: column; gap: 4px; }
 .comment {
   display: flex;
-  gap: 10px;
+  gap: 1px;
   padding: 10px 0;
 }
-.comment-thread { /* nested replies */
-  margin-left: 14px;
-  padding-left: 10px;
+.comment-thread { /* nested replies: line flush with the parent comment's left edge */
+  margin-left: 0;
+  padding-left: 12px;
   border-left: 2px solid var(--border);
 }
 .votes {
@@ -374,7 +374,7 @@ body {
   align-items: center;
   gap: 2px;
   flex: 0 0 auto;
-  min-width: 28px;
+  min-width: 24px;
 }
 .vote-btn {
   border: 0;
@@ -401,8 +401,14 @@ body {
 }
 .comment-author { color: var(--text); font-weight: 600; }
 .comment-text { white-space: pre-wrap; overflow-wrap: anywhere; }
-.comment-actions { margin-top: 4px; }
-.reply-btn {
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+.reply-btn,
+.ranking-btn {
   background: none;
   border: 0;
   color: var(--text-dim);
@@ -411,7 +417,8 @@ body {
   cursor: pointer;
   padding: 2px 0;
 }
-.reply-btn:hover { color: var(--text); }
+.reply-btn:hover,
+.ranking-btn:hover { color: var(--text); }
 .reply-form { margin-top: 8px; }
 .reply-form .body-input { font-size: 16px; }
 .reply-form-actions {
@@ -522,6 +529,61 @@ body {
   gap: 10px;
   margin-top: 20px;
 }
+
+/* ---- Ranking dialog (a commenter's saved tiers) ---- */
+.ranking-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  color: var(--text);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+.ranking-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+.ranking-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.ranking-dialog-title { margin: 0; font-size: 1.15rem; line-height: 1.2; }
+.ranking-dialog-sub {
+  margin: 2px 0 0;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+.ranking-dialog-close {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elev);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: filter 0.12s ease, color 0.12s ease;
+}
+.ranking-dialog-close:hover { color: var(--text); filter: brightness(1.12); }
+.ranking-dialog-body {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: calc(100vh - 64px - 64px);
+}
+/* Chips inside the dialog are display-only. */
+.ranking-chip { cursor: default; touch-action: auto; }
 
 /* ---- Shared-ranking preview ---- */
 .preview-banner {

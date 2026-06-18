@@ -78,7 +78,9 @@ const state = {
   // When the page is opened from a share link, we render someone else's tiers
   // read-only instead of the local game.
   readOnly: false,
-  preview: null // { itemId: tierLabel } decoded from the share link
+  preview: null, // { itemId: tierLabel } decoded from the share link
+  previewAuthor: "", // sharer's display name, from the share link
+  previewCountry: "" // sharer's ISO alpha-2 country code, from the share link
 };
 
 const tiersKey = (day) => `sabcdef:tiers:${day}`;
@@ -137,6 +139,7 @@ async function init() {
   wireToolbar();
   wireShareMenu();
   wireChipPicker();
+  wireRankingDialog();
 
   // First visit (no profile saved on this device): prompt for name + country.
   // Skipped when viewing someone else's shared ranking.
@@ -263,9 +266,10 @@ function renderProfile() {
   btn.classList.toggle("is-empty", !hasAny);
   btn.setAttribute("aria-label", hasAny ? "Edit your profile" : "Set up your profile");
 
-  // Comments are posted under the profile name (or "anon" if it's blank).
+  // Comments are posted under the profile name (or "anon" if it's blank),
+  // prefixed with the country flag to match how they'll appear on a comment.
   const idBtn = $("#composer-identity-btn");
-  if (idBtn) idBtn.textContent = name || "anon";
+  if (idBtn) idBtn.textContent = `${flagPrefix(profile.country)}${name || "anon"}`;
 }
 
 function openProfileDialog(mode = "edit") {
@@ -586,7 +590,7 @@ async function shareLink() {
   // Prefer the native share sheet where available (mobile, some desktops).
   if (navigator.share) {
     try {
-      await navigator.share({ title: "sabcdef", text: `My ${state.today.name} tier ranking`, url });
+      await navigator.share({ title: "Tier Drop", text: `My ${state.today.name} tier ranking`, url });
       return;
     } catch (err) {
       if (err && err.name === "AbortError") return; // user dismissed the sheet
@@ -614,7 +618,7 @@ function buildShareText() {
   const { name, day, tierLabels } = state.today;
   const byId = Object.fromEntries(state.today.items.map((i) => [i.id, i]));
   const placement = store.get(tiersKey(day), {});
-  const lines = [`sabcdef — ${name} (${day})`];
+  const lines = [`Tier Drop — ${name} (${day})`];
   for (const label of tierLabels) {
     const names = Object.entries(placement)
       .filter(([, t]) => t === label)
@@ -641,13 +645,32 @@ function decodeRanking(today, str) {
   return placement;
 }
 
+// True when an encoded ranking places at least one item into a tier (i.e. it's
+// not all "-" / empty). Used to decide whether to offer "See Ranking".
+function hasRanking(str) {
+  return Boolean(str) && [...str].some((c) => TIER_LABELS.includes(c));
+}
+
+// A country flag + trailing space to prefix a name with, or "" when there's no
+// country. flagEmoji only ever returns safe regional-indicator codepoints, so
+// the result is safe to drop into innerHTML.
+function flagPrefix(country) {
+  const flag = flagEmoji(country);
+  return flag ? `${flag} ` : "";
+}
+
 function buildShareUrl() {
   const placement = store.get(tiersKey(state.today.day), {});
+  const profile = getProfile() || {};
   const url = new URL(location.href);
   url.hash = "";
   url.search = "";
   url.searchParams.set("d", state.today.day);
   url.searchParams.set("r", encodeRanking(state.today, placement));
+  // Carry the sharer's display name + country so the preview can attribute it.
+  const name = (profile.name || "").trim().slice(0, 32);
+  if (name) url.searchParams.set("n", name);
+  if (profile.country) url.searchParams.set("c", profile.country);
   return url.toString();
 }
 
@@ -656,16 +679,20 @@ function getShareParams() {
   const day = params.get("d");
   const ranking = params.get("r");
   // Day must look like YYYY-MM-DD; otherwise ignore and load the normal game.
-  if (day && ranking != null && /^\d{4}-\d{2}-\d{2}$/.test(day)) return { day, ranking };
+  if (day && ranking != null && /^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    return { day, ranking, name: params.get("n") || "", country: params.get("c") || "" };
+  }
   return null;
 }
 
 // ---- Shared-ranking preview -------------------------------------------------
 
-function enterPreview({ day, ranking }) {
+function enterPreview({ day, ranking, name, country }) {
   state.today = categoryForDay(day);
   state.readOnly = true;
   state.preview = decodeRanking(state.today, ranking);
+  state.previewAuthor = (name || "").trim().slice(0, 32);
+  state.previewCountry = country || "";
   document.body.classList.add("preview-mode");
   renderCategoryHead();
   renderPreviewBanner();
@@ -689,8 +716,12 @@ function renderPreviewBanner() {
   const banner = document.createElement("div");
   banner.id = "preview-banner";
   banner.className = "preview-banner";
+  const name = (state.previewAuthor || "").trim();
+  const who = name
+    ? `<strong>${flagPrefix(state.previewCountry)}${escapeHtml(name)}</strong>'s`
+    : "a shared";
   banner.innerHTML = `
-    <span class="preview-text">You're viewing a shared <strong>${escapeHtml(state.today.name)}</strong> ranking.</span>
+    <span class="preview-text">You're viewing ${who} <strong>${escapeHtml(state.today.name)}</strong> ranking.</span>
     <button id="exit-preview-btn" class="btn btn-primary" type="button">Make your own</button>
   `;
   const section = $(".tierlist");
@@ -712,7 +743,7 @@ function showForumOffline() {
 async function loadComments() {
   const { data, error } = await supabase
     .from("comments")
-    .select("id,parent_id,author,body,score,created_at")
+    .select("id,parent_id,author,country,body,ranking,score,created_at")
     .eq("day", state.today.day)
     .order("created_at", { ascending: true });
 
@@ -766,6 +797,12 @@ function renderComments() {
 function renderNode(node, votes, depth) {
   const myVote = votes[node.id] || 0;
 
+  // A node is a comment plus (optionally) the thread of its replies. The thread
+  // is a sibling of the comment — not nested inside its body — so the reply line
+  // lines up with the left edge of the comment instead of its text column.
+  const wrapper = document.createElement("div");
+  wrapper.className = "comment-node";
+
   const el = document.createElement("div");
   el.className = "comment";
   el.dataset.id = node.id;
@@ -777,12 +814,13 @@ function renderNode(node, votes, depth) {
     </div>
     <div class="comment-body">
       <div class="comment-meta">
-        <span class="comment-author">${escapeHtml(node.author)}</span>
+        <span class="comment-author">${flagPrefix(node.country)}${escapeHtml(node.author)}</span>
         <span class="comment-time">${timeAgo(node.created_at)}</span>
       </div>
       <div class="comment-text">${escapeHtml(node.body)}</div>
       <div class="comment-actions">
         <button class="reply-btn" data-action="reply">Reply</button>
+        ${hasRanking(node.ranking) ? `<button class="ranking-btn" data-action="ranking">See Ranking</button>` : ""}
       </div>
     </div>
   `;
@@ -790,15 +828,78 @@ function renderNode(node, votes, depth) {
   el.querySelector(".vote-btn.up").addEventListener("click", () => vote(node.id, 1));
   el.querySelector(".vote-btn.down").addEventListener("click", () => vote(node.id, -1));
   el.querySelector('[data-action="reply"]').addEventListener("click", () => toggleReplyForm(el, node.id));
+  el.querySelector('[data-action="ranking"]')?.addEventListener("click", () => openRankingDialog(node));
+
+  wrapper.appendChild(el);
 
   if (node.children.length) {
     const thread = document.createElement("div");
     // Cap visual indentation so deep chains don't run off a phone screen.
     thread.className = depth < 5 ? "comment-thread" : "";
     node.children.forEach((child) => thread.appendChild(renderNode(child, votes, depth + 1)));
-    el.querySelector(".comment-body").appendChild(thread);
+    wrapper.appendChild(thread);
   }
-  return el;
+  return wrapper;
+}
+
+// ---- Comment ranking popup -------------------------------------------------
+// Each comment carries a snapshot of its author's tier ranking at post time
+// (see postComment). "See Ranking" opens a read-only visual of it in a dialog.
+
+function rankingTiersHtml(today, placement) {
+  const byTier = Object.fromEntries(today.tierLabels.map((l) => [l, []]));
+  for (const item of today.items) {
+    const tier = placement[item.id];
+    if (tier && byTier[tier]) byTier[tier].push(item);
+  }
+  const rows = today.tierLabels
+    .map((label) => {
+      const chips = byTier[label]
+        .map(
+          (item) =>
+            `<div class="chip ranking-chip"><span class="emoji">${escapeHtml(item.emoji || "•")}</span><span class="label">${escapeHtml(item.name)}</span></div>`
+        )
+        .join("");
+      return `
+        <div class="tier-row">
+          <div class="tier-label" style="background:var(--tier-${label})">${label}</div>
+          <div class="tier-dropzone">${chips}</div>
+        </div>`;
+    })
+    .join("");
+  return `<div class="tiers">${rows}</div>`;
+}
+
+function openRankingDialog(node) {
+  const dialog = $("#ranking-dialog");
+  if (!dialog) return;
+  // Comments are loaded for the current day, so state.today is the right
+  // category to decode the positional ranking against.
+  const placement = decodeRanking(state.today, node.ranking);
+
+  $("#ranking-dialog-title").textContent = `${flagPrefix(node.country)}${node.author || "anon"}'s ranking`;
+  $("#ranking-dialog-sub").textContent = `${state.today.name} · ${state.today.day}`;
+  $("#ranking-dialog-body").innerHTML = rankingTiersHtml(state.today, placement);
+
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+}
+
+function closeRankingDialog() {
+  const dialog = $("#ranking-dialog");
+  if (!dialog) return;
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+}
+
+function wireRankingDialog() {
+  const dialog = $("#ranking-dialog");
+  if (!dialog) return;
+  $("#ranking-dialog-close")?.addEventListener("click", closeRankingDialog);
+  // A click on the backdrop reports the dialog itself as the target.
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) closeRankingDialog();
+  });
 }
 
 function toggleReplyForm(commentEl, parentId) {
@@ -889,12 +990,25 @@ function wireComposer() {
 }
 
 async function postComment({ parentId = null, body }) {
-  // The author is the on-device profile name; "anon" when it's unset.
-  const name = ((getProfile()?.name) || "").trim().slice(0, 32) || "anon";
+  // The author + country come from the on-device profile ("anon" / none unset).
+  const profile = getProfile() || {};
+  const name = (profile.name || "").trim().slice(0, 32) || "anon";
+  const country = profile.country || null; // ISO alpha-2; shown as a flag by the name
+  // Snapshot the author's current tier ranking so it can be shown alongside the
+  // comment later. Stored null when nothing is placed yet (no "See Ranking").
+  const placement = store.get(tiersKey(state.today.day), {});
+  const ranking = encodeRanking(state.today, placement);
   const { data, error } = await supabase
     .from("comments")
-    .insert({ day: state.today.day, parent_id: parentId, author: name, body })
-    .select("id,parent_id,author,body,score,created_at")
+    .insert({
+      day: state.today.day,
+      parent_id: parentId,
+      author: name,
+      country,
+      body,
+      ranking: hasRanking(ranking) ? ranking : null
+    })
+    .select("id,parent_id,author,country,body,ranking,score,created_at")
     .single();
 
   if (error) throw new Error(error.message);

@@ -9,24 +9,6 @@
 
 export const CATEGORIES = [
   {
-    name: "Desserts",
-    blurb: "The sweet finale. Rank them before dinner regrets set in.",
-    items: [
-      { id: "tiramisu", name: "Tiramisu", emoji: "🍰" },
-      { id: "icecream", name: "Ice Cream", emoji: "🍨" },
-      { id: "donut", name: "Donut", emoji: "🍩" },
-      { id: "cookie", name: "Cookie", emoji: "🍪" },
-      { id: "cheesecake", name: "Cheesecake", emoji: "🧀" },
-      { id: "brownie", name: "Brownie", emoji: "🍫" },
-      { id: "pie", name: "Apple Pie", emoji: "🥧" },
-      { id: "cupcake", name: "Cupcake", emoji: "🧁" },
-      { id: "pudding", name: "Pudding", emoji: "🍮" },
-      { id: "mochi", name: "Mochi", emoji: "🍡" },
-      { id: "gelato", name: "Gelato", emoji: "🍦" },
-      { id: "macaron", name: "Macaron", emoji: "🌈" }
-    ]
-  },
-  {
     name: "Pizza Toppings",
     blurb: "Settle the pineapple debate once and for all.",
     items: [
@@ -127,5 +109,50 @@ export const CATEGORIES = [
       { id: "lizard", name: "Lizard", emoji: "🦎" },
       { id: "ferret", name: "Ferret", emoji: "🦦" }
     ]
-  }
+  },
+  {
+    name: "Desserts",
+    blurb: "The sweet finale. Rank them before dinner regrets set in.",
+    items: [
+      { id: "tiramisu", name: "Tiramisu", emoji: "🍰" },
+      { id: "icecream", name: "Ice Cream", emoji: "🍨" },
+      { id: "donut", name: "Donut", emoji: "🍩" },
+      { id: "cookie", name: "Cookie", emoji: "🍪" },
+      { id: "cheesecake", name: "Cheesecake", emoji: "🧀" },
+      { id: "brownie", name: "Brownie", emoji: "🍫" },
+      { id: "pie", name: "Apple Pie", emoji: "🥧" },
+      { id: "cupcake", name: "Cupcake", emoji: "🧁" },
+      { id: "pudding", name: "Pudding", emoji: "🍮" },
+      { id: "mochi", name: "Mochi", emoji: "🍡" },
+      { id: "gelato", name: "Gelato", emoji: "🍦" },
+      { id: "macaron", name: "Macaron", emoji: "🌈" },
+    ]
+  },
+  {
+    name: "Numbers",
+    blurb: "The numbers that make the world go round.",
+    items: [
+      { id: "zero", name: "Zero", emoji: "0️⃣" },
+      { id: "one", name: "One", emoji: "1️⃣" },
+      { id: "two", name: "Two", emoji: "2️⃣" },
+      { id: "three", name: "Three", emoji: "3️⃣" },
+      { id: "four", name: "Four", emoji: "4️⃣" },
+      { id: "five", name: "Five", emoji: "5️⃣" },
+      { id: "six", name: "Six", emoji: "6️⃣" },
+      { id: "seven", name: "Seven", emoji: "7️⃣" },
+      { id: "eight", name: "Eight", emoji: "8️⃣" },
+      { id: "nine", name: "Nine", emoji: "9️⃣" },
+      { id: "ten", name: "Ten", emoji: "1️⃣0️⃣" },
+      { id: "eleven", name: "Eleven", emoji: "1️⃣1️⃣" },
+      { id: "twelve", name: "Twelve", emoji: "1️⃣2️⃣" },
+      { id: "thirteen", name: "Thirteen", emoji: "1️⃣3️⃣" },
+      { id: "fourteen", name: "Fourteen", emoji: "1️⃣4️⃣" },
+      { id: "fifteen", name: "Fifteen", emoji: "1️⃣5️⃣" },
+      { id: "sixteen", name: "Sixteen", emoji: "1️⃣6️⃣" },
+      { id: "seventeen", name: "Seventeen", emoji: "1️⃣7️⃣" },
+      { id: "eighteen", name: "Eighteen", emoji: "1️⃣8️⃣" },
+      { id: "nineteen", name: "Nineteen", emoji: "1️⃣9️⃣" },
+      { id: "twenty", name: "Twenty", emoji: "2️⃣0️⃣" }
+    ]
+  },
 ];

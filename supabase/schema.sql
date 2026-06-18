@@ -8,12 +8,30 @@ create table if not exists public.comments (
   day         text        not null,              -- YYYY-MM-DD the comment belongs to
   parent_id   bigint      references public.comments(id) on delete cascade,
   author      text        not null default 'anon',
+  country     text,                              -- author's ISO 3166-1 alpha-2 country code (optional)
   body        text        not null,
+  ranking     text,                              -- the author's tier ranking at post time (positional encoding; see encodeRanking in app.js)
   score       integer     not null default 1,    -- starts at 1 (author's implicit upvote)
   created_at  timestamptz not null default now(),
-  constraint body_len   check (char_length(body) between 1 and 4000),
-  constraint author_len check (char_length(author) <= 32)
+  constraint body_len    check (char_length(body) between 1 and 4000),
+  constraint author_len  check (char_length(author) <= 32),
+  constraint country_len check (country is null or char_length(country) <= 2),
+  constraint ranking_len check (ranking is null or char_length(ranking) <= 64)
 );
+
+-- For tables created before the ranking / country columns existed.
+alter table public.comments add column if not exists ranking text;
+alter table public.comments add column if not exists country text;
+do $$ begin
+  alter table public.comments
+    add constraint ranking_len check (ranking is null or char_length(ranking) <= 64);
+exception when duplicate_object then null;
+end $$;
+do $$ begin
+  alter table public.comments
+    add constraint country_len check (country is null or char_length(country) <= 2);
+exception when duplicate_object then null;
+end $$;
 
 create index if not exists comments_day_idx    on public.comments (day);
 create index if not exists comments_parent_idx on public.comments (parent_id);
@@ -36,6 +54,8 @@ create policy "insert comments" on public.comments
   with check (
     char_length(body) between 1 and 4000
     and char_length(coalesce(author, 'anon')) <= 32
+    and (country is null or char_length(country) <= 2)
+    and (ranking is null or char_length(ranking) <= 64)
     and score = 1            -- clients cannot seed an inflated score
   );
 
