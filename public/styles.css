@@ -103,6 +103,7 @@ body {
   color: #1a0d0d;
   font-weight: 800;
 }
+.brand-logo { height: 28px; width: auto; display: block; }
 .brand-name { font-weight: 700; letter-spacing: 0.2px; }
 .today-meta { display: flex; align-items: center; gap: 10px; }
 
