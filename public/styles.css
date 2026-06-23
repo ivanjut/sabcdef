@@ -716,6 +716,109 @@ body.preview-mode .next-category { display: none; }
   margin-top: 20px;
 }
 
+/* ---- Notifications ---- */
+/* Header bell shares the round icon-button look (.theme-toggle); when the device
+   is subscribed it gets an accent ring. */
+.notify-btn.is-on {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* The dialog reuses .profile-dialog's frame; these style its rows + controls. */
+.notify-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.notify-row-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.notify-row-title { font-weight: 600; font-size: 0.95rem; }
+.notify-row-sub { color: var(--text-dim); font-size: 0.8rem; }
+
+/* Toggle switch (a visually-hidden checkbox + a styled track). */
+.switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 28px;
+  cursor: pointer;
+}
+.switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.switch-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.switch input:checked + .switch-track { background: var(--accent); border-color: var(--accent); }
+.switch input:checked + .switch-track::after { transform: translateX(18px); background: #fff; }
+.switch input:focus-visible + .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* "All comments vs. only replies to me" choice. */
+.notify-mode {
+  margin: 14px 0 4px;
+  padding: 10px 12px 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.notify-mode .field-label { margin-bottom: 4px; padding: 0; }
+.radio-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  cursor: pointer;
+}
+.radio-row + .radio-row { border-top: 1px solid var(--border); }
+/* Counteract .profile-dialog input { width:100%; border; background } so the
+   radios render as native controls instead of full-width boxes. */
+.notify-mode input[type="radio"] {
+  width: auto;
+  height: auto;
+  margin: 3px 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+.radio-text { display: flex; flex-direction: column; }
+.radio-text strong { font-size: 0.92rem; font-weight: 600; }
+.radio-text small { color: var(--text-dim); font-size: 0.8rem; }
+
+.notify-note {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-elev-2);
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
 /* ---- Tier list / rankings dialogs (a commenter's saved tiers) ---- */
 .ranking-dialog {
   width: min(560px, calc(100vw - 32px));

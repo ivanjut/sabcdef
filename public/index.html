@@ -8,6 +8,15 @@
   <title>Tier Drop</title>
   <link rel="icon" type="image/svg+xml" href="tier-drop-icon.svg" />
 
+  <!-- PWA: installable + notification-capable. start_url/scope are relative so
+       this works both at the site root (local dev) and under /sabcdef/ (Pages). -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="TierDrop" />
+
   <!-- Social share preview (Open Graph + Twitter Card). Absolute URLs are required;
        most platforms don't render SVG, so the preview image is a PNG. -->
   <meta property="og:type" content="website" />
@@ -54,6 +63,7 @@
           <span class="profile-flag" hidden></span>
           <span class="profile-name">Set profile</span>
         </button>
+        <button id="notify-btn" class="theme-toggle notify-btn" type="button" aria-label="Notifications" hidden>🔔</button>
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">🌙</button>
       </div>
     </div>
@@ -195,6 +205,77 @@
       <div class="profile-dialog-actions">
         <button id="profile-skip-btn" class="btn btn-ghost" type="button">Skip</button>
         <button id="profile-confirm-btn" class="btn btn-primary" type="submit">Confirm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Notifications dialog: master switch + per-type toggles. Wired in push.js.
+       Preferences are saved on this device and mirrored to the push server. -->
+  <dialog id="notify-dialog" class="profile-dialog notify-dialog">
+    <form id="notify-form" method="dialog">
+      <h2 class="profile-dialog-title">Notifications</h2>
+      <p class="profile-dialog-sub">
+        Get a daily nudge when a new category drops, and a ping when the discussion
+        moves. Choose what you want below — your choice is saved on this device.
+      </p>
+
+      <div class="notify-row">
+        <div class="notify-row-text">
+          <span class="notify-row-title">Enable notifications</span>
+          <span class="notify-row-sub">Allow TierDrop to send push notifications</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="notify-enable" />
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <div id="notify-detail" hidden>
+        <div class="notify-row">
+          <div class="notify-row-text">
+            <span class="notify-row-title">Daily category</span>
+            <span class="notify-row-sub">A reminder when each day's category drops</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="notify-daily" />
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <div class="notify-row">
+          <div class="notify-row-text">
+            <span class="notify-row-title">New comments</span>
+            <span class="notify-row-sub">When people join today's discussion</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="notify-comments" />
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <fieldset id="notify-mode" class="notify-mode">
+          <legend class="field-label">Notify me about</legend>
+          <label class="radio-row">
+            <input type="radio" name="notify-mode" value="all" />
+            <span class="radio-text">
+              <strong>All new comments</strong>
+              <small>Every comment on the day's category</small>
+            </span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="notify-mode" value="replies" />
+            <span class="radio-text">
+              <strong>Only replies to me</strong>
+              <small>When someone replies to a comment you posted</small>
+            </span>
+          </label>
+        </fieldset>
+      </div>
+
+      <p id="notify-note" class="notify-note" hidden></p>
+
+      <div class="profile-dialog-actions">
+        <button class="btn btn-primary" id="notify-done" type="submit">Done</button>
       </div>
     </form>
   </dialog>

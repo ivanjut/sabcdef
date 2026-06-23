@@ -3,6 +3,8 @@
 import { CATEGORIES } from "./categories.js";
 import { COUNTRIES, flagEmoji } from "./countries.js";
 import { supabase, isConfigured } from "./supabase.js";
+import { getDeviceId } from "./identity.js";
+import { initPush } from "./push.js";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -88,21 +90,12 @@ const tiersKey = (day) => `sabcdef:tiers:${day}`;
 const votesKey = "sabcdef:votes";
 const themeKey = "sabcdef:theme";
 const profileKey = "sabcdef:profile"; // { name, country } — country is an ISO alpha-2 code
-const voterIdKey = "sabcdef:voterId"; // anonymous per-device id, used to dedupe suggestion reactions
 
-// A stable, anonymous identifier for this device, minted on first use. It's the
-// key that lets a visitor change/withdraw their tier reaction on a suggestion
-// without anyone signing in (same trust model as the rest of the app).
-function getVoterId() {
-  let id = store.get(voterIdKey, null);
-  if (!id) {
-    id =
-      (typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID()) ||
-      `v_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
-    store.set(voterIdKey, id);
-  }
-  return id;
-}
+// The anonymous per-device id lives in identity.js so push.js can tie a push
+// subscription to the same device that posts comments/reactions. Here it's used
+// to dedupe suggestion reactions and to stamp comments (so replies can be routed
+// back to the device that posted the parent — see "reply" notifications).
+const getVoterId = getDeviceId;
 
 // Timestamp of the most recent drag end, so the synthetic click SortableJS may
 // fire afterwards doesn't pop open the tap-to-assign picker.
@@ -172,6 +165,11 @@ async function init() {
   } else {
     showForumOffline();
   }
+
+  // Push notifications (daily category + new comments). Self-contained: it
+  // reveals the header bell only when supported + configured, and never blocks
+  // the rest of the app if it fails.
+  initPush().catch((err) => console.error("Push init failed:", err));
 }
 
 // ---- Theme ----------------------------------------------------------------
@@ -1084,7 +1082,7 @@ async function postSuggestion(item) {
   const country = profile.country || null;
   const { data, error } = await supabase
     .from("comments")
-    .insert({ day: state.today.day, parent_id: null, author: name, country, body: item, kind: "suggestion" })
+    .insert({ day: state.today.day, parent_id: null, author: name, country, body: item, kind: "suggestion", device_id: getVoterId() })
     .select("id,parent_id,author,country,body,tier_list,score,created_at,kind")
     .single();
 
@@ -1359,7 +1357,10 @@ async function postComment({ parentId = null, body }) {
       author: name,
       country,
       body,
-      tier_list: hasTierList(tierList) ? tierList : null
+      tier_list: hasTierList(tierList) ? tierList : null,
+      // Stamped so a reply to this comment can be routed back to its author's
+      // device for a "reply" notification. Not authenticated — see identity.js.
+      device_id: getVoterId()
     })
     .select("id,parent_id,author,country,body,tier_list,score,created_at,kind")
     .single();

@@ -9,7 +9,10 @@ Reddit-style forum to debate the tier lists. Mobile-first, works on any screen.
 
 - **Static frontend** — vanilla HTML/CSS/JS, no build step (`public/`)
 - **SortableJS** (CDN) — touch-friendly drag-and-drop for tiering
-- **Supabase** — hosted Postgres + browser SDK for the shared comment forum
+- **Supabase** — hosted Postgres + browser SDK for the shared comment forum, plus
+  an Edge Function (`supabase/functions/send-push`) that sends push notifications
+- **PWA** — installable to the home screen (manifest + service worker), with Web
+  Push for the daily category and new comments
 - **GitHub Pages** — hosting, deployed by GitHub Actions (`.github/workflows/deploy.yml`)
 
 There is no server to run: the daily category is computed in the browser and the
@@ -36,6 +39,56 @@ Supabase configured (below); until then it shows an "offline" notice.
 
 The anon key is meant to live in the browser; Row Level Security (in the schema)
 is what restricts access. Never put the `service_role` key in `config.js`.
+
+## Install as an app + notifications (PWA)
+
+TierDrop is a Progressive Web App: visitors can **Add to Home Screen** on Android
+and iOS and run it like a native app. Install works as soon as the manifest +
+service worker ship — no extra setup.
+
+**Notifications** (a daily nudge when the category drops, and pings for new
+comments) need three one-time pieces of setup. Until they're done, everything
+else works and the header bell stays hidden.
+
+1. **Generate a VAPID key pair** (identifies your push server to browsers):
+
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+
+2. **Publish the public key.** Paste it into `public/config.js` as
+   `VAPID_PUBLIC_KEY`. (Like the Supabase anon key, this one is meant to ship in
+   the browser.)
+
+3. **Apply the schema + deploy the sender.** Re-run [`supabase/schema.sql`](supabase/schema.sql)
+   (it adds the `push_subscriptions` table and `comments.device_id`), then deploy
+   the Edge Function and set its secrets:
+
+   ```bash
+   supabase functions deploy send-push --no-verify-jwt
+   supabase secrets set \
+     VAPID_PUBLIC_KEY=<public>  VAPID_PRIVATE_KEY=<private> \
+     VAPID_SUBJECT=mailto:you@example.com \
+     WEBHOOK_SECRET=<a-long-random-string> \
+     APP_URL=https://ivanjut.github.io/sabcdef/
+   ```
+
+   Finally, edit the two placeholders in
+   [`supabase/notifications-setup.sql`](supabase/notifications-setup.sql) and run
+   it — that schedules the daily push (`pg_cron`) and the new-comment trigger
+   (`pg_net`).
+
+**How recipients are chosen.** Each device opts in from the bell menu and picks,
+on-device, between **All new comments** and **Only replies to me**; the choice is
+mirrored onto the server subscription so the sender can honor it. A reply always
+pings the parent comment's author; "all"-mode subscribers additionally get every
+new comment (except their own). Identity is the same anonymous per-device id the
+forum already uses (`identity.js`) — no accounts.
+
+**iOS note.** Web Push on iPhone/iPad only works for an *installed* PWA (iOS 16.4+).
+The bell explains this: users must Add to Home Screen and open it from there first.
+If iOS push reliability matters, the same `public/` can later be wrapped with
+Capacitor for native APNs without changing the app code.
 
 ## Deploy (GitHub Pages)
 
@@ -68,15 +121,22 @@ To point Pages at a different folder or repo, edit the `path:` in
 
 ```
 public/
-  index.html       Markup
-  styles.css       Mobile-first styling, light/dark themes
-  app.js           Tier list + forum client logic
-  categories.js    The rotating pool of daily categories
-  config.js        Supabase URL + anon key (you fill these in)
-  supabase.js      Creates the Supabase client
+  index.html             Markup
+  styles.css             Mobile-first styling, light/dark themes
+  app.js                 Tier list + forum client logic
+  categories.js          The rotating pool of daily categories
+  config.js              Supabase URL + anon key + VAPID public key (you fill these in)
+  supabase.js            Creates the Supabase client
+  identity.js            Anonymous per-device id (shared by forum + push)
+  push.js                Service-worker registration + notification opt-in UI
+  sw.js                  Service worker: receives push, shows notifications
+  manifest.webmanifest   PWA manifest (installable)
+  icon-*.png             App / maskable / Apple-touch icons
 supabase/
-  schema.sql       Forum table, RLS policies, vote function
-serve.js           Zero-dependency static server for local dev
+  schema.sql             Forum + push_subscriptions tables, RLS, RPC functions
+  notifications-setup.sql  pg_cron daily job + new-comment trigger (placeholders)
+  functions/send-push/   Edge Function that sends the Web Push messages
+serve.js                 Zero-dependency static server for local dev
 .github/workflows/
-  deploy.yml       Builds & deploys public/ to GitHub Pages
+  deploy.yml             Builds & deploys public/ to GitHub Pages
 ```

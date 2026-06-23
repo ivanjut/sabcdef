@@ -202,3 +202,102 @@ $$;
 grant select on public.suggestion_reactions to anon, authenticated;
 grant execute on function public.react_suggestion(bigint, text, text, text, text) to anon, authenticated;
 grant execute on function public.unreact_suggestion(bigint, text) to anon, authenticated;
+
+-- ── Push notifications ────────────────────────────────────────────────────────
+-- Two pieces:
+--   1. comments.device_id — the anonymous per-device id (see identity.js) of the
+--      poster, so a reply can be routed back to the parent comment's author for a
+--      "reply" notification. Not authenticated; same honor-system trust model as
+--      the rest of the app.
+--   2. push_subscriptions — one row per browser that opted in, holding the Web
+--      Push endpoint/keys plus that device's preferences. The send-push Edge
+--      Function (service role) reads these to decide who to notify.
+
+alter table public.comments add column if not exists device_id text;
+do $$ begin
+  alter table public.comments
+    add constraint device_id_len check (device_id is null or char_length(device_id) <= 64);
+exception when duplicate_object then null;
+end $$;
+
+create table if not exists public.push_subscriptions (
+  id              bigint      generated always as identity primary key,
+  endpoint        text        not null unique,         -- the browser's push endpoint URL
+  p256dh          text        not null,                -- client public key (for payload encryption)
+  auth            text        not null,                -- client auth secret
+  device_id       text,                                -- = the poster's voterId; for "replies to me"
+  notify_daily    boolean     not null default true,   -- daily "new category" nudge
+  notify_comments boolean     not null default true,   -- new-comment pings
+  comment_mode    text        not null default 'all',  -- 'all' | 'replies'
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  constraint comment_mode_valid check (comment_mode in ('all', 'replies')),
+  constraint endpoint_len  check (char_length(endpoint) <= 1024),
+  constraint device_id_len check (device_id is null or char_length(device_id) <= 64)
+);
+
+create index if not exists push_subscriptions_device_idx on public.push_subscriptions (device_id);
+
+-- RLS on, with NO anon policies: the browser can't read or write the table
+-- directly (endpoints/keys stay private). All writes go through the SECURITY
+-- DEFINER functions below; the Edge Function reads via the service role, which
+-- bypasses RLS.
+alter table public.push_subscriptions enable row level security;
+
+-- Create-or-update this device's subscription (keyed on endpoint). Re-called
+-- whenever a preference toggle changes, so it doubles as "save my prefs".
+create or replace function public.upsert_push_subscription(
+  p_endpoint text,
+  p_p256dh   text,
+  p_auth     text,
+  p_device   text,
+  p_daily    boolean,
+  p_comments boolean,
+  p_mode     text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if p_mode not in ('all', 'replies') then
+    raise exception 'invalid comment_mode %', p_mode;
+  end if;
+
+  insert into public.push_subscriptions
+    (endpoint, p256dh, auth, device_id, notify_daily, notify_comments, comment_mode)
+  values (
+    left(p_endpoint, 1024),
+    p_p256dh,
+    p_auth,
+    nullif(left(coalesce(p_device, ''), 64), ''),
+    coalesce(p_daily, true),
+    coalesce(p_comments, true),
+    p_mode
+  )
+  on conflict (endpoint) do update
+    set p256dh          = excluded.p256dh,
+        auth            = excluded.auth,
+        device_id       = excluded.device_id,
+        notify_daily    = excluded.notify_daily,
+        notify_comments = excluded.notify_comments,
+        comment_mode    = excluded.comment_mode,
+        updated_at      = now();
+end;
+$$;
+
+-- Remove this device's subscription (on disable / unsubscribe).
+create or replace function public.delete_push_subscription(p_endpoint text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  delete from public.push_subscriptions where endpoint = left(p_endpoint, 1024);
+end;
+$$;
+
+grant execute on function public.upsert_push_subscription(text, text, text, text, boolean, boolean, text) to anon, authenticated;
+grant execute on function public.delete_push_subscription(text) to anon, authenticated;
