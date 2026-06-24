@@ -95,19 +95,25 @@ export const CATEGORIES = [
     ]
   },
   {
-    name: "Pets",
-    blurb: "Companions ranked. No, your one doesn't automatically get S.",
+    name: "World Cuisines",
+    blurb: "Food.",
     items: [
-      { id: "dog", name: "Dog", emoji: "🐕" },
-      { id: "cat", name: "Cat", emoji: "🐈" },
-      { id: "rabbit", name: "Rabbit", emoji: "🐇" },
-      { id: "hamster", name: "Hamster", emoji: "🐹" },
-      { id: "fish", name: "Fish", emoji: "🐠" },
-      { id: "parrot", name: "Parrot", emoji: "🦜" },
-      { id: "snake", name: "Snake", emoji: "🐍" },
-      { id: "turtle", name: "Turtle", emoji: "🐢" },
-      { id: "lizard", name: "Lizard", emoji: "🦎" },
-      { id: "ferret", name: "Ferret", emoji: "🦦" }
+      { id: "italian", name: "Italian", emoji: "🇮🇹" },
+      { id: "japanese", name: "Japanese", emoji: "🇯🇵" },
+      { id: "mexican", name: "Mexican", emoji: "🇲🇽" },
+      { id: "indian", name: "Indian", emoji: "🇮🇳" },
+      { id: "thai", name: "Thai", emoji: "🇹🇭" },
+      { id: "french", name: "French", emoji: "🇫🇷" },
+      { id: "chinese", name: "Chinese", emoji: "🇨🇳" },
+      { id: "korean", name: "Korean", emoji: "🇰🇷" },
+      { id: "greek", name: "Greek", emoji: "🇬🇷" },
+      { id: "lebanese", name: "Lebanese", emoji: "🇱🇧" },
+      { id: "spanish", name: "Spanish", emoji: "🇪🇸" },
+      { id: "vietnamese", name: "Vietnamese", emoji: "🇻🇳" },
+      { id: "turkish", name: "Turkish", emoji: "🇹🇷" },
+      { id: "ethiopian", name: "Ethiopian", emoji: "🇪🇹" },
+      { id: "peruvian", name: "Peruvian", emoji: "🇵🇪" },
+      { id: "moroccan", name: "Moroccan", emoji: "🇲🇦" },
     ]
   },
   {
