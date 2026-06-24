@@ -85,6 +85,13 @@ pings the parent comment's author; "all"-mode subscribers additionally get every
 new comment (except their own). Identity is the same anonymous per-device id the
 forum already uses (`identity.js`) — no accounts.
 
+**Daily reminder time.** Each device also picks the **local hour** it wants the
+daily reminder. The cron runs *hourly* and the `send-push` function notifies only
+the devices whose local time has just reached their chosen hour (and that haven't
+been reminded yet that day). The device's IANA timezone is stored with the
+subscription so the conversion is DST-correct. Because of this, the daily cron
+**must stay hourly** — a once-a-day schedule would only ever match one timezone.
+
 **iOS note.** Web Push on iPhone/iPad only works for an *installed* PWA (iOS 16.4+).
 The bell explains this: users must Add to Home Screen and open it from there first.
 If iOS push reliability matters, the same `public/` can later be wrapped with
@@ -102,7 +109,10 @@ To point Pages at a different folder or repo, edit the `path:` in
 
 - **Daily category** — chosen deterministically from the date (whole days since
   the epoch, modulo the list in `public/categories.js`), so everyone sees the
-  same category each day. Comments are keyed per day.
+  same category each day. The day rolls over at a fixed UTC moment
+  (`CATEGORY_SWITCH_UTC_HOUR` in `app.js`, default 05:00 UTC) rather than each
+  visitor's local midnight, so the whole world shares one category and one
+  comment thread at any instant. Comments are keyed per (global) day.
 - **Tier lists** — saved to `localStorage` per day (private to each device).
   "Copy tier list" exports a shareable text version.
 - **Forum** — threaded comments with up/down votes, sortable by Top or New.

@@ -238,6 +238,22 @@ create table if not exists public.push_subscriptions (
 
 create index if not exists push_subscriptions_device_idx on public.push_subscriptions (device_id);
 
+-- Per-device daily-reminder scheduling: the local hour the user chose (0–23),
+-- their IANA timezone (so the send-time → local-time conversion is DST-correct),
+-- and the last local date a daily reminder was sent (a once-per-day guard, since
+-- the cron now runs hourly). daily_last_sent is written only by the Edge Function.
+alter table public.push_subscriptions add column if not exists daily_hour integer not null default 9;
+alter table public.push_subscriptions add column if not exists timezone text;
+alter table public.push_subscriptions add column if not exists daily_last_sent text;
+do $$ begin
+  alter table public.push_subscriptions add constraint daily_hour_valid check (daily_hour between 0 and 23);
+exception when duplicate_object then null;
+end $$;
+do $$ begin
+  alter table public.push_subscriptions add constraint timezone_len check (timezone is null or char_length(timezone) <= 64);
+exception when duplicate_object then null;
+end $$;
+
 -- RLS on, with NO anon policies: the browser can't read or write the table
 -- directly (endpoints/keys stay private). All writes go through the SECURITY
 -- DEFINER functions below; the Edge Function reads via the service role, which
@@ -246,14 +262,22 @@ alter table public.push_subscriptions enable row level security;
 
 -- Create-or-update this device's subscription (keyed on endpoint). Re-called
 -- whenever a preference toggle changes, so it doubles as "save my prefs".
+-- daily_last_sent is intentionally NOT touched here — it's the Edge Function's
+-- send guard, so changing the reminder hour never re-arms a same-day reminder.
+--
+-- The argument list grew (added p_daily_hour, p_timezone), so drop the prior
+-- signature first to avoid leaving a stale overload behind on re-run.
+drop function if exists public.upsert_push_subscription(text, text, text, text, boolean, boolean, text);
 create or replace function public.upsert_push_subscription(
-  p_endpoint text,
-  p_p256dh   text,
-  p_auth     text,
-  p_device   text,
-  p_daily    boolean,
-  p_comments boolean,
-  p_mode     text
+  p_endpoint   text,
+  p_p256dh     text,
+  p_auth       text,
+  p_device     text,
+  p_daily      boolean,
+  p_comments   boolean,
+  p_mode       text,
+  p_daily_hour integer,
+  p_timezone   text
 )
 returns void
 language plpgsql
@@ -266,7 +290,7 @@ begin
   end if;
 
   insert into public.push_subscriptions
-    (endpoint, p256dh, auth, device_id, notify_daily, notify_comments, comment_mode)
+    (endpoint, p256dh, auth, device_id, notify_daily, notify_comments, comment_mode, daily_hour, timezone)
   values (
     left(p_endpoint, 1024),
     p_p256dh,
@@ -274,7 +298,9 @@ begin
     nullif(left(coalesce(p_device, ''), 64), ''),
     coalesce(p_daily, true),
     coalesce(p_comments, true),
-    p_mode
+    p_mode,
+    least(23, greatest(0, coalesce(p_daily_hour, 9))),   -- clamp to a valid hour
+    nullif(left(coalesce(p_timezone, ''), 64), '')
   )
   on conflict (endpoint) do update
     set p256dh          = excluded.p256dh,
@@ -283,6 +309,8 @@ begin
         notify_daily    = excluded.notify_daily,
         notify_comments = excluded.notify_comments,
         comment_mode    = excluded.comment_mode,
+        daily_hour      = excluded.daily_hour,
+        timezone        = excluded.timezone,
         updated_at      = now();
 end;
 $$;
@@ -299,5 +327,5 @@ begin
 end;
 $$;
 
-grant execute on function public.upsert_push_subscription(text, text, text, text, boolean, boolean, text) to anon, authenticated;
+grant execute on function public.upsert_push_subscription(text, text, text, text, boolean, boolean, text, integer, text) to anon, authenticated;
 grant execute on function public.delete_push_subscription(text) to anon, authenticated;

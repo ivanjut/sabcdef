@@ -72,6 +72,35 @@ function categoryNameForDay(day: string): string {
   return CATEGORY_NAMES[((epochDays % n) + n) % n];
 }
 
+// The category rotates at this UTC hour worldwide — keep in sync with
+// CATEGORY_SWITCH_UTC_HOUR in public/app.js.
+const CATEGORY_SWITCH_UTC_HOUR = 5;
+
+// The global "TierDrop day" (YYYY-MM-DD) at an instant, computed the same way the
+// client does, so the daily reminder can name the currently-live category.
+function currentGlobalDay(now: Date): string {
+  return new Date(now.getTime() - CATEGORY_SWITCH_UTC_HOUR * 3_600_000).toISOString().slice(0, 10);
+}
+
+// The wall-clock hour (0–23) and calendar date (YYYY-MM-DD) in an IANA timezone
+// right now — DST-correct. Falls back to UTC for a blank/invalid zone.
+function localHourAndDate(now: Date, tz: string): { hour: number; date: string } {
+  try {
+    const hour = Number(
+      new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "2-digit", hour12: false }).format(now)
+    );
+    const date = new Intl.DateTimeFormat("en-CA", {
+      timeZone: tz,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(now);
+    return { hour: hour % 24, date }; // normalize a "24" some engines emit at midnight
+  } catch {
+    return { hour: now.getUTCHours(), date: now.toISOString().slice(0, 10) };
+  }
+}
+
 function truncate(text: string, max = 120): string {
   const clean = (text ?? "").replace(/\s+/g, " ").trim();
   return clean.length > max ? clean.slice(0, max - 1) + "…" : clean;
@@ -102,15 +131,61 @@ async function deliver(rows: Row[], notification: Record<string, unknown>): Prom
   return { sent, failed: results.length - sent, pruned: dead.length };
 }
 
+interface DailyRow extends Row {
+  daily_hour: number;
+  timezone: string | null;
+  daily_last_sent: string | null;
+}
+
+const DAILY_SELECT = "endpoint,p256dh,auth,device_id,daily_hour,timezone,daily_last_sent";
+
+// Invoked hourly by cron. Sends the daily reminder only to subscriptions whose
+// local time has just reached their chosen hour and that haven't been reminded
+// yet today (in their own local date) — so each device gets exactly one daily
+// push, at its own local time.
 async function handleDaily(body: Record<string, unknown>): Promise<Stats> {
-  const { data, error } = await admin.from("push_subscriptions").select(SELECT).eq("notify_daily", true);
+  const { data, error } = await admin
+    .from("push_subscriptions")
+    .select(DAILY_SELECT)
+    .eq("notify_daily", true);
   if (error) throw error;
-  return deliver((data ?? []) as Row[], {
-    title: (body.title as string) ?? "TierDrop",
-    body: (body.body as string) ?? "Today's category just dropped — open the app and rank it.",
-    url: (body.url as string) ?? APP_URL,
-    tag: (body.tag as string) ?? "daily"
-  });
+
+  const now = new Date();
+  const subs = (data ?? []) as DailyRow[];
+
+  const due: { row: DailyRow; localDate: string }[] = [];
+  for (const s of subs) {
+    const { hour, date } = localHourAndDate(now, s.timezone || "UTC");
+    if (hour === (s.daily_hour ?? 9) && s.daily_last_sent !== date) {
+      due.push({ row: s, localDate: date });
+    }
+  }
+  if (!due.length) return { sent: 0, failed: 0, pruned: 0 };
+
+  const category = categoryNameForDay(currentGlobalDay(now));
+  const stats = await deliver(
+    due.map((d) => d.row),
+    {
+      title: (body.title as string) ?? "",
+      body: (body.body as string) ?? "Today's category just dropped!",
+      url: (body.url as string) ?? APP_URL,
+      tag: (body.tag as string) ?? `daily-${currentGlobalDay(now)}`
+    }
+  );
+
+  // Mark each reminded device for its local date, grouped so one UPDATE covers
+  // each date. This is the once-per-day guard against the hourly cron.
+  const byDate = new Map<string, string[]>();
+  for (const d of due) {
+    const list = byDate.get(d.localDate) ?? [];
+    list.push(d.row.endpoint);
+    byDate.set(d.localDate, list);
+  }
+  for (const [date, endpoints] of byDate) {
+    await admin.from("push_subscriptions").update({ daily_last_sent: date }).in("endpoint", endpoints);
+  }
+
+  return stats;
 }
 
 interface CommentRecord {

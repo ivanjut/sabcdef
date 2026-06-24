@@ -737,6 +737,13 @@ body.preview-mode .next-category { display: none; }
 .notify-row-title { font-weight: 600; font-size: 0.95rem; }
 .notify-row-sub { color: var(--text-dim); font-size: 0.8rem; }
 
+/* Reminder-time picker nested under the Daily toggle. */
+.notify-subrow {
+  padding: 12px 0 14px;
+  border-bottom: 1px solid var(--border);
+}
+.notify-subrow .field-select { margin-top: 2px; }
+
 /* Toggle switch (a visually-hidden checkbox + a styled track). */
 .switch {
   position: relative;

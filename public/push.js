@@ -16,8 +16,8 @@ import { getDeviceId } from "./identity.js";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
-const prefsKey = "sabcdef:notify"; // { daily, comments, mode } — saved on device
-const DEFAULT_PREFS = { daily: true, comments: true, mode: "all" };
+const prefsKey = "sabcdef:notify"; // { daily, comments, mode, dailyHour } — saved on device
+const DEFAULT_PREFS = { daily: true, comments: true, mode: "all", dailyHour: 9 };
 
 const vapidConfigured = Boolean(VAPID_PUBLIC_KEY) && !VAPID_PUBLIC_KEY.includes("YOUR-");
 
@@ -57,6 +57,24 @@ function isStandalone() {
   );
 }
 
+// This device's IANA timezone (e.g. "America/New_York"), sent with the
+// subscription so the server can convert the chosen local hour to a real send
+// time, DST-correct. Falls back to UTC if the browser won't say.
+function getTimeZone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  } catch {
+    return "UTC";
+  }
+}
+
+// "9:00 AM" style label for an hour 0–23.
+function hourLabel(h) {
+  const period = h < 12 ? "AM" : "PM";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:00 ${period}`;
+}
+
 // ---- Subscription plumbing -------------------------------------------------
 
 // VAPID public keys are base64url; PushManager wants a Uint8Array.
@@ -84,7 +102,9 @@ async function syncSubscription(sub, prefs) {
     p_device: getDeviceId(),
     p_daily: prefs.daily,
     p_comments: prefs.comments,
-    p_mode: prefs.mode
+    p_mode: prefs.mode,
+    p_daily_hour: prefs.dailyHour,
+    p_timezone: getTimeZone()
   });
   if (error) throw new Error(error.message);
 }
@@ -143,6 +163,8 @@ async function render() {
   const commentsEl = $("#notify-comments");
   const detailEl = $("#notify-detail");
   const modeEl = $("#notify-mode");
+  const dailyTimeRow = $("#notify-daily-time-row");
+  const dailyTimeSel = $("#notify-daily-time");
   const bell = $("#notify-btn");
 
   // Unsupported (most often iOS Safari outside an installed PWA): the dialog can
@@ -172,6 +194,8 @@ async function render() {
   if (enableEl) enableEl.checked = subscribed;
   if (dailyEl) dailyEl.checked = prefs.daily;
   if (commentsEl) commentsEl.checked = prefs.comments;
+  if (dailyTimeSel) dailyTimeSel.value = String(prefs.dailyHour);
+  if (dailyTimeRow) dailyTimeRow.hidden = !prefs.daily;
   if (modeEl) {
     modeEl.querySelectorAll('input[name="notify-mode"]').forEach((r) => {
       r.checked = r.value === prefs.mode;
@@ -208,6 +232,18 @@ function wireDialog() {
   const dailyEl = $("#notify-daily");
   const commentsEl = $("#notify-comments");
   const modeEl = $("#notify-mode");
+  const dailyTimeRow = $("#notify-daily-time-row");
+  const dailyTimeSel = $("#notify-daily-time");
+
+  // Populate the reminder-time dropdown once (12 AM … 11 PM, value = hour 0–23).
+  if (dailyTimeSel && !dailyTimeSel.options.length) {
+    for (let h = 0; h < 24; h++) {
+      const opt = document.createElement("option");
+      opt.value = String(h);
+      opt.textContent = hourLabel(h);
+      dailyTimeSel.appendChild(opt);
+    }
+  }
 
   enableEl?.addEventListener("change", async () => {
     if (enableEl.checked) {
@@ -233,6 +269,13 @@ function wireDialog() {
   dailyEl?.addEventListener("change", () => {
     const prefs = getPrefs();
     prefs.daily = dailyEl.checked;
+    persistPrefs(prefs);
+    if (dailyTimeRow) dailyTimeRow.hidden = !prefs.daily;
+  });
+
+  dailyTimeSel?.addEventListener("change", () => {
+    const prefs = getPrefs();
+    prefs.dailyHour = Number(dailyTimeSel.value);
     persistPrefs(prefs);
   });
 
@@ -305,4 +348,9 @@ export async function initPush() {
 
   // Reflect any existing subscription (e.g. the browser dropped it on key change).
   await render();
+
+  // If already subscribed, re-sync the server row on load: this keeps the stored
+  // timezone current when the user travels, and backfills it for subscriptions
+  // made before time-of-day support existed. Fire-and-forget.
+  if (await currentSubscription()) persistPrefs(getPrefs());
 }

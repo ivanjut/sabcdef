@@ -102,14 +102,24 @@ const getVoterId = getDeviceId;
 let lastDragEndAt = 0;
 
 // ---- Daily category (computed client-side) --------------------------------
-// "Today" is the visitor's local date as YYYY-MM-DD. The category is chosen by
-// the number of whole days since the Unix epoch, modulo the category count, so
-// the choice is stable for everyone on a given day and rotates predictably.
+// The category switches at a fixed moment worldwide so everyone is always on the
+// same category and in the same comment thread, regardless of timezone. A
+// "TierDrop day" begins at CATEGORY_SWITCH_UTC_HOUR:00 UTC; the category is then
+// chosen by the number of whole days since the epoch (in that shifted frame),
+// modulo the category count, so the choice is stable and rotates predictably.
+//
+// 05:00 UTC ≈ midnight–1 AM in the US East/Central, late evening on the US West
+// coast, and 5–7 AM in the UK/EU — overnight for the Americas, an early-morning
+// refresh for Europe. Change this one constant to retune when the day rolls over.
+const CATEGORY_SWITCH_UTC_HOUR = 5;
 
 function dayString(date = new Date()) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
+  // Shift back by the switch hour, then read the UTC date: the value only rolls
+  // over at CATEGORY_SWITCH_UTC_HOUR:00 UTC, identically for every visitor.
+  const shifted = new Date(date.getTime() - CATEGORY_SWITCH_UTC_HOUR * 3_600_000);
+  const y = shifted.getUTCFullYear();
+  const m = String(shifted.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(shifted.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 
@@ -328,12 +338,14 @@ function renderCategoryHead() {
 }
 
 // ---- Next-category countdown ----------------------------------------------
-// The category rotates at local midnight (see dayString/getToday), so we count
-// down to the start of the next local day and tick once a second.
+// The category rotates at CATEGORY_SWITCH_UTC_HOUR:00 UTC (see dayString), so we
+// count down to the next occurrence of that UTC moment and tick once a second.
 
 function msUntilNextDay() {
   const now = new Date();
-  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+  const next = new Date(now);
+  next.setUTCHours(CATEGORY_SWITCH_UTC_HOUR, 0, 0, 0);
+  if (next.getTime() <= now.getTime()) next.setUTCDate(next.getUTCDate() + 1);
   return next.getTime() - now.getTime();
 }
 
