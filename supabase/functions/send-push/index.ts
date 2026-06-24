@@ -48,6 +48,30 @@ interface Stats {
 
 const SELECT = "endpoint,p256dh,auth,device_id";
 
+// Category names, in the SAME ORDER as public/categories.js. The daily category
+// is derived from the date exactly the way the client does (categoryForDay in
+// app.js), so notifications can name it. Keep this list in sync if you edit
+// categories.js (add/remove/reorder).
+const CATEGORY_NAMES = [
+  "Pizza Toppings",
+  "Fast Food Chains",
+  "Video Game Genres",
+  "Hot Drinks",
+  "Weekend Activities",
+  "Pets",
+  "Desserts",
+  "Numbers"
+];
+
+// The (already title-cased) category name for a YYYY-MM-DD day, or a safe
+// fallback if the day is missing/unparseable.
+function categoryNameForDay(day: string): string {
+  const epochDays = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86_400_000);
+  if (!Number.isFinite(epochDays) || CATEGORY_NAMES.length === 0) return "today's category";
+  const n = CATEGORY_NAMES.length;
+  return CATEGORY_NAMES[((epochDays % n) + n) % n];
+}
+
 function truncate(text: string, max = 120): string {
   const clean = (text ?? "").replace(/\s+/g, " ").trim();
   return clean.length > max ? clean.slice(0, max - 1) + "…" : clean;
@@ -156,7 +180,9 @@ async function handleComment(record: CommentRecord): Promise<Stats> {
   if (broadcastRows.length) {
     add(
       await deliver(broadcastRows, {
-        title: isSuggestion ? "New suggestion on TierDrop" : "New comment on TierDrop",
+        title: isSuggestion
+          ? `New suggestion for ${categoryNameForDay(record.day)}`
+          : `New comment for ${categoryNameForDay(record.day)}`,
         body: `${author}: ${snippet}`,
         url: APP_URL,
         tag: `day-${record.day ?? "today"}`
