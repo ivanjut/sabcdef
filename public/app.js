@@ -77,6 +77,7 @@ const state = {
   today: null, // { day, name, blurb, items, tierLabels }
   comments: [], // flat list from Supabase
   reactions: {}, // { suggestionCommentId: [ { voter_id, tier, author, country, created_at } ] }
+  tierLists: [], // public submissions for the day (the global feed), newest first
   sort: "top",
   // When the page is opened from a share link, we render someone else's tiers
   // read-only instead of the local game.
@@ -87,9 +88,15 @@ const state = {
 };
 
 const tiersKey = (day) => `sabcdef:tiers:${day}`;
+// The encoded board this device last submitted for a day — drives the Submit
+// button's "you have unsubmitted changes" attention pulse.
+const submittedKey = (day) => `sabcdef:submitted:${day}`;
+// The server-issued share_id of this device's last submission for a day, so a
+// share link can point at the stored row without re-writing an unchanged board.
+const shareIdKey = (day) => `sabcdef:tlshare:${day}`;
 const votesKey = "sabcdef:votes";
 const themeKey = "sabcdef:theme";
-const profileKey = "sabcdef:profile"; // { name, country } — country is an ISO alpha-2 code
+const profileKey = "sabcdef:profile"; // { name, country, visibility } — country is an ISO alpha-2 code; visibility is "public" | "private"
 
 // The anonymous per-device id lives in identity.js so push.js can tie a push
 // subscription to the same device that posts comments/reactions. Here it's used
@@ -147,15 +154,24 @@ async function init() {
   wireProfile();
 
   const shared = getShareParams();
+  let previewing = false;
   if (shared && CATEGORIES.length) {
-    enterPreview(shared);
-  } else {
+    if (shared.shareId) {
+      // DB-backed link: fetch the stored row (works for public and private).
+      previewing = await enterSharedPreview(shared.shareId);
+    } else {
+      enterPreview(shared); // legacy self-contained link
+      previewing = true;
+    }
+  }
+  if (!previewing) {
     state.today = getToday();
     renderCategoryHead();
     renderTierList();
   }
 
   wireToolbar();
+  wireSubmit();
   wireShareMenu();
   wireChipPicker();
   wireTierListDialog();
@@ -165,13 +181,14 @@ async function init() {
 
   // First visit (no profile saved on this device): prompt for name + country.
   // Skipped when viewing someone else's shared tier list.
-  if (!shared && !getProfile()) openProfileDialog("onboarding");
+  if (!previewing && !getProfile()) openProfileDialog("onboarding");
 
   if (isConfigured) {
     wireComposer();
     wireSuggestComposer();
     wireSortToggle();
     await loadComments();
+    await loadTierLists();
   } else {
     showForumOffline();
   }
@@ -223,7 +240,18 @@ function getProfile() {
 }
 
 function saveProfile(profile) {
-  store.set(profileKey, { name: profile.name || "", country: profile.country || "" });
+  store.set(profileKey, {
+    name: profile.name || "",
+    country: profile.country || "",
+    // Default to public; only "private" opts out of the global feed.
+    visibility: profile.visibility === "private" ? "private" : "public"
+  });
+}
+
+// "public" (the default, incl. for profiles saved before this setting existed)
+// or "private". Public tier lists appear on the global feed when submitted.
+function getVisibility() {
+  return (getProfile() || {}).visibility === "private" ? "private" : "public";
 }
 
 function wireProfile() {
@@ -240,7 +268,8 @@ function wireProfile() {
     e.preventDefault();
     saveProfile({
       name: $("#profile-name-input").value.trim().slice(0, 32),
-      country: $("#profile-country-input").value
+      country: $("#profile-country-input").value,
+      visibility: $("#profile-visibility-input").checked ? "public" : "private"
     });
     renderProfile();
     closeProfileDialog();
@@ -307,6 +336,8 @@ function openProfileDialog(mode = "edit") {
 
   $("#profile-name-input").value = profile.name || "";
   $("#profile-country-input").value = profile.country || "";
+  // Default new/never-set profiles to public (checked).
+  $("#profile-visibility-input").checked = profile.visibility !== "private";
 
   $("#profile-dialog-title").textContent = onboarding ? "Welcome to TierDrop" : "Edit your profile";
   $("#profile-dialog-sub").textContent = onboarding
@@ -405,7 +436,10 @@ function renderTierList() {
     (target || poolEl).appendChild(chip);
   }
 
-  if (!state.readOnly) initSortable();
+  if (!state.readOnly) {
+    initSortable();
+    updateSubmitAttention();
+  }
 }
 
 function makeChip(item) {
@@ -456,6 +490,7 @@ function saveTierPlacements() {
     });
   });
   store.set(tiersKey(state.today.day), placement);
+  updateSubmitAttention();
 }
 
 // ---- Tap / click to assign --------------------------------------------------
@@ -648,6 +683,90 @@ function wireToolbar() {
   });
 }
 
+// ---- Submit (publish the board to the global feed) --------------------------
+// The tier list reaches the server only when the player clicks Submit — not on
+// every drag, and independent of commenting. Every submission is stored with the
+// profile's visibility; the server only returns public rows, so a private
+// submission is saved but never appears on the "Tier Lists" feed.
+
+function wireSubmit() {
+  const btn = $("#submit-btn");
+  if (!btn) return;
+  // Submitting needs the backend; without it the button has nothing to do.
+  if (!isConfigured) {
+    btn.hidden = true;
+    return;
+  }
+  btn.addEventListener("click", submitTierList);
+}
+
+// True once every item is on the board (the Unranked pool is empty).
+function poolIsEmpty() {
+  const pool = $("#pool");
+  return Boolean(pool) && pool.querySelectorAll(".chip").length === 0;
+}
+
+// Pulse the Submit button when the board is full *and* differs from what this
+// device last submitted — i.e. there's something new worth submitting. Cleared
+// after a submit, or whenever items are still unranked.
+function updateSubmitAttention() {
+  const btn = $("#submit-btn");
+  if (!btn || state.readOnly) return;
+  const enc = encodeTierList(state.today, store.get(tiersKey(state.today.day), {}));
+  const lastSubmitted = store.get(submittedKey(state.today.day), null);
+  btn.classList.toggle("is-ready", poolIsEmpty() && enc !== lastSubmitted);
+}
+
+// Persist the current board at the profile's visibility and return its stable
+// share_id. The single point where a tier list is written to the server; used by
+// both Submit and the share link. Returns { ok, shareId, visibility } or, on
+// failure, { ok: false, reason, error }. Also records the encoding + share_id
+// locally so an unchanged board can be re-shared without another write.
+async function persistTierList() {
+  const day = state.today.day;
+  const tiers = encodeTierList(state.today, store.get(tiersKey(day), {}));
+  if (!hasTierList(tiers)) return { ok: false, reason: "empty" };
+
+  const profile = getProfile() || {};
+  const name = (profile.name || "").trim().slice(0, 32) || "anon";
+  const country = profile.country || null;
+  const visibility = getVisibility();
+
+  const { data, error } = await supabase.rpc("upsert_tier_list", {
+    p_day: day,
+    p_device: getVoterId(),
+    p_tiers: tiers,
+    p_author: name,
+    p_country: country,
+    p_visibility: visibility
+  });
+  if (error) return { ok: false, reason: "error", error };
+
+  store.set(submittedKey(day), tiers);
+  store.set(shareIdKey(day), data); // the RPC returns the row's share_id
+  return { ok: true, shareId: data, visibility };
+}
+
+async function submitTierList() {
+  if (state.readOnly || !isConfigured) return;
+  const btn = $("#submit-btn");
+  btn.disabled = true;
+  try {
+    const res = await persistTierList();
+    if (!res.ok) {
+      toast(res.reason === "empty" ? "Rank at least one item first." : res.error?.message || "Couldn't submit your tier list");
+      return;
+    }
+    await loadTierLists(); // resync the feed from the server (also re-renders)
+    updateSubmitAttention();
+    toast(res.visibility === "public" ? "Tier list submitted to the global feed" : "Submitted privately — not shown on the feed");
+  } catch (err) {
+    toast(err.message || "Couldn't submit your tier list");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 // ---- Share ------------------------------------------------------------------
 // The "Share" button opens a small menu with two options:
 //   1. Share link — a URL that, when opened, shows the sharer's tiers as a
@@ -699,7 +818,37 @@ function wireShareMenu() {
 }
 
 async function shareLink() {
-  const url = buildShareUrl();
+  if (state.readOnly) return;
+  const day = state.today.day;
+  const enc = encodeTierList(state.today, store.get(tiersKey(day), {}));
+  if (!hasTierList(enc)) {
+    toast("Rank at least one item first.");
+    return;
+  }
+
+  let url;
+  if (isConfigured) {
+    // DB-backed link: persist the board (so the link points at a stored row) and
+    // build ?tl=<share_id>. Reuse the saved share_id when the board is unchanged
+    // since it was last persisted, so re-sharing doesn't write again. This works
+    // for private lists too — they're stored, just kept off the global feed.
+    let shareId = store.get(shareIdKey(day), null);
+    if (!shareId || enc !== store.get(submittedKey(day), null)) {
+      const res = await persistTierList();
+      if (!res.ok) {
+        toast(res.error?.message || "Couldn't create a share link");
+        return;
+      }
+      shareId = res.shareId;
+      await loadTierLists(); // a public board now appears on the feed
+      updateSubmitAttention();
+    }
+    url = buildSharedUrl(shareId);
+  } else {
+    // No backend configured: fall back to a self-contained URL-encoded link.
+    url = buildShareUrl();
+  }
+
   // Prefer the native share sheet where available (mobile, some desktops).
   if (navigator.share) {
     try {
@@ -772,6 +921,20 @@ function flagPrefix(country) {
   return flag ? `${flag} ` : "";
 }
 
+// A short, stable link to a stored tier list: ?tl=<share_id>. The recipient's
+// client fetches the row (see enterSharedPreview), so the board itself isn't in
+// the URL. This is the link used whenever the backend is available.
+function buildSharedUrl(shareId) {
+  const url = new URL(location.href);
+  url.hash = "";
+  url.search = "";
+  url.searchParams.set("tl", shareId);
+  return url.toString();
+}
+
+// Legacy self-contained link (?d=&r=&n=&c=): the whole board is encoded in the
+// URL, needing no backend. Kept as the offline fallback and so older shared links
+// still open.
 function buildShareUrl() {
   const placement = store.get(tiersKey(state.today.day), {});
   const profile = getProfile() || {};
@@ -789,6 +952,10 @@ function buildShareUrl() {
 
 function getShareParams() {
   const params = new URLSearchParams(location.search);
+  // DB-backed link (preferred): ?tl=<share_id>.
+  const shareId = params.get("tl");
+  if (shareId) return { shareId };
+  // Legacy self-contained link (?d=&r=…) — still honored so old shares work.
   const day = params.get("d");
   const tierList = params.get("r");
   // Day must look like YYYY-MM-DD; otherwise ignore and load the normal game.
@@ -810,6 +977,26 @@ function enterPreview({ day, tierList, name, country }) {
   renderCategoryHead();
   renderPreviewBanner();
   renderTierList();
+}
+
+// Open a DB-backed share link (?tl=<share_id>): fetch the stored row — public or
+// private — by its share_id and render it read-only. Returns true if shown, or
+// false (so the caller falls back to the normal game) when it can't be loaded.
+async function enterSharedPreview(shareId) {
+  if (!isConfigured) return false; // no backend to fetch from
+  try {
+    const { data, error } = await supabase.rpc("get_shared_tier_list", { p_share_id: shareId });
+    const row = Array.isArray(data) ? data[0] : data;
+    if (error || !row) {
+      toast("Couldn't load that shared tier list");
+      return false;
+    }
+    enterPreview({ day: row.day, tierList: row.tiers, name: row.author, country: row.country });
+    return true;
+  } catch {
+    toast("Couldn't load that shared tier list");
+    return false;
+  }
 }
 
 function exitPreview() {
@@ -853,6 +1040,9 @@ function showForumOffline() {
   // Suggestions live in the same backend, so hide the box when it's unavailable.
   const suggest = $("#suggest");
   if (suggest) suggest.hidden = true;
+  // The tier-lists feed comes from the backend, so there's nothing to show.
+  const tierlists = $("#tierlists");
+  if (tierlists) tierlists.hidden = true;
   $("#comment-count").textContent = "0";
 }
 
@@ -1046,6 +1236,50 @@ function wireTierListDialog() {
   dialog.addEventListener("click", (e) => {
     if (e.target === dialog) closeTierListDialog();
   });
+}
+
+// ---- Tier Lists log (the global feed) ---------------------------------------
+// Public tier lists submitted for the day (see submitTierList), newest first.
+// Each opens as the same read-only board a comment's "See Tier List" shows.
+
+async function loadTierLists() {
+  if (!isConfigured) return;
+  const { data, error } = await supabase
+    .from("tier_lists")
+    .select("day,device_id,author,country,tiers,updated_at,created_at")
+    .eq("day", state.today.day)
+    .order("updated_at", { ascending: false });
+  // A missing table (migration not run yet) just means an empty feed — don't
+  // break the rest of the page over it.
+  state.tierLists = error ? [] : data || [];
+  renderTierLists();
+}
+
+function renderTierLists() {
+  const log = $("#tierlists-log");
+  if (!log) return;
+  const entries = state.tierLists;
+
+  $("#tierlist-count").textContent = entries.length;
+  $("#tierlists-empty").hidden = entries.length > 0;
+
+  log.innerHTML = "";
+  for (const row of entries) {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "tierlist-row";
+    item.innerHTML = `
+      <span class="tierlist-who">
+        <span class="tierlist-author">${flagPrefix(row.country)}${escapeHtml(row.author || "anon")}</span>
+        <span class="tierlist-time">${timeAgo(row.updated_at || row.created_at)}</span>
+      </span>
+      <span class="tierlist-cta">See Tier List</span>`;
+    // openTierListDialog reads .tier_list/.author/.country — adapt the feed row.
+    item.addEventListener("click", () =>
+      openTierListDialog({ tier_list: row.tiers, author: row.author, country: row.country })
+    );
+    log.appendChild(item);
+  }
 }
 
 // ---- Suggestions ------------------------------------------------------------

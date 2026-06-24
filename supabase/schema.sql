@@ -203,6 +203,128 @@ grant select on public.suggestion_reactions to anon, authenticated;
 grant execute on function public.react_suggestion(bigint, text, text, text, text) to anon, authenticated;
 grant execute on function public.unreact_suggestion(bigint, text) to anon, authenticated;
 
+-- ── Tier lists (the global feed + shareable links) ────────────────────────────
+-- A player's whole board for a day, persisted via the "Submit" button (and when
+-- they grab a share link) — independent of commenting. One row per (day, device);
+-- re-submitting updates it in place. Every submission is stored with the profile's
+-- `visibility`: the read policy exposes ONLY public rows, so the global feed shows
+-- public submissions while private ones stay hidden from table reads. Each row
+-- also gets an unguessable `share_id`; a list (public OR private) is viewable by
+-- anyone holding its share link, via get_shared_tier_list below.
+create table if not exists public.tier_lists (
+  id          bigint      generated always as identity primary key,
+  day         text        not null,                  -- YYYY-MM-DD the tier list belongs to
+  device_id   text        not null,                  -- the anonymous per-device id (see identity.js)
+  author      text        not null default 'anon',
+  country     text,                                  -- author's ISO 3166-1 alpha-2 code (optional)
+  tiers       text        not null,                  -- positional encoding of the board (see encodeTierList in app.js)
+  visibility  text        not null default 'public', -- 'public' shows on the feed; 'private' is stored but hidden
+  share_id    uuid        not null default gen_random_uuid(), -- stable, unguessable id for the share link
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  constraint tier_lists_tiers_len    check (char_length(tiers) between 1 and 64),
+  constraint tier_lists_author_len   check (char_length(author) <= 32),
+  constraint tier_lists_country_len  check (country is null or char_length(country) <= 2),
+  constraint tier_lists_device_len   check (char_length(device_id) between 1 and 64),
+  constraint tier_lists_visibility   check (visibility in ('public', 'private')),
+  constraint tier_lists_share_uniq   unique (share_id),
+  unique (day, device_id)
+);
+
+-- Backfill columns on tables created before these flags existed.
+alter table public.tier_lists add column if not exists visibility text not null default 'public';
+alter table public.tier_lists add column if not exists share_id uuid not null default gen_random_uuid();
+do $$ begin
+  alter table public.tier_lists
+    add constraint tier_lists_visibility check (visibility in ('public', 'private'));
+exception when duplicate_object then null;
+end $$;
+do $$ begin
+  alter table public.tier_lists add constraint tier_lists_share_uniq unique (share_id);
+exception when duplicate_object then null;
+end $$;
+
+create index if not exists tier_lists_day_idx on public.tier_lists (day);
+
+-- Writes go through the SECURITY DEFINER functions below (anon gets no direct
+-- insert/update/delete). The read policy exposes only public rows, so a private
+-- submission is never selectable with the anon key — not merely filtered out of
+-- the feed UI. Sharing a private list works through get_shared_tier_list, which
+-- (as DEFINER) returns one row by its unguessable share_id regardless of the flag.
+alter table public.tier_lists enable row level security;
+
+drop policy if exists "read tier_lists" on public.tier_lists;
+create policy "read tier_lists" on public.tier_lists
+  for select
+  using (visibility = 'public');
+
+-- Publish (or update) the caller's tier list for a day, at the given visibility;
+-- returns the row's stable share_id (created once, preserved across re-submits).
+-- Drop prior overloads first (the arg list and return type changed across
+-- versions) so create-or-replace doesn't choke on a re-run.
+drop function if exists public.upsert_tier_list(text, text, text, text, text);
+drop function if exists public.upsert_tier_list(text, text, text, text, text, text);
+create or replace function public.upsert_tier_list(
+  p_day text, p_device text, p_tiers text, p_author text, p_country text, p_visibility text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_share_id uuid;
+begin
+  if p_tiers is null or char_length(p_tiers) < 1 or char_length(p_tiers) > 64 then
+    raise exception 'invalid tiers %', p_tiers;
+  end if;
+  if p_device is null or char_length(p_device) < 1 then
+    raise exception 'missing device';
+  end if;
+  if coalesce(p_visibility, 'public') not in ('public', 'private') then
+    raise exception 'invalid visibility %', p_visibility;
+  end if;
+
+  insert into public.tier_lists (day, device_id, author, country, tiers, visibility)
+  values (
+    p_day,
+    left(p_device, 64),
+    left(coalesce(nullif(p_author, ''), 'anon'), 32),
+    nullif(left(coalesce(p_country, ''), 2), ''),
+    left(p_tiers, 64),
+    coalesce(p_visibility, 'public')
+  )
+  on conflict (day, device_id)
+  do update set tiers      = excluded.tiers,
+                author     = excluded.author,
+                country    = excluded.country,
+                visibility = excluded.visibility,
+                updated_at = now()
+  returning share_id into v_share_id;
+
+  return v_share_id;
+end;
+$$;
+
+-- Fetch one tier list by its share_id, regardless of visibility — the read path
+-- for a shareable link. Returns no rows for an unknown id.
+create or replace function public.get_shared_tier_list(p_share_id uuid)
+returns table (day text, author text, country text, tiers text, visibility text, updated_at timestamptz)
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select day, author, country, tiers, visibility, updated_at
+    from public.tier_lists
+   where share_id = p_share_id
+   limit 1;
+$$;
+
+grant select on public.tier_lists to anon, authenticated;
+grant execute on function public.upsert_tier_list(text, text, text, text, text, text) to anon, authenticated;
+grant execute on function public.get_shared_tier_list(uuid) to anon, authenticated;
+
 -- ── Push notifications ────────────────────────────────────────────────────────
 -- Two pieces:
 --   1. comments.device_id — the anonymous per-device id (see identity.js) of the

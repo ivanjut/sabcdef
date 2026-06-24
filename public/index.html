@@ -105,7 +105,10 @@
       <div id="tiers" class="tiers"></div>
 
       <div class="pool-wrap">
-        <div class="pool-label">Unranked</div>
+        <div class="pool-head">
+          <div class="pool-label">Unranked</div>
+          <button id="submit-btn" class="btn btn-primary submit-btn" type="button">Submit</button>
+        </div>
         <div id="pool" class="pool tier-dropzone" data-tier="pool"></div>
       </div>
     </section>
@@ -173,6 +176,17 @@
       <div id="comments" class="comments"></div>
       <p id="comments-empty" class="empty" hidden>No comments yet. Start the debate.</p>
     </section>
+
+    <!-- Tier Lists: a log of everyone who's posted a tier list for today's
+         category. One entry per person (newest kept), each openable as the same
+         read-only board a comment's "See Tier List" shows. Populated in app.js. -->
+    <section class="tierlists" id="tierlists" aria-label="Tier lists">
+      <div class="forum-head">
+        <h2>Tier Lists <span id="tierlist-count" class="count">0</span></h2>
+      </div>
+      <div id="tierlists-log" class="tierlists-log"></div>
+      <p id="tierlists-empty" class="empty" hidden>No tier lists yet. Rank the items, then hit Submit to share yours.</p>
+    </section>
   </main>
 
   <footer class="app-footer">
@@ -202,6 +216,16 @@
           <option value="">No country</option>
         </select>
       </label>
+      <div class="notify-row">
+        <div class="notify-row-text">
+          <span class="notify-row-title">Show on global feed</span>
+          <span class="notify-row-sub">Public — your submitted tier list appears on the global feed. Turn off to keep it private.</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="profile-visibility-input" checked />
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
+      </div>
       <div class="profile-dialog-actions">
         <button id="profile-skip-btn" class="btn btn-ghost" type="button">Skip</button>
         <button id="profile-confirm-btn" class="btn btn-primary" type="submit">Confirm</button>
