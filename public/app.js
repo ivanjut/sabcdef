@@ -777,7 +777,7 @@ async function submitTierList() {
     }
     await loadTierLists(); // resync the feed from the server (also re-renders)
     updateSubmitAttention();
-    toast(res.visibility === "public" ? "Tier list submitted to the global feed" : "Submitted privately — not shown on the feed");
+    toast(res.visibility === "public" ? "Tier list submitted" : "Submitted privately");
   } catch (err) {
     toast(err.message || "Couldn't submit your tier list");
   } finally {
