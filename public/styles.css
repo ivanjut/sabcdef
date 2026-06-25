@@ -158,17 +158,27 @@ body {
 .theme-toggle:active { transform: scale(0.94); }
 
 /* ---- Category head ---- */
+/* Two-column, two-row header: category name / date on the left, countdown /
+   special-day right-aligned on the right. */
 .category-head {
   padding-top: 22px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 12px;
+  align-items: start;
 }
-.category-head-main { min-width: 0; }
-.category-head h1 { font-size: 1.5rem; margin: 0 0 4px; line-height: 1.2; }
+.category-head h1 {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  font-size: 1.5rem;
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
 .next-category {
-  flex: 0 0 auto;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
   margin: 0;
   padding-top: 4px;
   text-align: right;
@@ -180,11 +190,25 @@ body {
 /* The countdown is about the live daily reset — irrelevant on a shared preview. */
 body.preview-mode .next-category { display: none; }
 .today-date {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
   color: var(--text-dim);
   font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
   margin: 0;
 }
+/* The special-day label (e.g. "World Chocolate Day") sits at the far right of
+   the date's row, under the countdown; set/hidden in renderCategoryHead. */
+.special-day {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  text-align: right;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+.special-day[hidden] { display: none; }
 
 /* ---- Tier list ---- */
 /* Tight top margin so the toolbar ("View yesterday's results" / Share / Reset)

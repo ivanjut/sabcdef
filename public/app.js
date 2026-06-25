@@ -373,13 +373,17 @@ function closeProfileDialog() {
 // ---- Category header ------------------------------------------------------
 
 function renderCategoryHead() {
-  const { day, name } = state.today;
+  const { day, name, special_day } = state.today;
   $("#category-name").textContent = name;
   $("#today-date").textContent = new Date(`${day}T00:00:00`).toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",
     day: "numeric"
   });
+  const sd = $("#special-day");
+  const label = (special_day || "").trim();
+  sd.textContent = label;
+  sd.hidden = !label;
 }
 
 // ---- Next-category countdown ----------------------------------------------
