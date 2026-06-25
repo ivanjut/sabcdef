@@ -82,7 +82,7 @@
     <!-- Tier list -->
     <section class="tierlist" aria-label="Tier list">
       <div class="tierlist-toolbar">
-        <span class="yesterday-link">View yesterday's results: <span class="soon">soon</span></span>
+        <button id="yesterday-btn" class="btn btn-ghost yesterday-btn" type="button">Yesterday</button>
         <div class="toolbar-actions">
           <div class="share-menu">
             <button id="share-btn" class="btn btn-ghost" type="button" aria-haspopup="menu" aria-expanded="false">Share</button>
@@ -306,6 +306,19 @@
         <button class="btn btn-primary" id="notify-done" type="submit">Done</button>
       </div>
     </form>
+  </dialog>
+
+  <!-- Yesterday's results dialog: the average tiers across everyone's submitted
+       tier lists from the previous day, computed + populated in app.js -->
+  <dialog id="yesterday-dialog" class="ranking-dialog">
+    <div class="ranking-dialog-head">
+      <div>
+        <h2 id="yesterday-dialog-title" class="ranking-dialog-title">Yesterday's results</h2>
+        <p id="yesterday-dialog-sub" class="ranking-dialog-sub"></p>
+      </div>
+      <button id="yesterday-dialog-close" class="ranking-dialog-close" type="button" aria-label="Close">✕</button>
+    </div>
+    <div id="yesterday-dialog-body" class="ranking-dialog-body"></div>
   </dialog>
 
   <!-- Tier list dialog: shows a commenter's saved tier list, populated in app.js -->

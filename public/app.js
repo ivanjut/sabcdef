@@ -158,6 +158,16 @@ function getToday() {
   return categoryForDay(dayString());
 }
 
+// The TierDrop day before `day` (a YYYY-MM-DD). Computed in UTC so it lines up
+// with how dayString() derives the day, regardless of the viewer's timezone.
+function previousDay(day) {
+  const d = new Date(Date.parse(`${day}T00:00:00Z`) - 86_400_000);
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${dd}`;
+}
+
 // ---- Boot -----------------------------------------------------------------
 
 init().catch((err) => {
@@ -195,6 +205,7 @@ async function init() {
   wireShareMenu();
   wireChipPicker();
   wireTierListDialog();
+  wireYesterdayDialog();
   wireVotesDialog();
   wireSuggestInfo();
   startCountdown();
@@ -1391,6 +1402,184 @@ function wireTierListDialog() {
   // A click on the backdrop reports the dialog itself as the target.
   dialog.addEventListener("click", (e) => {
     if (e.target === dialog) closeTierListDialog();
+  });
+}
+
+// ---- Yesterday's results ----------------------------------------------------
+// The community's consensus for the previous day. Tiers are scored S=0…F=6, so a
+// lower mean is a better placement. Per item we compute the mean (its fractional
+// position on the S→F scale), the spread (population standard deviation), and the
+// observed range — then round the mean to a tier for the headline board. Items
+// nobody ranked are left out. An item is "contested" when its rankings are widely
+// spread (high standard deviation), which we both tag inline and call out.
+
+const CONTESTED_STD = 1.7; // ≈ rankings spread well beyond three tiers
+
+function tierStats(category, rows) {
+  // Decode each submission once, then summarise per item (keeping id types intact).
+  const placements = rows.map((row) => decodeTierList(category, row.tiers));
+  const stats = [];
+  for (const item of category.items) {
+    const idxs = [];
+    for (const placement of placements) {
+      const idx = TIER_LABELS.indexOf(placement[item.id]);
+      if (idx >= 0) idxs.push(idx);
+    }
+    if (!idxs.length) continue;
+    const mean = idxs.reduce((a, b) => a + b, 0) / idxs.length;
+    const std = Math.sqrt(idxs.reduce((a, b) => a + (b - mean) ** 2, 0) / idxs.length);
+    stats.push({
+      item,
+      n: idxs.length,
+      mean,
+      std,
+      min: Math.min(...idxs),
+      max: Math.max(...idxs),
+      tier: TIER_LABELS[Math.round(mean)],
+      contested: idxs.length >= 2 && std >= CONTESTED_STD
+    });
+  }
+  // Best average first, mirroring the S→F board (and sub-ordering within a tier).
+  stats.sort((a, b) => a.mean - b.mean || a.item.name.localeCompare(b.item.name));
+  return stats;
+}
+
+// The mean expressed on the tier scale: "A" when it lands on a tier, or "A.3"
+// meaning three tenths of the way from A toward the next (lower) tier B.
+function fractionalTierLabel(mean) {
+  const lo = Math.min(TIER_LABELS.length - 1, Math.floor(mean));
+  const tenths = Math.round((mean - lo) * 10);
+  if (tenths === 0) return TIER_LABELS[lo];
+  if (tenths === 10) return TIER_LABELS[lo + 1] ?? TIER_LABELS[lo];
+  return `${TIER_LABELS[lo]}.${tenths}`;
+}
+
+const clampPct = (v) => Math.max(0, Math.min(100, v));
+
+// One breakdown row per ranked item: a name, a track showing the spread (band)
+// and the fractional average (marker), then the rounded tier and the fractional
+// label. Contested rows are tagged.
+function yesterdayItemRow(s) {
+  const span = TIER_LABELS.length - 1; // index range 0…6
+  const markerPct = clampPct((s.mean / span) * 100);
+  const lowPct = clampPct(((s.mean - s.std) / span) * 100);
+  const highPct = clampPct(((s.mean + s.std) / span) * 100);
+  const frac = fractionalTierLabel(s.mean);
+  const title = `avg ${s.mean.toFixed(2)} on the S–F scale · ranged ${TIER_LABELS[s.min]}–${TIER_LABELS[s.max]} across ${s.n} list${s.n === 1 ? "" : "s"}`;
+  return `
+    <div class="yr-item${s.contested ? " is-contested" : ""}" title="${escapeHtml(title)}">
+      <span class="yr-name">
+        <span class="emoji">${escapeHtml(s.item.emoji || "•")}</span>
+        <span class="yr-label">${escapeHtml(s.item.name)}</span>
+        ${s.contested ? `<span class="yr-flag">contested</span>` : ""}
+      </span>
+      <span class="yr-scale" aria-hidden="true">
+        <span class="yr-spread" style="left:${lowPct}%;width:${Math.max(0, highPct - lowPct)}%"></span>
+        <span class="yr-marker" style="left:${markerPct}%;background:var(--tier-${s.tier})"></span>
+      </span>
+      <span class="yr-meta">
+        <span class="yr-tier" style="background:var(--tier-${s.tier})">${s.tier}</span>
+        <span class="yr-frac">${frac}</span>
+      </span>
+    </div>`;
+}
+
+function yesterdayBodyHtml(category, stats, n) {
+  const placement = Object.fromEntries(stats.map((s) => [s.item.id, s.tier]));
+  const rows = stats.map(yesterdayItemRow).join("");
+
+  // Tag every divisive item inline, but only call out the few most contested.
+  const contested = stats
+    .filter((s) => s.contested)
+    .sort((a, b) => b.std - a.std)
+    .slice(0, 5);
+  const contestedHtml = contested.length
+    ? `<div class="yr-contested">
+         <h3 class="yr-section-title">🔥 Most contested</h3>
+         <ul class="yr-contested-list">
+           ${contested
+             .map(
+               (s) =>
+                 `<li><span class="emoji">${escapeHtml(s.item.emoji || "•")}</span> <strong>${escapeHtml(
+                   s.item.name
+                 )}</strong> — ranged ${TIER_LABELS[s.min]}–${TIER_LABELS[s.max]} across ${s.n} list${
+                   s.n === 1 ? "" : "s"
+                 }</li>`
+             )
+             .join("")}
+         </ul>
+       </div>`
+    : `<p class="yr-consensus">Broad consensus — no item was especially divisive.</p>`;
+
+  return `
+    ${tierListHtml(category, placement)}
+    <div class="yr-breakdown">
+      <h3 class="yr-section-title">Average position</h3>
+      <p class="yr-legend">
+        Each item's average across ${n} list${n === 1 ? "" : "s"}, on the S→F scale.
+        The dot marks the average (e.g. <strong>A.3</strong> = just past A toward B);
+        the band shows how spread out the rankings were.
+      </p>
+      <div class="yr-items">${rows}</div>
+    </div>
+    ${contestedHtml}`;
+}
+
+async function openYesterdayDialog() {
+  const dialog = $("#yesterday-dialog");
+  if (!dialog) return;
+
+  // Yesterday relative to the real today (independent of any shared-list preview).
+  const day = previousDay(dayString());
+  const category = categoryForDay(day);
+  const body = $("#yesterday-dialog-body");
+
+  $("#yesterday-dialog-title").textContent = "Yesterday's results";
+  $("#yesterday-dialog-sub").textContent = `${category.name} · ${day}`;
+  body.innerHTML = `<p class="empty">Loading…</p>`;
+
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+
+  if (!isConfigured) {
+    body.innerHTML = `<p class="empty">Results are offline — add your Supabase keys in config.js to enable them.</p>`;
+    return;
+  }
+
+  const { data, error } = await supabase.from("tier_lists").select("tiers").eq("day", day);
+  if (error) {
+    body.innerHTML = `<p class="empty">Couldn't load yesterday's results.</p>`;
+    return;
+  }
+
+  // Only count submissions that actually placed at least one item.
+  const rows = (data || []).filter((row) => hasTierList(row.tiers));
+  if (!rows.length) {
+    body.innerHTML = `<p class="empty">No tier lists were submitted yesterday.</p>`;
+    return;
+  }
+
+  const n = rows.length;
+  $("#yesterday-dialog-sub").textContent = `Average of ${n} tier list${n === 1 ? "" : "s"} · ${category.name} · ${day}`;
+  body.innerHTML = yesterdayBodyHtml(category, tierStats(category, rows), n);
+}
+
+function closeYesterdayDialog() {
+  const dialog = $("#yesterday-dialog");
+  if (!dialog) return;
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+}
+
+function wireYesterdayDialog() {
+  const dialog = $("#yesterday-dialog");
+  const btn = $("#yesterday-btn");
+  if (!dialog || !btn) return;
+  btn.addEventListener("click", openYesterdayDialog);
+  $("#yesterday-dialog-close")?.addEventListener("click", closeYesterdayDialog);
+  // A click on the backdrop reports the dialog itself as the target.
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) closeYesterdayDialog();
   });
 }
 
