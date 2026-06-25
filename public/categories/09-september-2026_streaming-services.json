@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-09",
+  "name": "Streaming Services",
+  "theme": "Screen",
+  "special_day": "",
+  "items": [
+    { "id": "netflix", "name": "Netflix", "emoji": "🎬" },
+    { "id": "disney", "name": "Disney+", "emoji": "📺" },
+    { "id": "prime-video", "name": "Prime Video", "emoji": "🍿" },
+    { "id": "max", "name": "Max", "emoji": "🎞️" },
+    { "id": "hulu", "name": "Hulu", "emoji": "📽️" },
+    { "id": "apple-tv", "name": "Apple TV+", "emoji": "📡" },
+    { "id": "spotify", "name": "Spotify", "emoji": "🎥" },
+    { "id": "youtube-premium", "name": "YouTube Premium", "emoji": "🔴" },
+    { "id": "paramount", "name": "Paramount+", "emoji": "▶️" },
+    { "id": "peacock", "name": "Peacock", "emoji": "🎟️" },
+    { "id": "crunchyroll", "name": "Crunchyroll", "emoji": "🟣" },
+    { "id": "bbc-iplayer", "name": "BBC iPlayer", "emoji": "🔵" },
+    { "id": "twitch", "name": "Twitch", "emoji": "🟢" },
+    { "id": "mubi", "name": "MUBI", "emoji": "🦚" },
+    { "id": "now-tv", "name": "Now TV", "emoji": "🍥" },
+    { "id": "tubi", "name": "Tubi", "emoji": "🏰" }
+  ]
+}

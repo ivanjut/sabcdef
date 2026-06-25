@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-07",
+  "name": "Breakfast Cereals",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "frosted-flakes", "name": "Frosted Flakes", "emoji": "🥣" },
+    { "id": "cheerios", "name": "Cheerios", "emoji": "🌽" },
+    { "id": "lucky-charms", "name": "Lucky Charms", "emoji": "🍫" },
+    { "id": "coco-pops", "name": "Coco Pops", "emoji": "💀" },
+    { "id": "weetabix", "name": "Weetabix", "emoji": "🍯" },
+    { "id": "corn-flakes", "name": "Corn Flakes", "emoji": "🥛" },
+    { "id": "cinnamon-toast-crunch", "name": "Cinnamon Toast Crunch", "emoji": "🍞" },
+    { "id": "special-k", "name": "Special K", "emoji": "🌾" },
+    { "id": "froot-loops", "name": "Froot Loops", "emoji": "🍓" },
+    { "id": "rice-krispies", "name": "Rice Krispies", "emoji": "🍚" },
+    { "id": "shreddies", "name": "Shreddies", "emoji": "🟤" },
+    { "id": "crunchy-nut", "name": "Crunchy Nut", "emoji": "🟡" },
+    { "id": "cap-n-crunch", "name": "Cap'n Crunch", "emoji": "🍪" },
+    { "id": "granola", "name": "Granola", "emoji": "🥜" },
+    { "id": "muesli", "name": "Muesli", "emoji": "🟫" },
+    { "id": "bran-flakes", "name": "Bran Flakes", "emoji": "🟠" }
+  ]
+}

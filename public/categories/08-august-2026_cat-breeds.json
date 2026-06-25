@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-08",
+  "name": "Cat Breeds",
+  "theme": "Nature",
+  "special_day": "International Cat Day",
+  "items": [
+    { "id": "maine-coon", "name": "Maine Coon", "emoji": "🐱" },
+    { "id": "siamese", "name": "Siamese", "emoji": "😺" },
+    { "id": "persian", "name": "Persian", "emoji": "😸" },
+    { "id": "bengal", "name": "Bengal", "emoji": "😹" },
+    { "id": "ragdoll", "name": "Ragdoll", "emoji": "😻" },
+    { "id": "british-shorthair", "name": "British Shorthair", "emoji": "😼" },
+    { "id": "sphynx", "name": "Sphynx", "emoji": "😽" },
+    { "id": "scottish-fold", "name": "Scottish Fold", "emoji": "🙀" },
+    { "id": "norwegian-forest", "name": "Norwegian Forest", "emoji": "😿" },
+    { "id": "russian-blue", "name": "Russian Blue", "emoji": "😾" },
+    { "id": "abyssinian", "name": "Abyssinian", "emoji": "🐈" },
+    { "id": "burmese", "name": "Burmese", "emoji": "🐈‍⬛" },
+    { "id": "tabby", "name": "Tabby", "emoji": "🐅" },
+    { "id": "tuxedo", "name": "Tuxedo", "emoji": "🐆" },
+    { "id": "calico", "name": "Calico", "emoji": "🧶" },
+    { "id": "munchkin", "name": "Munchkin", "emoji": "🐾" }
+  ]
+}

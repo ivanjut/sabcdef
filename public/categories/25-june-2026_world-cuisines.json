@@ -1,0 +1,24 @@
+{
+  "date": "2026-06-25",
+  "name": "World Cuisines",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "italian", "name": "Italian", "emoji": "🇮🇹" },
+    { "id": "japanese", "name": "Japanese", "emoji": "🇯🇵" },
+    { "id": "mexican", "name": "Mexican", "emoji": "🇲🇽" },
+    { "id": "indian", "name": "Indian", "emoji": "🇮🇳" },
+    { "id": "thai", "name": "Thai", "emoji": "🇹🇭" },
+    { "id": "french", "name": "French", "emoji": "🇫🇷" },
+    { "id": "chinese", "name": "Chinese", "emoji": "🇨🇳" },
+    { "id": "korean", "name": "Korean", "emoji": "🇰🇷" },
+    { "id": "greek", "name": "Greek", "emoji": "🇬🇷" },
+    { "id": "lebanese", "name": "Lebanese", "emoji": "🇱🇧" },
+    { "id": "spanish", "name": "Spanish", "emoji": "🇪🇸" },
+    { "id": "vietnamese", "name": "Vietnamese", "emoji": "🇻🇳" },
+    { "id": "turkish", "name": "Turkish", "emoji": "🇹🇷" },
+    { "id": "ethiopian", "name": "Ethiopian", "emoji": "🇪🇹" },
+    { "id": "peruvian", "name": "Peruvian", "emoji": "🇵🇪" },
+    { "id": "moroccan", "name": "Moroccan", "emoji": "🇲🇦" }
+  ]
+}

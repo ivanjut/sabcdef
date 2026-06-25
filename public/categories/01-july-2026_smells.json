@@ -1,0 +1,23 @@
+{
+  "date": "2026-07-01",
+  "name": "Smells",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "fresh-bread", "name": "Fresh bread", "emoji": "🍞" },
+    { "id": "petrol", "name": "Petrol", "emoji": "⛽" },
+    { "id": "rain", "name": "Rain", "emoji": "🌧️" },
+    { "id": "coffee", "name": "Coffee", "emoji": "☕" },
+    { "id": "cut-grass", "name": "Cut grass", "emoji": "🌱" },
+    { "id": "bonfire", "name": "Bonfire", "emoji": "🔥" },
+    { "id": "new-car", "name": "New car", "emoji": "🚗" },
+    { "id": "old-books", "name": "Old books", "emoji": "📚" },
+    { "id": "sea-air", "name": "Sea air", "emoji": "🌊" },
+    { "id": "bacon", "name": "Bacon", "emoji": "🥓" },
+    { "id": "lavender", "name": "Lavender", "emoji": "💜" },
+    { "id": "vanilla", "name": "Vanilla", "emoji": "🍦" },
+    { "id": "wet-dog", "name": "Wet dog", "emoji": "🐶" },
+    { "id": "sunscreen", "name": "Sunscreen", "emoji": "🧴" },
+    { "id": "fresh-laundry", "name": "Fresh laundry", "emoji": "🧺" }
+  ]
+}

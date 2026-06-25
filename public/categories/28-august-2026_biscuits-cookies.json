@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-28",
+  "name": "Biscuits & Cookies",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "oreo", "name": "Oreo", "emoji": "🍪" },
+    { "id": "chocolate-chip", "name": "Chocolate chip", "emoji": "🍫" },
+    { "id": "digestive", "name": "Digestive", "emoji": "🧈" },
+    { "id": "shortbread", "name": "Shortbread", "emoji": "🍮" },
+    { "id": "custard-cream", "name": "Custard cream", "emoji": "🥃" },
+    { "id": "bourbon", "name": "Bourbon", "emoji": "🍊" },
+    { "id": "hobnob", "name": "Hobnob", "emoji": "🫚" },
+    { "id": "jaffa-cake", "name": "Jaffa Cake", "emoji": "🍰" },
+    { "id": "ginger-nut", "name": "Ginger nut", "emoji": "🍵" },
+    { "id": "rich-tea", "name": "Rich Tea", "emoji": "💍" },
+    { "id": "garibaldi", "name": "Garibaldi", "emoji": "🪵" },
+    { "id": "nice", "name": "Nice", "emoji": "🛞" },
+    { "id": "party-ring", "name": "Party ring", "emoji": "👆" },
+    { "id": "fig-roll", "name": "Fig roll", "emoji": "🟫" },
+    { "id": "chocolate-finger", "name": "Chocolate finger", "emoji": "🍩" },
+    { "id": "wagon-wheel", "name": "Wagon Wheel", "emoji": "🟡" }
+  ]
+}

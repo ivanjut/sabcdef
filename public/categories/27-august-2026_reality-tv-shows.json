@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-27",
+  "name": "Reality TV Shows",
+  "theme": "Screen",
+  "special_day": "",
+  "items": [
+    { "id": "love-island", "name": "Love Island", "emoji": "📺" },
+    { "id": "survivor", "name": "Survivor", "emoji": "💍" },
+    { "id": "big-brother", "name": "Big Brother", "emoji": "🌴" },
+    { "id": "the-bachelor", "name": "The Bachelor", "emoji": "👑" },
+    { "id": "masterchef", "name": "MasterChef", "emoji": "🍳" },
+    { "id": "rupaul-s-drag-race", "name": "RuPaul's Drag Race", "emoji": "🏝️" },
+    { "id": "bake-off", "name": "Bake Off", "emoji": "📹" },
+    { "id": "traitors", "name": "Traitors", "emoji": "🥂" },
+    { "id": "real-housewives", "name": "Real Housewives", "emoji": "💃" },
+    { "id": "love-is-blind", "name": "Love Is Blind", "emoji": "🏆" },
+    { "id": "too-hot-to-handle", "name": "Too Hot to Handle", "emoji": "🌹" },
+    { "id": "kardashians", "name": "Kardashians", "emoji": "🎭" },
+    { "id": "gogglebox", "name": "Gogglebox", "emoji": "📷" },
+    { "id": "selling-sunset", "name": "Selling Sunset", "emoji": "💋" },
+    { "id": "naked-attraction", "name": "Naked Attraction", "emoji": "🏠" },
+    { "id": "married-at-first-sight", "name": "Married at First Sight", "emoji": "💎" }
+  ]
+}

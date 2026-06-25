@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-16",
+  "name": "Sitcoms",
+  "theme": "Screen",
+  "special_day": "International Tell a Joke Day",
+  "items": [
+    { "id": "friends", "name": "Friends", "emoji": "📺" },
+    { "id": "the-office", "name": "The Office", "emoji": "😂" },
+    { "id": "seinfeld", "name": "Seinfeld", "emoji": "🎭" },
+    { "id": "brooklyn-nine-nine", "name": "Brooklyn Nine-Nine", "emoji": "🛋️" },
+    { "id": "parks-and-rec", "name": "Parks and Rec", "emoji": "🤣" },
+    { "id": "it-s-always-sunny", "name": "It's Always Sunny", "emoji": "😹" },
+    { "id": "fawlty-towers", "name": "Fawlty Towers", "emoji": "🎬" },
+    { "id": "the-it-crowd", "name": "The IT Crowd", "emoji": "📼" },
+    { "id": "frasier", "name": "Frasier", "emoji": "🍿" },
+    { "id": "community", "name": "Community", "emoji": "😆" },
+    { "id": "modern-family", "name": "Modern Family", "emoji": "🌃" },
+    { "id": "curb", "name": "Curb", "emoji": "🏢" },
+    { "id": "arrested-development", "name": "Arrested Development", "emoji": "🍺" },
+    { "id": "peep-show", "name": "Peep Show", "emoji": "☕" },
+    { "id": "how-i-met-your-mother", "name": "How I Met Your Mother", "emoji": "🗽" },
+    { "id": "30-rock", "name": "30 Rock", "emoji": "🎙️" }
+  ]
+}

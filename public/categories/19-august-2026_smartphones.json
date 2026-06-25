@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-19",
+  "name": "Smartphones",
+  "theme": "Tech",
+  "special_day": "World Photo Day",
+  "items": [
+    { "id": "iphone", "name": "iPhone", "emoji": "📱" },
+    { "id": "samsung-galaxy", "name": "Samsung Galaxy", "emoji": "📲" },
+    { "id": "google-pixel", "name": "Google Pixel", "emoji": "☎️" },
+    { "id": "huawei", "name": "Huawei", "emoji": "📞" },
+    { "id": "motorola", "name": "Motorola", "emoji": "📟" },
+    { "id": "sony-xperia", "name": "Sony Xperia", "emoji": "🔋" },
+    { "id": "nokia", "name": "Nokia", "emoji": "📶" },
+    { "id": "oneplus", "name": "OnePlus", "emoji": "🔌" },
+    { "id": "xiaomi", "name": "Xiaomi", "emoji": "💻" },
+    { "id": "iphone-pro", "name": "iPhone Pro", "emoji": "🖥️" },
+    { "id": "galaxy-s", "name": "Galaxy S", "emoji": "🤳" },
+    { "id": "galaxy-z-flip", "name": "Galaxy Z Flip", "emoji": "🪫" },
+    { "id": "pixel-pro", "name": "Pixel Pro", "emoji": "🍏" },
+    { "id": "iphone-se", "name": "iPhone SE", "emoji": "🤖" },
+    { "id": "oppo", "name": "Oppo", "emoji": "📸" },
+    { "id": "nothing-phone", "name": "Nothing Phone", "emoji": "🟦" }
+  ]
+}

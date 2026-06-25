@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-04",
+  "name": "Sports",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "football-soccer", "name": "Football/Soccer", "emoji": "⚽" },
+    { "id": "basketball", "name": "Basketball", "emoji": "🏀" },
+    { "id": "tennis", "name": "Tennis", "emoji": "🎾" },
+    { "id": "cricket", "name": "Cricket", "emoji": "🏏" },
+    { "id": "rugby", "name": "Rugby", "emoji": "🏉" },
+    { "id": "boxing", "name": "Boxing", "emoji": "🥊" },
+    { "id": "formula-1", "name": "Formula 1", "emoji": "🏎️" },
+    { "id": "athletics", "name": "Athletics", "emoji": "🏃" },
+    { "id": "golf", "name": "Golf", "emoji": "⛳" },
+    { "id": "swimming", "name": "Swimming", "emoji": "🏊" },
+    { "id": "cycling", "name": "Cycling", "emoji": "🚴" },
+    { "id": "baseball", "name": "Baseball", "emoji": "⚾" },
+    { "id": "hockey", "name": "Hockey", "emoji": "🏒" },
+    { "id": "mma", "name": "MMA", "emoji": "🥋" },
+    { "id": "table-tennis", "name": "Table tennis", "emoji": "🏸" },
+    { "id": "badminton", "name": "Badminton", "emoji": "🤸" }
+  ]
+}

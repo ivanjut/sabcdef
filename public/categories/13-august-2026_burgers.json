@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-13",
+  "name": "Burgers",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "cheeseburger", "name": "Cheeseburger", "emoji": "🍔" },
+    { "id": "bacon", "name": "Bacon", "emoji": "🥓" },
+    { "id": "double", "name": "Double", "emoji": "🧀" },
+    { "id": "smash", "name": "Smash", "emoji": "🍄" },
+    { "id": "veggie", "name": "Veggie", "emoji": "🍖" },
+    { "id": "mushroom-swiss", "name": "Mushroom Swiss", "emoji": "🌶️" },
+    { "id": "bbq", "name": "BBQ", "emoji": "🥚" },
+    { "id": "classic", "name": "Classic", "emoji": "🐔" },
+    { "id": "wagyu", "name": "Wagyu", "emoji": "🌱" },
+    { "id": "chicken", "name": "Chicken", "emoji": "🍗" },
+    { "id": "slider", "name": "Slider", "emoji": "🍞" },
+    { "id": "blue-cheese", "name": "Blue cheese", "emoji": "🥩" },
+    { "id": "jalapeno", "name": "Jalapeño", "emoji": "🟢" },
+    { "id": "breakfast-burger", "name": "Breakfast burger", "emoji": "🔥" },
+    { "id": "impossible", "name": "Impossible", "emoji": "🥬" },
+    { "id": "halloumi", "name": "Halloumi", "emoji": "🍅" }
+  ]
+}

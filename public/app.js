@@ -1,6 +1,6 @@
 // sabcdef client. Plain ES modules, no build step.
 // SortableJS is loaded globally from the CDN <script> in index.html.
-import { CATEGORIES } from "./categories.js";
+import { loadCategories } from "./categories.js";
 import { COUNTRIES, flagEmoji } from "./countries.js";
 import { supabase, isConfigured } from "./supabase.js";
 import { getDeviceId } from "./identity.js";
@@ -74,7 +74,7 @@ const store = {
 // ---- App state ------------------------------------------------------------
 
 const state = {
-  today: null, // { day, name, blurb, items, tierLabels }
+  today: null, // { day, name, theme, special_day, items, tierLabels }
   comments: [], // flat list from Supabase
   reactions: {}, // { suggestionCommentId: [ { voter_id, tier, author, country, created_at } ] }
   tierLists: [], // public submissions for the day (the global feed), newest first
@@ -120,6 +120,10 @@ let lastDragEndAt = 0;
 // refresh for Europe. Change this one constant to retune when the day rolls over.
 const CATEGORY_SWITCH_UTC_HOUR = 5;
 
+// The day's category configs, loaded once at boot from the categories/ folder
+// (see categories.js). Each entry is { date, name, theme, special_day, items }.
+let CATEGORIES = [];
+
 function dayString(date = new Date()) {
   // Shift back by the switch hour, then read the UTC date: the value only rolls
   // over at CATEGORY_SWITCH_UTC_HOUR:00 UTC, identically for every visitor.
@@ -131,10 +135,17 @@ function dayString(date = new Date()) {
 }
 
 function categoryForDay(day) {
+  // The calendar maps specific dates to specific categories. For any date the
+  // calendar doesn't cover (old share links, dates past the planned range) fall
+  // back to a deterministic rotation so the app always has something to show.
+  const cat = CATEGORIES.find((c) => c.date === day) || rotationForDay(day);
+  return { day, name: cat.name, theme: cat.theme, special_day: cat.special_day, items: cat.items, tierLabels: TIER_LABELS };
+}
+
+function rotationForDay(day) {
   const epochDays = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86_400_000);
   const index = ((epochDays % CATEGORIES.length) + CATEGORIES.length) % CATEGORIES.length;
-  const cat = CATEGORIES[index];
-  return { day, index, name: cat.name, blurb: cat.blurb, items: cat.items, tierLabels: TIER_LABELS };
+  return CATEGORIES[index];
 }
 
 function getToday() {
@@ -152,6 +163,9 @@ init().catch((err) => {
 async function init() {
   wireThemeToggle(); // independent of everything else
   wireProfile();
+
+  // Load the daily category configs before anything that reads them.
+  CATEGORIES = await loadCategories();
 
   const shared = getShareParams();
   let previewing = false;

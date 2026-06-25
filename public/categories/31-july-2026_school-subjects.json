@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-31",
+  "name": "School Subjects",
+  "theme": "Time",
+  "special_day": "",
+  "items": [
+    { "id": "maths", "name": "Maths", "emoji": "🔢" },
+    { "id": "english", "name": "English", "emoji": "📖" },
+    { "id": "science", "name": "Science", "emoji": "🔬" },
+    { "id": "history", "name": "History", "emoji": "📜" },
+    { "id": "geography", "name": "Geography", "emoji": "🌍" },
+    { "id": "art", "name": "Art", "emoji": "🖼️" },
+    { "id": "pe", "name": "PE", "emoji": "🏃" },
+    { "id": "music", "name": "Music", "emoji": "🎵" },
+    { "id": "chemistry", "name": "Chemistry", "emoji": "⚗️" },
+    { "id": "physics", "name": "Physics", "emoji": "⚛️" },
+    { "id": "biology", "name": "Biology", "emoji": "🧬" },
+    { "id": "languages", "name": "Languages", "emoji": "🗣️" },
+    { "id": "drama", "name": "Drama", "emoji": "🎭" },
+    { "id": "it-computing", "name": "IT/Computing", "emoji": "💻" },
+    { "id": "economics", "name": "Economics", "emoji": "📈" },
+    { "id": "philosophy", "name": "Philosophy", "emoji": "📚" }
+  ]
+}

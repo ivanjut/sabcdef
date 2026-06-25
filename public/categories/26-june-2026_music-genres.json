@@ -1,0 +1,24 @@
+{
+  "date": "2026-06-26",
+  "name": "Music Genres",
+  "theme": "Music",
+  "special_day": "",
+  "items": [
+    { "id": "hip-hop", "name": "Hip-hop", "emoji": "🎤" },
+    { "id": "rock", "name": "Rock", "emoji": "🎸" },
+    { "id": "pop", "name": "Pop", "emoji": "🎵" },
+    { "id": "jazz", "name": "Jazz", "emoji": "🎷" },
+    { "id": "electronic", "name": "Electronic", "emoji": "🎛️" },
+    { "id": "r-b", "name": "R&B", "emoji": "🤘" },
+    { "id": "metal", "name": "Metal", "emoji": "🎻" },
+    { "id": "classical", "name": "Classical", "emoji": "🤠" },
+    { "id": "country", "name": "Country", "emoji": "🥁" },
+    { "id": "reggae", "name": "Reggae", "emoji": "🎶" },
+    { "id": "punk", "name": "Punk", "emoji": "🪕" },
+    { "id": "soul", "name": "Soul", "emoji": "🎺" },
+    { "id": "folk", "name": "Folk", "emoji": "🎹" },
+    { "id": "blues", "name": "Blues", "emoji": "🪗" },
+    { "id": "house", "name": "House", "emoji": "🎚️" },
+    { "id": "afrobeats", "name": "Afrobeats", "emoji": "🔊" }
+  ]
+}

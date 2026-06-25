@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-30",
+  "name": "Fashion Brands",
+  "theme": "Lifestyle",
+  "special_day": "",
+  "items": [
+    { "id": "nike", "name": "Nike", "emoji": "👗" },
+    { "id": "zara", "name": "Zara", "emoji": "👜" },
+    { "id": "gucci", "name": "Gucci", "emoji": "👠" },
+    { "id": "adidas", "name": "Adidas", "emoji": "👕" },
+    { "id": "louis-vuitton", "name": "Louis Vuitton", "emoji": "👖" },
+    { "id": "h-m", "name": "H&M", "emoji": "🧥" },
+    { "id": "prada", "name": "Prada", "emoji": "🧣" },
+    { "id": "chanel", "name": "Chanel", "emoji": "🕶️" },
+    { "id": "levi-s", "name": "Levi's", "emoji": "💎" },
+    { "id": "balenciaga", "name": "Balenciaga", "emoji": "👔" },
+    { "id": "the-north-face", "name": "The North Face", "emoji": "🧢" },
+    { "id": "ralph-lauren", "name": "Ralph Lauren", "emoji": "👒" },
+    { "id": "dior", "name": "Dior", "emoji": "💄" },
+    { "id": "gap", "name": "Gap", "emoji": "👛" },
+    { "id": "uniqlo", "name": "Uniqlo", "emoji": "🥿" },
+    { "id": "burberry", "name": "Burberry", "emoji": "👞" }
+  ]
+}

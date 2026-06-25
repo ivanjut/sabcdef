@@ -1,0 +1,20 @@
+{
+  "date": "2026-06-24",
+  "name": "Weekend Activities",
+  "theme": "",
+  "special_day": "",
+  "items": [
+    { "id": "hiking", "name": "Hiking", "emoji": "🥾" },
+    { "id": "gaming", "name": "Gaming", "emoji": "🎮" },
+    { "id": "brunch", "name": "Brunch", "emoji": "🥞" },
+    { "id": "movies", "name": "Movie Night", "emoji": "🎬" },
+    { "id": "napping", "name": "Napping", "emoji": "😴" },
+    { "id": "shopping", "name": "Shopping", "emoji": "🛍️" },
+    { "id": "reading", "name": "Reading", "emoji": "📚" },
+    { "id": "gym", "name": "The Gym", "emoji": "🏋️" },
+    { "id": "cooking", "name": "Cooking", "emoji": "🍳" },
+    { "id": "beach", "name": "Beach Day", "emoji": "🏖️" },
+    { "id": "concert", "name": "Live Music", "emoji": "🎤" },
+    { "id": "cleaning", "name": "Cleaning", "emoji": "🧹" }
+  ]
+}

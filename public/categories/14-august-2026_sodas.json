@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-14",
+  "name": "Sodas",
+  "theme": "Drink/Dip",
+  "special_day": "",
+  "items": [
+    { "id": "coca-cola", "name": "Coca-Cola", "emoji": "🥤" },
+    { "id": "pepsi", "name": "Pepsi", "emoji": "🔵" },
+    { "id": "sprite", "name": "Sprite", "emoji": "🍋" },
+    { "id": "fanta", "name": "Fanta", "emoji": "🍊" },
+    { "id": "dr-pepper", "name": "Dr Pepper", "emoji": "🟤" },
+    { "id": "mountain-dew", "name": "Mountain Dew", "emoji": "⛰️" },
+    { "id": "7up", "name": "7UP", "emoji": "💚" },
+    { "id": "irn-bru", "name": "Irn-Bru", "emoji": "🧡" },
+    { "id": "root-beer", "name": "Root beer", "emoji": "🍺" },
+    { "id": "schweppes", "name": "Schweppes", "emoji": "🫧" },
+    { "id": "mirinda", "name": "Mirinda", "emoji": "🟧" },
+    { "id": "cream-soda", "name": "Cream soda", "emoji": "🍦" },
+    { "id": "ginger-ale", "name": "Ginger ale", "emoji": "🫚" },
+    { "id": "lilt", "name": "Lilt", "emoji": "🍍" },
+    { "id": "tango", "name": "Tango", "emoji": "🕺" },
+    { "id": "vimto", "name": "Vimto", "emoji": "🍇" }
+  ]
+}

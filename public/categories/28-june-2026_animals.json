@@ -1,0 +1,24 @@
+{
+  "date": "2026-06-28",
+  "name": "Animals",
+  "theme": "Nature",
+  "special_day": "",
+  "items": [
+    { "id": "lion", "name": "Lion", "emoji": "🦁" },
+    { "id": "elephant", "name": "Elephant", "emoji": "🐘" },
+    { "id": "wolf", "name": "Wolf", "emoji": "🐺" },
+    { "id": "octopus", "name": "Octopus", "emoji": "🐙" },
+    { "id": "tiger", "name": "Tiger", "emoji": "🐯" },
+    { "id": "dolphin", "name": "Dolphin", "emoji": "🐬" },
+    { "id": "eagle", "name": "Eagle", "emoji": "🦅" },
+    { "id": "penguin", "name": "Penguin", "emoji": "🐧" },
+    { "id": "gorilla", "name": "Gorilla", "emoji": "🦍" },
+    { "id": "bear", "name": "Bear", "emoji": "🐻" },
+    { "id": "crow", "name": "Crow", "emoji": "🐦‍⬛" },
+    { "id": "horse", "name": "Horse", "emoji": "🐴" },
+    { "id": "fox", "name": "Fox", "emoji": "🦊" },
+    { "id": "shark", "name": "Shark", "emoji": "🦈" },
+    { "id": "owl", "name": "Owl", "emoji": "🦉" },
+    { "id": "otter", "name": "Otter", "emoji": "🦦" }
+  ]
+}

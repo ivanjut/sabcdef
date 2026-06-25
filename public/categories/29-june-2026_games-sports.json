@@ -1,0 +1,25 @@
+{
+  "date": "2026-06-29",
+  "name": "Games / Sports",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "football-soccer", "name": "Football/Soccer", "emoji": "⚽" },
+    { "id": "basketball", "name": "Basketball", "emoji": "🏀" },
+    { "id": "chess", "name": "Chess", "emoji": "♟️" },
+    { "id": "poker", "name": "Poker", "emoji": "🃏" },
+    { "id": "tennis", "name": "Tennis", "emoji": "🎾" },
+    { "id": "mario-kart", "name": "Mario Kart", "emoji": "🏎️" },
+    { "id": "monopoly", "name": "Monopoly", "emoji": "🎲" },
+    { "id": "cricket", "name": "Cricket", "emoji": "🏏" },
+    { "id": "tetris", "name": "Tetris", "emoji": "🎮" },
+    { "id": "darts", "name": "Darts", "emoji": "🎯" },
+    { "id": "table-tennis", "name": "Table tennis", "emoji": "🏉" },
+    { "id": "rugby", "name": "Rugby", "emoji": "🐱" },
+    { "id": "catan", "name": "Catan", "emoji": "🎱" },
+    { "id": "fifa", "name": "FIFA", "emoji": "🏐" },
+    { "id": "volleyball", "name": "Volleyball", "emoji": "🏓" },
+    { "id": "snooker", "name": "Snooker", "emoji": "🟢" },
+    { "id": "uno", "name": "Uno", "emoji": "🎟️" }
+  ]
+}

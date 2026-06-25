@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-06",
+  "name": "Board Games",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "monopoly", "name": "Monopoly", "emoji": "🎲" },
+    { "id": "scrabble", "name": "Scrabble", "emoji": "🔤" },
+    { "id": "cluedo", "name": "Cluedo", "emoji": "🔍" },
+    { "id": "risk", "name": "Risk", "emoji": "🗺️" },
+    { "id": "chess", "name": "Chess", "emoji": "♟️" },
+    { "id": "catan", "name": "Catan", "emoji": "🐱" },
+    { "id": "trivial-pursuit", "name": "Trivial Pursuit", "emoji": "❓" },
+    { "id": "connect-4", "name": "Connect 4", "emoji": "🔴" },
+    { "id": "jenga", "name": "Jenga", "emoji": "🧱" },
+    { "id": "operation", "name": "Operation", "emoji": "⚡" },
+    { "id": "guess-who", "name": "Guess Who", "emoji": "🚢" },
+    { "id": "battleship", "name": "Battleship", "emoji": "🐍" },
+    { "id": "snakes-ladders", "name": "Snakes & Ladders", "emoji": "🚂" },
+    { "id": "ticket-to-ride", "name": "Ticket to Ride", "emoji": "✏️" },
+    { "id": "pictionary", "name": "Pictionary", "emoji": "🎯" },
+    { "id": "backgammon", "name": "Backgammon", "emoji": "🏰" }
+  ]
+}

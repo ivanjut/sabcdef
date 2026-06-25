@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-12",
+  "name": "Hairstyles",
+  "theme": "Lifestyle",
+  "special_day": "",
+  "items": [
+    { "id": "mullet", "name": "Mullet", "emoji": "💇" },
+    { "id": "buzz-cut", "name": "Buzz cut", "emoji": "💇‍♂️" },
+    { "id": "bob", "name": "Bob", "emoji": "💇‍♀️" },
+    { "id": "ponytail", "name": "Ponytail", "emoji": "✂️" },
+    { "id": "afro", "name": "Afro", "emoji": "💈" },
+    { "id": "bun", "name": "Bun", "emoji": "👱" },
+    { "id": "mohawk", "name": "Mohawk", "emoji": "👨‍🦱" },
+    { "id": "man-bun", "name": "Man bun", "emoji": "👩‍🦰" },
+    { "id": "pixie-cut", "name": "Pixie cut", "emoji": "👨‍🦲" },
+    { "id": "bald", "name": "Bald", "emoji": "🧑‍🦱" },
+    { "id": "dreadlocks", "name": "Dreadlocks", "emoji": "🦱" },
+    { "id": "fringe", "name": "Fringe", "emoji": "🦰" },
+    { "id": "quiff", "name": "Quiff", "emoji": "🦳" },
+    { "id": "perm", "name": "Perm", "emoji": "💆" },
+    { "id": "cornrows", "name": "Cornrows", "emoji": "👩‍🦳" },
+    { "id": "bangs", "name": "Bangs", "emoji": "🧑‍🦲" }
+  ]
+}

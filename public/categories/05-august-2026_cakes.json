@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-05",
+  "name": "Cakes",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "chocolate", "name": "Chocolate", "emoji": "🍫" },
+    { "id": "victoria-sponge", "name": "Victoria sponge", "emoji": "🍰" },
+    { "id": "red-velvet", "name": "Red velvet", "emoji": "🧀" },
+    { "id": "carrot", "name": "Carrot", "emoji": "🥕" },
+    { "id": "cheesecake", "name": "Cheesecake", "emoji": "🍋" },
+    { "id": "black-forest", "name": "Black Forest", "emoji": "☕" },
+    { "id": "lemon-drizzle", "name": "Lemon drizzle", "emoji": "💧" },
+    { "id": "tiramisu", "name": "Tiramisu", "emoji": "🟤" },
+    { "id": "battenberg", "name": "Battenberg", "emoji": "🟫" },
+    { "id": "coffee-walnut", "name": "Coffee & walnut", "emoji": "🍌" },
+    { "id": "funfetti", "name": "Funfetti", "emoji": "🍞" },
+    { "id": "bundt", "name": "Bundt", "emoji": "🎂" },
+    { "id": "angel-food", "name": "Angel food", "emoji": "🧁" },
+    { "id": "opera", "name": "Opera", "emoji": "🟥" },
+    { "id": "banana-bread", "name": "Banana bread", "emoji": "⚪" },
+    { "id": "basque", "name": "Basque", "emoji": "🍓" }
+  ]
+}

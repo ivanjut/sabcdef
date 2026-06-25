@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-31",
+  "name": "Plants",
+  "theme": "Nature",
+  "special_day": "",
+  "items": [
+    { "id": "monstera", "name": "Monstera", "emoji": "🪴" },
+    { "id": "snake-plant", "name": "Snake plant", "emoji": "🌿" },
+    { "id": "pothos", "name": "Pothos", "emoji": "🌱" },
+    { "id": "fiddle-leaf-fig", "name": "Fiddle-leaf fig", "emoji": "🌵" },
+    { "id": "aloe-vera", "name": "Aloe vera", "emoji": "🌳" },
+    { "id": "orchid", "name": "Orchid", "emoji": "🌴" },
+    { "id": "succulent", "name": "Succulent", "emoji": "🍀" },
+    { "id": "fern", "name": "Fern", "emoji": "☘️" },
+    { "id": "peace-lily", "name": "Peace lily", "emoji": "🌾" },
+    { "id": "cactus", "name": "Cactus", "emoji": "🎍" },
+    { "id": "rubber-plant", "name": "Rubber plant", "emoji": "🌷" },
+    { "id": "bonsai", "name": "Bonsai", "emoji": "🌻" },
+    { "id": "lavender", "name": "Lavender", "emoji": "🌹" },
+    { "id": "bamboo", "name": "Bamboo", "emoji": "🌺" },
+    { "id": "spider-plant", "name": "Spider plant", "emoji": "🌸" },
+    { "id": "zz-plant", "name": "ZZ plant", "emoji": "🍃" }
+  ]
+}

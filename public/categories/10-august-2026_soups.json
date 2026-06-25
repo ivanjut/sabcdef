@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-10",
+  "name": "Soups",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "tomato", "name": "Tomato", "emoji": "🍅" },
+    { "id": "chicken-noodle", "name": "Chicken noodle", "emoji": "🍜" },
+    { "id": "pho", "name": "Pho", "emoji": "🍲" },
+    { "id": "ramen", "name": "Ramen", "emoji": "🥣" },
+    { "id": "miso", "name": "Miso", "emoji": "🥕" },
+    { "id": "minestrone", "name": "Minestrone", "emoji": "🧅" },
+    { "id": "french-onion", "name": "French onion", "emoji": "🇫🇷" },
+    { "id": "lentil", "name": "Lentil", "emoji": "🍄" },
+    { "id": "pumpkin", "name": "Pumpkin", "emoji": "🌶️" },
+    { "id": "gazpacho", "name": "Gazpacho", "emoji": "🟠" },
+    { "id": "tom-yum", "name": "Tom yum", "emoji": "🟡" },
+    { "id": "borscht", "name": "Borscht", "emoji": "🟢" },
+    { "id": "clam-chowder", "name": "Clam chowder", "emoji": "🫘" },
+    { "id": "mushroom", "name": "Mushroom", "emoji": "🥄" },
+    { "id": "pea-ham", "name": "Pea & ham", "emoji": "🍖" },
+    { "id": "hot-sour", "name": "Hot & sour", "emoji": "🍠" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-09",
+  "name": "Types of Exercise",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "running", "name": "Running", "emoji": "🏃" },
+    { "id": "weightlifting", "name": "Weightlifting", "emoji": "🏋️" },
+    { "id": "yoga", "name": "Yoga", "emoji": "🧘" },
+    { "id": "swimming", "name": "Swimming", "emoji": "🏊" },
+    { "id": "cycling", "name": "Cycling", "emoji": "🚴" },
+    { "id": "hiit", "name": "HIIT", "emoji": "🔥" },
+    { "id": "pilates", "name": "Pilates", "emoji": "🤸" },
+    { "id": "boxing", "name": "Boxing", "emoji": "🥊" },
+    { "id": "rowing", "name": "Rowing", "emoji": "🚣" },
+    { "id": "crossfit", "name": "CrossFit", "emoji": "💪" },
+    { "id": "calisthenics", "name": "Calisthenics", "emoji": "🤼" },
+    { "id": "hiking", "name": "Hiking", "emoji": "🧗" },
+    { "id": "burpees", "name": "Burpees", "emoji": "⏱️" },
+    { "id": "squats", "name": "Squats", "emoji": "🦵" },
+    { "id": "jump-rope", "name": "Jump rope", "emoji": "🪢" },
+    { "id": "walking", "name": "Walking", "emoji": "🚶" }
+  ]
+}

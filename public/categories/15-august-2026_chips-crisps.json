@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-15",
+  "name": "Chips / Crisps",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "lay-s", "name": "Lay's", "emoji": "🍟" },
+    { "id": "doritos", "name": "Doritos", "emoji": "🥔" },
+    { "id": "pringles", "name": "Pringles", "emoji": "🌽" },
+    { "id": "walkers", "name": "Walkers", "emoji": "🧀" },
+    { "id": "cheetos", "name": "Cheetos", "emoji": "🌶️" },
+    { "id": "kettle", "name": "Kettle", "emoji": "🥨" },
+    { "id": "ruffles", "name": "Ruffles", "emoji": "🫓" },
+    { "id": "takis", "name": "Takis", "emoji": "🧂" },
+    { "id": "tortilla", "name": "Tortilla", "emoji": "🌭" },
+    { "id": "quavers", "name": "Quavers", "emoji": "🥓" },
+    { "id": "hula-hoops", "name": "Hula Hoops", "emoji": "🟡" },
+    { "id": "sun-chips", "name": "Sun Chips", "emoji": "☀️" },
+    { "id": "wotsits", "name": "Wotsits", "emoji": "🟠" },
+    { "id": "monster-munch", "name": "Monster Munch", "emoji": "⚡" },
+    { "id": "cool-ranch", "name": "Cool Ranch", "emoji": "🥗" },
+    { "id": "salt-vinegar", "name": "Salt & Vinegar", "emoji": "🟤" }
+  ]
+}

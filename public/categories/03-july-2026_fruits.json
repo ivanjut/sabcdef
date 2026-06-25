@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-03",
+  "name": "Fruits",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "mango", "name": "Mango", "emoji": "🥭" },
+    { "id": "strawberry", "name": "Strawberry", "emoji": "🍓" },
+    { "id": "banana", "name": "Banana", "emoji": "🍌" },
+    { "id": "apple", "name": "Apple", "emoji": "🍎" },
+    { "id": "watermelon", "name": "Watermelon", "emoji": "🍉" },
+    { "id": "pineapple", "name": "Pineapple", "emoji": "🍍" },
+    { "id": "grapes", "name": "Grapes", "emoji": "🍇" },
+    { "id": "orange", "name": "Orange", "emoji": "🍊" },
+    { "id": "peach", "name": "Peach", "emoji": "🍑" },
+    { "id": "cherry", "name": "Cherry", "emoji": "🍒" },
+    { "id": "kiwi", "name": "Kiwi", "emoji": "🥝" },
+    { "id": "blueberry", "name": "Blueberry", "emoji": "🫐" },
+    { "id": "durian", "name": "Durian", "emoji": "🍈" },
+    { "id": "pomegranate", "name": "Pomegranate", "emoji": "🟢" },
+    { "id": "lychee", "name": "Lychee", "emoji": "🟡" },
+    { "id": "passion-fruit", "name": "Passion fruit", "emoji": "🟣" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-11",
+  "name": "Planets",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "mercury", "name": "Mercury", "emoji": "☿️" },
+    { "id": "venus", "name": "Venus", "emoji": "♀️" },
+    { "id": "earth", "name": "Earth", "emoji": "🌍" },
+    { "id": "mars", "name": "Mars", "emoji": "🔴" },
+    { "id": "jupiter", "name": "Jupiter", "emoji": "🪐" },
+    { "id": "saturn", "name": "Saturn", "emoji": "🟤" },
+    { "id": "uranus", "name": "Uranus", "emoji": "🔵" },
+    { "id": "neptune", "name": "Neptune", "emoji": "🟣" },
+    { "id": "pluto", "name": "Pluto", "emoji": "🌑" },
+    { "id": "the-moon", "name": "The Moon", "emoji": "🌙" },
+    { "id": "the-sun", "name": "The Sun", "emoji": "☀️" },
+    { "id": "europa", "name": "Europa", "emoji": "🟠" },
+    { "id": "titan", "name": "Titan", "emoji": "🟡" },
+    { "id": "saturn-s-rings", "name": "Saturn's rings", "emoji": "☄️" },
+    { "id": "asteroid-belt", "name": "Asteroid belt", "emoji": "🌌" },
+    { "id": "io", "name": "Io", "emoji": "⭐" }
+  ]
+}

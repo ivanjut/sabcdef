@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-01",
+  "name": "Logos",
+  "theme": "Tech",
+  "special_day": "",
+  "items": [
+    { "id": "apple", "name": "Apple", "emoji": "🍎" },
+    { "id": "nike", "name": "Nike", "emoji": "👟" },
+    { "id": "mcdonald-s", "name": "McDonald's", "emoji": "🏷️" },
+    { "id": "coca-cola", "name": "Coca-Cola", "emoji": "🥤" },
+    { "id": "mercedes", "name": "Mercedes", "emoji": "🚗" },
+    { "id": "fedex", "name": "FedEx", "emoji": "📦" },
+    { "id": "shell", "name": "Shell", "emoji": "🐦" },
+    { "id": "starbucks", "name": "Starbucks", "emoji": "🦚" },
+    { "id": "google", "name": "Google", "emoji": "🐧" },
+    { "id": "adidas", "name": "Adidas", "emoji": "☕" },
+    { "id": "amazon", "name": "Amazon", "emoji": "🛍️" },
+    { "id": "twitter-bird", "name": "Twitter bird", "emoji": "🔵" },
+    { "id": "playboy", "name": "Playboy", "emoji": "🟡" },
+    { "id": "nbc-peacock", "name": "NBC peacock", "emoji": "🔴" },
+    { "id": "wwf-panda", "name": "WWF panda", "emoji": "🟢" },
+    { "id": "penguin-books", "name": "Penguin Books", "emoji": "🟣" }
+  ]
+}

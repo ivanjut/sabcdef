@@ -107,9 +107,14 @@ To point Pages at a different folder or repo, edit the `path:` in
 
 ## How it works
 
-- **Daily category** — chosen deterministically from the date (whole days since
-  the epoch, modulo the list in `public/categories.js`), so everyone sees the
-  same category each day. The day rolls over at a fixed UTC moment
+- **Daily category** — each date maps to a category config in
+  `public/categories/` (one JSON file per day, named
+  `dd-monthname-year_categoryname.json` with the shape
+  `{ date, name, theme, special_day, items }`, listed in
+  `categories/index.json`).
+  `public/categories.js` loads them at boot; dates the calendar doesn't cover
+  fall back to a deterministic rotation. Everyone sees the same category each
+  day. The day rolls over at a fixed UTC moment
   (`CATEGORY_SWITCH_UTC_HOUR` in `app.js`, default 05:00 UTC) rather than each
   visitor's local midnight, so the whole world shares one category and one
   comment thread at any instant. Comments are keyed per (global) day.
@@ -123,8 +128,8 @@ To point Pages at a different folder or repo, edit the `path:` in
 
 - No accounts/auth — display names are unverified and votes are device-local.
   Add Supabase Auth + a per-user votes table before relying on the counts.
-- Items are emoji-based — swap `emoji` for an `img` URL in
-  `public/categories.js`; the tier logic doesn't change.
+- Items are emoji-based — swap `emoji` for an `img` URL in a category's JSON
+  config under `public/categories/`; the tier logic doesn't change.
 - Tier lists aren't aggregated server-side yet (no "community average" tier list).
 
 ## Layout
@@ -134,7 +139,8 @@ public/
   index.html             Markup
   styles.css             Mobile-first styling, light/dark themes
   app.js                 Tier list + forum client logic
-  categories.js          The rotating pool of daily categories
+  categories.js          Loads the daily category configs from categories/
+  categories/            One JSON config per day + index.json manifest
   config.js              Supabase URL + anon key + VAPID public key (you fill these in)
   supabase.js            Creates the Supabase client
   identity.js            Anonymous per-device id (shared by forum + push)

@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-19",
+  "name": "Ice Cream Flavors",
+  "theme": "Food",
+  "special_day": "International Ice Cream Day",
+  "items": [
+    { "id": "vanilla", "name": "Vanilla", "emoji": "🍦" },
+    { "id": "chocolate", "name": "Chocolate", "emoji": "🍫" },
+    { "id": "strawberry", "name": "Strawberry", "emoji": "🍓" },
+    { "id": "mint-choc-chip", "name": "Mint choc chip", "emoji": "🍨" },
+    { "id": "cookies-cream", "name": "Cookies & cream", "emoji": "🌿" },
+    { "id": "pistachio", "name": "Pistachio", "emoji": "🍪" },
+    { "id": "salted-caramel", "name": "Salted caramel", "emoji": "💚" },
+    { "id": "toffee", "name": "Toffee", "emoji": "🍬" },
+    { "id": "coffee", "name": "Coffee", "emoji": "☕" },
+    { "id": "mango", "name": "Mango", "emoji": "🥭" },
+    { "id": "rum-raisin", "name": "Rum & raisin", "emoji": "🧡" },
+    { "id": "neapolitan", "name": "Neapolitan", "emoji": "🥃" },
+    { "id": "cookie-dough", "name": "Cookie dough", "emoji": "🟤" },
+    { "id": "hazelnut", "name": "Hazelnut", "emoji": "🌰" },
+    { "id": "bubblegum", "name": "Bubblegum", "emoji": "🩷" },
+    { "id": "raspberry-ripple", "name": "Raspberry ripple", "emoji": "🫐" }
+  ]
+}

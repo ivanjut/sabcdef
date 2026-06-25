@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-27",
+  "name": "Noodles",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "ramen", "name": "Ramen", "emoji": "🍜" },
+    { "id": "pho", "name": "Pho", "emoji": "🍝" },
+    { "id": "pad-thai", "name": "Pad thai", "emoji": "🇹🇭" },
+    { "id": "spaghetti", "name": "Spaghetti", "emoji": "🥢" },
+    { "id": "udon", "name": "Udon", "emoji": "🍲" },
+    { "id": "chow-mein", "name": "Chow mein", "emoji": "🌾" },
+    { "id": "lo-mein", "name": "Lo mein", "emoji": "🟡" },
+    { "id": "pasta", "name": "Pasta", "emoji": "🍤" },
+    { "id": "singapore-noodles", "name": "Singapore noodles", "emoji": "🇸🇬" },
+    { "id": "egg-noodles", "name": "Egg noodles", "emoji": "🥚" },
+    { "id": "glass-noodles", "name": "Glass noodles", "emoji": "🥡" },
+    { "id": "instant-noodles", "name": "Instant noodles", "emoji": "🟠" },
+    { "id": "rice-noodles", "name": "Rice noodles", "emoji": "🍚" },
+    { "id": "mac-cheese", "name": "Mac & cheese", "emoji": "🧀" },
+    { "id": "soba", "name": "Soba", "emoji": "🥣" },
+    { "id": "vermicelli", "name": "Vermicelli", "emoji": "🔥" }
+  ]
+}
