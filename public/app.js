@@ -97,6 +97,12 @@ const shareIdKey = (day) => `sabcdef:tlshare:${day}`;
 const votesKey = "sabcdef:votes";
 const themeKey = "sabcdef:theme";
 const profileKey = "sabcdef:profile"; // { name, country, visibility } — country is an ISO alpha-2 code; visibility is "public" | "private"
+// Ids of the comments/suggestions this device authored. The server never sends
+// each comment's device_id to clients (it's used to route reply notifications,
+// so it stays private), so we remember our own posts locally to decide whether
+// to show the "delete" menu. The real ownership check is enforced server-side by
+// delete_comment, which only removes a row when the device id matches.
+const mineKey = "sabcdef:mine";
 
 // The anonymous per-device id lives in identity.js so push.js can tie a push
 // subscription to the same device that posts comments/reactions. Here it's used
@@ -1067,7 +1073,7 @@ function showForumOffline() {
 async function loadComments() {
   const { data, error } = await supabase
     .from("comments")
-    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind")
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted")
     .eq("day", state.today.day)
     .order("created_at", { ascending: true });
 
@@ -1132,6 +1138,26 @@ function renderComments() {
   roots.forEach((node) => container.appendChild(renderNode(node, votes, 0)));
 }
 
+// ---- "My posts" ownership (for the delete menu) ----------------------------
+// We can only know a comment is ours from the local list of ids we authored, so
+// these helpers keep that list in sync with localStorage.
+function myPostIds() {
+  return store.get(mineKey, []);
+}
+function isMine(id) {
+  return myPostIds().includes(id);
+}
+function markMine(id) {
+  const mine = myPostIds();
+  if (!mine.includes(id)) {
+    mine.push(id);
+    store.set(mineKey, mine);
+  }
+}
+function unmarkMine(id) {
+  store.set(mineKey, myPostIds().filter((x) => x !== id));
+}
+
 function renderNode(node, votes, depth) {
   const myVote = votes[node.id] || 0;
   const isSuggestion = node.kind === "suggestion";
@@ -1145,6 +1171,29 @@ function renderNode(node, votes, depth) {
   const el = document.createElement("div");
   el.className = `comment${isSuggestion ? " is-suggestion" : ""}`;
   el.dataset.id = node.id;
+
+  // A soft-deleted comment that still has replies renders as a "[deleted]"
+  // tombstone: no content, no votes, no actions — just enough to keep the thread
+  // (its replies, rendered below) anchored.
+  if (node.deleted) {
+    el.classList.add("is-deleted");
+    el.innerHTML = `
+      <div class="comment-body">
+        <div class="comment-meta">
+          <span class="comment-time">${timeAgo(node.created_at)}</span>
+        </div>
+        <div class="comment-text comment-tombstone">[deleted]</div>
+      </div>
+    `;
+    wrapper.appendChild(el);
+    if (node.children.length) {
+      const thread = document.createElement("div");
+      thread.className = depth < 5 ? "comment-thread" : "";
+      node.children.forEach((child) => thread.appendChild(renderNode(child, votes, depth + 1)));
+      wrapper.appendChild(thread);
+    }
+    return wrapper;
+  }
 
   // Suggestions get a badge + a prominent item name, and a "Vote" button that
   // ranks the item into a tier, plus a "See Rankings" breakdown of those votes.
@@ -1160,6 +1209,13 @@ function renderNode(node, votes, depth) {
     : `<button class="reply-btn" data-action="reply">Reply</button>
        ${hasTierList(node.tier_list) ? `<button class="ranking-btn" data-action="tierlist">See Tier List</button>` : ""}`;
 
+  // The author (same device that posted) gets a meatball menu at the top right, on
+  // the name/time line, to delete their own comment/suggestion. Everyone else sees
+  // no menu at all.
+  const ownerMenu = isMine(node.id)
+    ? `<button class="menu-btn" data-action="menu" aria-label="More options" aria-haspopup="menu">&#8943;</button>`
+    : "";
+
   el.innerHTML = `
     <div class="votes">
       <button class="vote-btn up ${myVote === 1 ? "is-active" : ""}" data-dir="up" aria-label="Upvote">▲</button>
@@ -1171,6 +1227,7 @@ function renderNode(node, votes, depth) {
         <span class="comment-author">${flagPrefix(node.country)}${escapeHtml(node.author)}</span>
         ${isSuggestion ? `<span class="suggest-tag">💡 Suggestion</span>` : ""}
         <span class="comment-time">${timeAgo(node.created_at)}</span>
+        ${ownerMenu}
       </div>
       ${text}
       <div class="comment-actions">${actions}</div>
@@ -1183,6 +1240,7 @@ function renderNode(node, votes, depth) {
   el.querySelector('[data-action="tierlist"]')?.addEventListener("click", () => openTierListDialog(node));
   el.querySelector('[data-action="react"]')?.addEventListener("click", (e) => openReactionPicker(e.currentTarget, node));
   el.querySelector('[data-action="votes"]')?.addEventListener("click", () => openVotesDialog(node));
+  el.querySelector('[data-action="menu"]')?.addEventListener("click", (e) => openCommentMenu(e.currentTarget, node));
 
   wrapper.appendChild(el);
 
@@ -1194,6 +1252,86 @@ function renderNode(node, votes, depth) {
     wrapper.appendChild(thread);
   }
   return wrapper;
+}
+
+// ---- Deleting your own comment ----------------------------------------------
+// The meatball menu only renders on posts this device authored (see isMine). The
+// menu offers a single "Delete" action; the actual ownership check is enforced
+// server-side by delete_comment (the device id must match), so this is safe even
+// though the menu's visibility is decided from local state.
+function openCommentMenu(anchor, node) {
+  const label = node.kind === "suggestion" ? "suggestion" : "comment";
+  showMenuPopover(
+    anchor,
+    `<button type="button" class="menu-item is-danger" data-value="delete">Delete ${label}</button>`,
+    (value) => {
+      if (value === "delete") deleteComment(node);
+    }
+  );
+}
+
+async function deleteComment(node) {
+  const label = node.kind === "suggestion" ? "suggestion" : "comment";
+  const { data, error } = await supabase.rpc("delete_comment", {
+    c_id: node.id,
+    d_id: getVoterId()
+  });
+
+  if (error) {
+    toast(`Couldn't delete: ${error.message}`);
+    return;
+  }
+  // 'denied' means the device id didn't match (e.g. local state thought it was
+  // ours but the server disagrees) — drop the stale marker and bail.
+  if (data === "denied") {
+    unmarkMine(node.id);
+    renderComments();
+    toast(`You can only delete a ${label} from the device that posted it`);
+    return;
+  }
+
+  unmarkMine(node.id);
+  // The server soft-deletes when the post has replies (keep a tombstone) and hard
+  // deletes otherwise. Mirror whichever it did so we don't have to reload.
+  if (data === "tombstoned") {
+    tombstoneCommentLocally(node.id);
+  } else {
+    removeCommentLocally(node.id);
+  }
+  renderComments();
+  toast(`${label[0].toUpperCase()}${label.slice(1)} deleted`);
+}
+
+// Mirror a server-side soft delete: keep the row (its replies stay threaded under
+// it) but scrub its content and flag it so renderNode shows the tombstone.
+function tombstoneCommentLocally(id) {
+  const c = state.comments.find((x) => x.id === id);
+  if (!c) return;
+  c.deleted = true;
+  c.body = "[deleted]";
+  c.author = "[deleted]";
+  c.country = null;
+  c.tier_list = null;
+  delete state.reactions[id];
+}
+
+// Remove a comment and all of its replies from local state. The DB cascades the
+// delete (parent_id ... on delete cascade), so we mirror that here rather than
+// reload, sweeping up descendants by walking parent_id.
+function removeCommentLocally(id) {
+  const removed = new Set([id]);
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const c of state.comments) {
+      if (c.parent_id != null && removed.has(c.parent_id) && !removed.has(c.id)) {
+        removed.add(c.id);
+        grew = true;
+      }
+    }
+  }
+  state.comments = state.comments.filter((c) => !removed.has(c.id));
+  for (const rid of removed) delete state.reactions[rid];
 }
 
 // ---- Comment tier-list popup ------------------------------------------------
@@ -1347,7 +1485,7 @@ async function postSuggestion(item) {
   const { data, error } = await supabase
     .from("comments")
     .insert({ day: state.today.day, parent_id: null, author: name, country, body: item, kind: "suggestion", device_id: getVoterId() })
-    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind")
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted")
     .single();
 
   if (error) throw new Error(error.message);
@@ -1356,6 +1494,9 @@ async function postSuggestion(item) {
   const votes = store.get(votesKey, {});
   votes[data.id] = 1;
   store.set(votesKey, votes);
+
+  // Remember it's ours so we can offer the delete menu on this device.
+  markMine(data.id);
 
   state.comments.push(data);
   state.reactions[data.id] = [];
@@ -1626,7 +1767,7 @@ async function postComment({ parentId = null, body }) {
       // device for a "reply" notification. Not authenticated — see identity.js.
       device_id: getVoterId()
     })
-    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind")
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted")
     .single();
 
   if (error) throw new Error(error.message);
@@ -1635,6 +1776,9 @@ async function postComment({ parentId = null, body }) {
   const votes = store.get(votesKey, {});
   votes[data.id] = 1;
   store.set(votesKey, votes);
+
+  // Remember it's ours so we can offer the delete menu on this device.
+  markMine(data.id);
 
   state.comments.push(data);
   renderComments();

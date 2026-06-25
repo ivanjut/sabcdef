@@ -58,6 +58,12 @@ do $$ begin
 exception when duplicate_object then null;
 end $$;
 
+-- A soft-delete flag. When the author deletes a comment that has replies, we keep
+-- the row so the thread stays intact, but scrub its content and set deleted =
+-- true; the UI then renders a "[deleted]" tombstone. A comment with no replies is
+-- hard-deleted instead (see delete_comment). Defaults false for existing rows.
+alter table public.comments add column if not exists deleted boolean not null default false;
+
 create index if not exists comments_day_idx    on public.comments (day);
 create index if not exists comments_parent_idx on public.comments (parent_id);
 
@@ -84,7 +90,9 @@ create policy "insert comments" on public.comments
     and score = 1            -- clients cannot seed an inflated score
   );
 
--- No UPDATE or DELETE policies => anon cannot edit or delete comments.
+-- No UPDATE/DELETE policies => anon cannot edit comments and cannot delete them
+-- directly. Removal goes through delete_comment below (a SECURITY DEFINER function
+-- that checks the device id, then either hard-deletes or soft-deletes the row).
 
 -- ── Voting ───────────────────────────────────────────────────────────────────
 -- A controlled increment. SECURITY DEFINER lets it bump score even though anon
@@ -116,9 +124,71 @@ begin
 end;
 $$;
 
+-- ── Deleting your own comment ─────────────────────────────────────────────────
+-- Anon has no direct DELETE/UPDATE policy, so removal goes through this SECURITY
+-- DEFINER function. It acts ONLY when the caller's device id matches the one
+-- stamped on the comment at post time (see identity.js) — i.e. a comment can be
+-- removed only from the same device that posted it. Same honor-system trust model
+-- as the rest of the app (the id is not a secret), but it keeps one device from
+-- deleting another's posts.
+--
+-- A comment with replies is SOFT-deleted: the row stays (so the thread survives)
+-- but its content is scrubbed and `deleted` is set, and the UI shows a "[deleted]"
+-- tombstone. A comment with no replies is HARD-deleted outright.
+--
+-- Returns 'denied' (not the owner), 'tombstoned' (soft-deleted), or 'removed'
+-- (hard-deleted) so the client can update its view without reloading. The return
+-- type changed from an earlier boolean version, so drop that first.
+drop function if exists public.delete_comment(bigint, text);
+create or replace function public.delete_comment(c_id bigint, d_id text)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  owns        boolean;
+  has_replies boolean;
+begin
+  if d_id is null or char_length(d_id) = 0 then
+    return 'denied';
+  end if;
+
+  select true into owns
+    from public.comments
+   where id = c_id
+     and device_id is not null
+     and device_id = left(d_id, 64);
+
+  if not coalesce(owns, false) then
+    return 'denied';
+  end if;
+
+  select exists (select 1 from public.comments where parent_id = c_id) into has_replies;
+
+  if has_replies then
+    update public.comments
+       set body      = '[deleted]',
+           author    = '[deleted]',
+           country   = null,
+           tier_list = null,
+           device_id = null,
+           deleted   = true
+     where id = c_id;
+    -- A deleted suggestion keeps no tier reactions behind its tombstone.
+    delete from public.suggestion_reactions where comment_id = c_id;
+    return 'tombstoned';
+  end if;
+
+  delete from public.comments where id = c_id;
+  return 'removed';
+end;
+$$;
+
 -- ── Grants ───────────────────────────────────────────────────────────────────
 grant select, insert on public.comments to anon, authenticated;
 grant execute on function public.vote_comment(bigint, integer) to anon, authenticated;
+grant execute on function public.delete_comment(bigint, text) to anon, authenticated;
 
 -- ── Suggestion tier reactions ─────────────────────────────────────────────────
 -- Each visitor — identified by an anonymous, client-generated voter_id kept in
@@ -241,7 +311,10 @@ exception when duplicate_object then null;
 end $$;
 do $$ begin
   alter table public.tier_lists add constraint tier_lists_share_uniq unique (share_id);
-exception when duplicate_object then null;
+-- Adding a UNIQUE constraint also creates an index of the same name, so a re-run
+-- can trip on either the constraint (duplicate_object) or that index
+-- (duplicate_table) already existing — tolerate both.
+exception when duplicate_object or duplicate_table then null;
 end $$;
 
 create index if not exists tier_lists_day_idx on public.tier_lists (day);
