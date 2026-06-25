@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-25",
+  "name": "Pies",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "apple-pie", "name": "Apple pie", "emoji": "🥧" },
+    { "id": "pumpkin-pie", "name": "Pumpkin pie", "emoji": "🟤" },
+    { "id": "cherry-pie", "name": "Cherry pie", "emoji": "🍒" },
+    { "id": "pecan-pie", "name": "Pecan pie", "emoji": "🎃" },
+    { "id": "key-lime", "name": "Key lime", "emoji": "🍋" },
+    { "id": "meat-pie", "name": "Meat pie", "emoji": "🥩" },
+    { "id": "pork-pie", "name": "Pork pie", "emoji": "🐷" },
+    { "id": "shepherd-s-pie", "name": "Shepherd's pie", "emoji": "🐑" },
+    { "id": "banoffee", "name": "Banoffee", "emoji": "🍮" },
+    { "id": "lemon-meringue", "name": "Lemon meringue", "emoji": "🟠" },
+    { "id": "steak-kidney", "name": "Steak & kidney", "emoji": "🟫" },
+    { "id": "mince-pie", "name": "Mince pie", "emoji": "🍯" },
+    { "id": "chicken-pot-pie", "name": "Chicken pot pie", "emoji": "🥮" },
+    { "id": "custard-tart", "name": "Custard tart", "emoji": "🫓" },
+    { "id": "cottage-pie", "name": "Cottage pie", "emoji": "🍏" },
+    { "id": "fruit-pie", "name": "Fruit pie", "emoji": "🟡" }
+  ]
+}

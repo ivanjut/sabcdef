@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-17",
+  "name": "Emojis",
+  "theme": "Wildcard",
+  "special_day": "World Emoji Day",
+  "items": [
+    { "id": "item-1", "name": "", "emoji": "😂" },
+    { "id": "item-2", "name": "", "emoji": "💀" },
+    { "id": "item-3", "name": "", "emoji": "❤️" },
+    { "id": "item-4", "name": "", "emoji": "🔥" },
+    { "id": "item-5", "name": "", "emoji": "👍" },
+    { "id": "item-6", "name": "", "emoji": "🙏" },
+    { "id": "item-7", "name": "", "emoji": "😭" },
+    { "id": "item-8", "name": "", "emoji": "🤣" },
+    { "id": "item-9", "name": "", "emoji": "✨" },
+    { "id": "item-10", "name": "", "emoji": "🥹" },
+    { "id": "item-11", "name": "", "emoji": "😍" },
+    { "id": "item-12", "name": "", "emoji": "🤔" },
+    { "id": "item-13", "name": "", "emoji": "👀" },
+    { "id": "item-14", "name": "", "emoji": "💯" },
+    { "id": "item-15", "name": "", "emoji": "🫡" },
+    { "id": "item-16", "name": "", "emoji": "🤝" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-06",
+  "name": "Book Genres",
+  "theme": "Screen",
+  "special_day": "International Read a Book Day",
+  "items": [
+    { "id": "fantasy", "name": "Fantasy", "emoji": "🐉" },
+    { "id": "sci-fi", "name": "Sci-fi", "emoji": "🚀" },
+    { "id": "mystery", "name": "Mystery", "emoji": "🔍" },
+    { "id": "romance", "name": "Romance", "emoji": "📚" },
+    { "id": "thriller", "name": "Thriller", "emoji": "🔪" },
+    { "id": "literary-fiction", "name": "Literary fiction", "emoji": "💕" },
+    { "id": "historical", "name": "Historical", "emoji": "📜" },
+    { "id": "horror", "name": "Horror", "emoji": "👻" },
+    { "id": "memoir", "name": "Memoir", "emoji": "📖" },
+    { "id": "self-help", "name": "Self-help", "emoji": "💡" },
+    { "id": "romantasy", "name": "Romantasy", "emoji": "🦄" },
+    { "id": "crime", "name": "Crime", "emoji": "🕵️" },
+    { "id": "biography", "name": "Biography", "emoji": "📕" },
+    { "id": "poetry", "name": "Poetry", "emoji": "📗" },
+    { "id": "ya", "name": "YA", "emoji": "📘" },
+    { "id": "classics", "name": "Classics", "emoji": "📙" }
+  ]
+}

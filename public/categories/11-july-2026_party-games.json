@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-11",
+  "name": "Party Games",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "charades", "name": "Charades", "emoji": "🎭" },
+    { "id": "musical-chairs", "name": "Musical chairs", "emoji": "🪑" },
+    { "id": "pin-the-tail", "name": "Pin the tail", "emoji": "🫏" },
+    { "id": "beer-pong", "name": "Beer pong", "emoji": "🍺" },
+    { "id": "twister", "name": "Twister", "emoji": "🌀" },
+    { "id": "hide-and-seek", "name": "Hide and seek", "emoji": "🙈" },
+    { "id": "tag", "name": "Tag", "emoji": "🏃" },
+    { "id": "pass-the-parcel", "name": "Pass the parcel", "emoji": "🎁" },
+    { "id": "musical-statues", "name": "Musical statues", "emoji": "🗿" },
+    { "id": "limbo", "name": "Limbo", "emoji": "💃" },
+    { "id": "scavenger-hunt", "name": "Scavenger hunt", "emoji": "🔍" },
+    { "id": "karaoke", "name": "Karaoke", "emoji": "🎤" },
+    { "id": "truth-or-dare", "name": "Truth or dare", "emoji": "🎯" },
+    { "id": "never-have-i-ever", "name": "Never have I ever", "emoji": "🙊" },
+    { "id": "spin-the-bottle", "name": "Spin the bottle", "emoji": "🍾" },
+    { "id": "pictionary", "name": "Pictionary", "emoji": "✏️" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-16",
+  "name": "Ways to Cook Eggs",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "scrambled", "name": "Scrambled", "emoji": "🍳" },
+    { "id": "fried", "name": "Fried", "emoji": "🥚" },
+    { "id": "poached", "name": "Poached", "emoji": "🍮" },
+    { "id": "boiled", "name": "Boiled", "emoji": "🥘" },
+    { "id": "omelette", "name": "Omelette", "emoji": "🫕" },
+    { "id": "benedict", "name": "Benedict", "emoji": "☀️" },
+    { "id": "sunny-side-up", "name": "Sunny-side up", "emoji": "🔥" },
+    { "id": "soft-boiled", "name": "Soft-boiled", "emoji": "🧈" },
+    { "id": "frittata", "name": "Frittata", "emoji": "🥣" },
+    { "id": "shakshuka", "name": "Shakshuka", "emoji": "🌡️" },
+    { "id": "deviled", "name": "Deviled", "emoji": "🧂" },
+    { "id": "quiche", "name": "Quiche", "emoji": "🥄" },
+    { "id": "over-easy", "name": "Over-easy", "emoji": "♨️" },
+    { "id": "coddled", "name": "Coddled", "emoji": "🟡" },
+    { "id": "tea-egg", "name": "Tea egg", "emoji": "🍵" },
+    { "id": "cloud-eggs", "name": "Cloud eggs", "emoji": "⚪" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-04",
+  "name": "Phone Apps",
+  "theme": "Tech",
+  "special_day": "",
+  "items": [
+    { "id": "whatsapp", "name": "WhatsApp", "emoji": "💬" },
+    { "id": "instagram", "name": "Instagram", "emoji": "📸" },
+    { "id": "tiktok", "name": "TikTok", "emoji": "🎵" },
+    { "id": "google-maps", "name": "Google Maps", "emoji": "🗺️" },
+    { "id": "spotify", "name": "Spotify", "emoji": "🎧" },
+    { "id": "youtube", "name": "YouTube", "emoji": "▶️" },
+    { "id": "gmail", "name": "Gmail", "emoji": "📧" },
+    { "id": "notes", "name": "Notes", "emoji": "📝" },
+    { "id": "calculator", "name": "Calculator", "emoji": "🧮" },
+    { "id": "weather", "name": "Weather", "emoji": "🌦️" },
+    { "id": "uber", "name": "Uber", "emoji": "🚗" },
+    { "id": "calendar", "name": "Calendar", "emoji": "📅" },
+    { "id": "camera", "name": "Camera", "emoji": "📷" },
+    { "id": "duolingo", "name": "Duolingo", "emoji": "🦉" },
+    { "id": "bereal", "name": "BeReal", "emoji": "📱" },
+    { "id": "photos", "name": "Photos", "emoji": "🌄" }
+  ]
+}

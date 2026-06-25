@@ -1,0 +1,19 @@
+{
+  "date": "2026-07-18",
+  "name": "Decades",
+  "theme": "Time",
+  "special_day": "",
+  "items": [
+    { "id": "1920s", "name": "1920s", "emoji": "📅" },
+    { "id": "1950s", "name": "1950s", "emoji": "🕰️" },
+    { "id": "1960s", "name": "1960s", "emoji": "⏳" },
+    { "id": "1970s", "name": "1970s", "emoji": "📻" },
+    { "id": "1980s", "name": "1980s", "emoji": "📼" },
+    { "id": "1990s", "name": "1990s", "emoji": "💿" },
+    { "id": "2000s", "name": "2000s", "emoji": "📀" },
+    { "id": "2010s", "name": "2010s", "emoji": "🎞️" },
+    { "id": "2020s", "name": "2020s", "emoji": "🕺" },
+    { "id": "1940s", "name": "1940s", "emoji": "🪩" },
+    { "id": "1930s", "name": "1930s", "emoji": "🎸" }
+  ]
+}

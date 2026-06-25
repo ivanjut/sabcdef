@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-17",
+  "name": "Card Games",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "poker", "name": "Poker", "emoji": "🃏" },
+    { "id": "uno", "name": "Uno", "emoji": "♠️" },
+    { "id": "blackjack", "name": "Blackjack", "emoji": "♥️" },
+    { "id": "solitaire", "name": "Solitaire", "emoji": "♦️" },
+    { "id": "snap", "name": "Snap", "emoji": "♣️" },
+    { "id": "go-fish", "name": "Go Fish", "emoji": "🎴" },
+    { "id": "rummy", "name": "Rummy", "emoji": "🀄" },
+    { "id": "hearts", "name": "Hearts", "emoji": "🎰" },
+    { "id": "bridge", "name": "Bridge", "emoji": "🧩" },
+    { "id": "old-maid", "name": "Old Maid", "emoji": "🎲" },
+    { "id": "whist", "name": "Whist", "emoji": "🤡" },
+    { "id": "top-trumps", "name": "Top Trumps", "emoji": "🔢" },
+    { "id": "cards-against-humanity", "name": "Cards Against Humanity", "emoji": "🎯" },
+    { "id": "patience", "name": "Patience", "emoji": "👵" },
+    { "id": "crazy-eights", "name": "Crazy Eights", "emoji": "🍸" },
+    { "id": "gin-rummy", "name": "Gin Rummy", "emoji": "🂡" }
+  ]
+}

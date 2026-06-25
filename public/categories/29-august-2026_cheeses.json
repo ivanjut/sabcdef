@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-29",
+  "name": "Cheeses",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "cheddar", "name": "Cheddar", "emoji": "🧀" },
+    { "id": "brie", "name": "Brie", "emoji": "🐄" },
+    { "id": "parmesan", "name": "Parmesan", "emoji": "🐐" },
+    { "id": "mozzarella", "name": "Mozzarella", "emoji": "🟡" },
+    { "id": "gouda", "name": "Gouda", "emoji": "🟠" },
+    { "id": "blue-cheese", "name": "Blue cheese", "emoji": "⚪" },
+    { "id": "feta", "name": "Feta", "emoji": "🫕" },
+    { "id": "camembert", "name": "Camembert", "emoji": "🥛" },
+    { "id": "halloumi", "name": "Halloumi", "emoji": "🍞" },
+    { "id": "gruyere", "name": "Gruyère", "emoji": "🧈" },
+    { "id": "emmental", "name": "Emmental", "emoji": "🟫" },
+    { "id": "cream-cheese", "name": "Cream cheese", "emoji": "🐑" },
+    { "id": "goat-s-cheese", "name": "Goat's cheese", "emoji": "🧫" },
+    { "id": "ricotta", "name": "Ricotta", "emoji": "🍶" },
+    { "id": "red-leicester", "name": "Red Leicester", "emoji": "🟥" },
+    { "id": "babybel", "name": "Babybel", "emoji": "🟨" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-01",
+  "name": "Insects",
+  "theme": "Nature",
+  "special_day": "",
+  "items": [
+    { "id": "honeybee", "name": "Honeybee", "emoji": "🐝" },
+    { "id": "butterfly", "name": "Butterfly", "emoji": "🦋" },
+    { "id": "ant", "name": "Ant", "emoji": "🐜" },
+    { "id": "ladybird", "name": "Ladybird", "emoji": "🐞" },
+    { "id": "dragonfly", "name": "Dragonfly", "emoji": "🦗" },
+    { "id": "praying-mantis", "name": "Praying mantis", "emoji": "🐛" },
+    { "id": "beetle", "name": "Beetle", "emoji": "🪲" },
+    { "id": "firefly", "name": "Firefly", "emoji": "✨" },
+    { "id": "mosquito", "name": "Mosquito", "emoji": "🦟" },
+    { "id": "grasshopper", "name": "Grasshopper", "emoji": "🪳" },
+    { "id": "cockroach", "name": "Cockroach", "emoji": "🕷️" },
+    { "id": "wasp", "name": "Wasp", "emoji": "🦂" },
+    { "id": "moth", "name": "Moth", "emoji": "🟤" },
+    { "id": "stick-insect", "name": "Stick insect", "emoji": "⚫" },
+    { "id": "cicada", "name": "Cicada", "emoji": "🟢" },
+    { "id": "tarantula-hawk", "name": "Tarantula hawk", "emoji": "🟡" }
+  ]
+}

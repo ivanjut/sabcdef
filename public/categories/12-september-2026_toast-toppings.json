@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-12",
+  "name": "Toast Toppings",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "butter", "name": "Butter", "emoji": "🧈" },
+    { "id": "jam", "name": "Jam", "emoji": "🍓" },
+    { "id": "marmalade", "name": "Marmalade", "emoji": "🍊" },
+    { "id": "peanut-butter", "name": "Peanut butter", "emoji": "🥜" },
+    { "id": "nutella", "name": "Nutella", "emoji": "🍫" },
+    { "id": "avocado", "name": "Avocado", "emoji": "🥑" },
+    { "id": "beans", "name": "Beans", "emoji": "🫘" },
+    { "id": "cheese", "name": "Cheese", "emoji": "🧀" },
+    { "id": "honey", "name": "Honey", "emoji": "🍯" },
+    { "id": "marmite", "name": "Marmite", "emoji": "🖤" },
+    { "id": "egg", "name": "Egg", "emoji": "🥚" },
+    { "id": "bacon", "name": "Bacon", "emoji": "🥓" },
+    { "id": "banana", "name": "Banana", "emoji": "🍌" },
+    { "id": "cinnamon-sugar", "name": "Cinnamon sugar", "emoji": "🍩" },
+    { "id": "cream-cheese", "name": "Cream cheese", "emoji": "🍞" },
+    { "id": "hummus", "name": "Hummus", "emoji": "🥣" }
+  ]
+}

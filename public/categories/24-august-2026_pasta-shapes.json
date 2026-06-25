@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-24",
+  "name": "Pasta Shapes",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "spaghetti", "name": "Spaghetti", "emoji": "🍝" },
+    { "id": "penne", "name": "Penne", "emoji": "🍜" },
+    { "id": "fusilli", "name": "Fusilli", "emoji": "🫕" },
+    { "id": "macaroni", "name": "Macaroni", "emoji": "🥘" },
+    { "id": "lasagne", "name": "Lasagne", "emoji": "🍲" },
+    { "id": "tagliatelle", "name": "Tagliatelle", "emoji": "🌾" },
+    { "id": "linguine", "name": "Linguine", "emoji": "🍴" },
+    { "id": "ravioli", "name": "Ravioli", "emoji": "🇮🇹" },
+    { "id": "gnocchi", "name": "Gnocchi", "emoji": "🥖" },
+    { "id": "farfalle", "name": "Farfalle", "emoji": "🧀" },
+    { "id": "rigatoni", "name": "Rigatoni", "emoji": "🥡" },
+    { "id": "cannelloni", "name": "Cannelloni", "emoji": "🍛" },
+    { "id": "tortellini", "name": "Tortellini", "emoji": "🫓" },
+    { "id": "pasta-shells", "name": "Pasta shells", "emoji": "🥣" },
+    { "id": "vermicelli", "name": "Vermicelli", "emoji": "🟡" },
+    { "id": "angel-hair", "name": "Angel hair", "emoji": "🟤" }
+  ]
+}

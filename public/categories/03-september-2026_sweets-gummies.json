@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-03",
+  "name": "Sweets & Gummies",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "haribo", "name": "Haribo", "emoji": "🐻" },
+    { "id": "skittles", "name": "Skittles", "emoji": "🌈" },
+    { "id": "m-ms", "name": "M&Ms", "emoji": "🔵" },
+    { "id": "gummy-bears", "name": "Gummy bears", "emoji": "🧸" },
+    { "id": "jelly-beans", "name": "Jelly beans", "emoji": "🫘" },
+    { "id": "lollipop", "name": "Lollipop", "emoji": "🍭" },
+    { "id": "marshmallow", "name": "Marshmallow", "emoji": "🍡" },
+    { "id": "liquorice", "name": "Liquorice", "emoji": "🖤" },
+    { "id": "sour-worms", "name": "Sour worms", "emoji": "🪱" },
+    { "id": "wine-gums", "name": "Wine gums", "emoji": "🍷" },
+    { "id": "starburst", "name": "Starburst", "emoji": "⭐" },
+    { "id": "bubblegum", "name": "Bubblegum", "emoji": "🍬" },
+    { "id": "fudge", "name": "Fudge", "emoji": "🫧" },
+    { "id": "werther-s", "name": "Werther's", "emoji": "🟫" },
+    { "id": "mints", "name": "Mints", "emoji": "🟡" },
+    { "id": "jelly-babies", "name": "Jelly babies", "emoji": "👶" }
+  ]
+}

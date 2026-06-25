@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-02",
+  "name": "Breakfast Foods",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "pancakes", "name": "Pancakes", "emoji": "🥞" },
+    { "id": "bacon", "name": "Bacon", "emoji": "🥓" },
+    { "id": "eggs", "name": "Eggs", "emoji": "🍳" },
+    { "id": "toast", "name": "Toast", "emoji": "🍞" },
+    { "id": "cereal", "name": "Cereal", "emoji": "🥣" },
+    { "id": "croissant", "name": "Croissant", "emoji": "🥐" },
+    { "id": "porridge", "name": "Porridge", "emoji": "🧇" },
+    { "id": "waffles", "name": "Waffles", "emoji": "🍴" },
+    { "id": "full-english", "name": "Full English", "emoji": "📖" },
+    { "id": "avocado-toast", "name": "Avocado toast", "emoji": "🥑" },
+    { "id": "bagel", "name": "Bagel", "emoji": "🥯" },
+    { "id": "smoothie", "name": "Smoothie", "emoji": "🥤" },
+    { "id": "fruit", "name": "Fruit", "emoji": "🍓" },
+    { "id": "yoghurt", "name": "Yoghurt", "emoji": "🥛" },
+    { "id": "muffin", "name": "Muffin", "emoji": "🧁" },
+    { "id": "sausage", "name": "Sausage", "emoji": "🌭" }
+  ]
+}

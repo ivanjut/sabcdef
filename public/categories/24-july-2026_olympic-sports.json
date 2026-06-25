@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-24",
+  "name": "Olympic Sports",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "100m-sprint", "name": "100m sprint", "emoji": "🏃" },
+    { "id": "gymnastics", "name": "Gymnastics", "emoji": "🤸" },
+    { "id": "swimming", "name": "Swimming", "emoji": "🏊" },
+    { "id": "diving", "name": "Diving", "emoji": "🤿" },
+    { "id": "basketball", "name": "Basketball", "emoji": "🏀" },
+    { "id": "football", "name": "Football", "emoji": "⚽" },
+    { "id": "athletics", "name": "Athletics", "emoji": "🏅" },
+    { "id": "boxing", "name": "Boxing", "emoji": "🥊" },
+    { "id": "weightlifting", "name": "Weightlifting", "emoji": "🏋️" },
+    { "id": "fencing", "name": "Fencing", "emoji": "🤺" },
+    { "id": "archery", "name": "Archery", "emoji": "🏹" },
+    { "id": "climbing", "name": "Climbing", "emoji": "🧗" },
+    { "id": "skateboarding", "name": "Skateboarding", "emoji": "🛹" },
+    { "id": "table-tennis", "name": "Table tennis", "emoji": "🎾" },
+    { "id": "curling", "name": "Curling", "emoji": "🥌" },
+    { "id": "judo", "name": "Judo", "emoji": "🥋" }
+  ]
+}

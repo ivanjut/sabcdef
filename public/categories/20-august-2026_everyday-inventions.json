@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-20",
+  "name": "Everyday Inventions",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "wheel", "name": "Wheel", "emoji": "🛞" },
+    { "id": "printing-press", "name": "Printing press", "emoji": "🖨️" },
+    { "id": "internet", "name": "Internet", "emoji": "🌐" },
+    { "id": "electricity", "name": "Electricity", "emoji": "⚡" },
+    { "id": "washing-machine", "name": "Washing machine", "emoji": "🧺" },
+    { "id": "refrigerator", "name": "Refrigerator", "emoji": "🧊" },
+    { "id": "antibiotics", "name": "Antibiotics", "emoji": "💡" },
+    { "id": "telephone", "name": "Telephone", "emoji": "☎️" },
+    { "id": "light-bulb", "name": "Light bulb", "emoji": "💊" },
+    { "id": "toilet", "name": "Toilet", "emoji": "🚽" },
+    { "id": "paper", "name": "Paper", "emoji": "📄" },
+    { "id": "compass", "name": "Compass", "emoji": "🧭" },
+    { "id": "vaccines", "name": "Vaccines", "emoji": "📞" },
+    { "id": "engine", "name": "Engine", "emoji": "⚙️" },
+    { "id": "gps", "name": "GPS", "emoji": "📍" },
+    { "id": "air-conditioning", "name": "Air conditioning", "emoji": "💉" }
+  ]
+}

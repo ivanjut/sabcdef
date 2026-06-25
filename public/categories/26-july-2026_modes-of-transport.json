@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-26",
+  "name": "Modes of Transport",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "car", "name": "Car", "emoji": "🚗" },
+    { "id": "train", "name": "Train", "emoji": "🚆" },
+    { "id": "plane", "name": "Plane", "emoji": "✈️" },
+    { "id": "bicycle", "name": "Bicycle", "emoji": "🚲" },
+    { "id": "walking", "name": "Walking", "emoji": "🚶" },
+    { "id": "bus", "name": "Bus", "emoji": "🚌" },
+    { "id": "motorbike", "name": "Motorbike", "emoji": "🏍️" },
+    { "id": "tram", "name": "Tram", "emoji": "🚊" },
+    { "id": "ferry", "name": "Ferry", "emoji": "⛴️" },
+    { "id": "metro", "name": "Metro", "emoji": "🚇" },
+    { "id": "scooter", "name": "Scooter", "emoji": "🛴" },
+    { "id": "taxi", "name": "Taxi", "emoji": "🚕" },
+    { "id": "helicopter", "name": "Helicopter", "emoji": "🚁" },
+    { "id": "cable-car", "name": "Cable car", "emoji": "🚠" },
+    { "id": "tuk-tuk", "name": "Tuk-tuk", "emoji": "🛺" },
+    { "id": "horse", "name": "Horse", "emoji": "🐴" }
+  ]
+}

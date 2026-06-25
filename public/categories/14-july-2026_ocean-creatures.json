@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-14",
+  "name": "Ocean Creatures",
+  "theme": "Nature",
+  "special_day": "",
+  "items": [
+    { "id": "octopus", "name": "Octopus", "emoji": "🐙" },
+    { "id": "great-white-shark", "name": "Great white shark", "emoji": "🦈" },
+    { "id": "blue-whale", "name": "Blue whale", "emoji": "🐋" },
+    { "id": "dolphin", "name": "Dolphin", "emoji": "🐬" },
+    { "id": "jellyfish", "name": "Jellyfish", "emoji": "🪼" },
+    { "id": "seahorse", "name": "Seahorse", "emoji": "🐚" },
+    { "id": "manta-ray", "name": "Manta ray", "emoji": "🐠" },
+    { "id": "anglerfish", "name": "Anglerfish", "emoji": "🐟" },
+    { "id": "clownfish", "name": "Clownfish", "emoji": "🌊" },
+    { "id": "sea-otter", "name": "Sea otter", "emoji": "🦦" },
+    { "id": "narwhal", "name": "Narwhal", "emoji": "🐳" },
+    { "id": "mantis-shrimp", "name": "Mantis shrimp", "emoji": "🦐" },
+    { "id": "orca", "name": "Orca", "emoji": "🐴" },
+    { "id": "pufferfish", "name": "Pufferfish", "emoji": "🐡" },
+    { "id": "giant-squid", "name": "Giant squid", "emoji": "🦑" },
+    { "id": "sea-turtle", "name": "Sea turtle", "emoji": "🐢" }
+  ]
+}

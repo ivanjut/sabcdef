@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-10",
+  "name": "Airlines",
+  "theme": "Places",
+  "special_day": "",
+  "items": [
+    { "id": "singapore-airlines", "name": "Singapore Airlines", "emoji": "✈️" },
+    { "id": "emirates", "name": "Emirates", "emoji": "🛩️" },
+    { "id": "qatar-airways", "name": "Qatar Airways", "emoji": "🛫" },
+    { "id": "ana", "name": "ANA", "emoji": "🛬" },
+    { "id": "cathay-pacific", "name": "Cathay Pacific", "emoji": "🪂" },
+    { "id": "lufthansa", "name": "Lufthansa", "emoji": "🎫" },
+    { "id": "british-airways", "name": "British Airways", "emoji": "🧳" },
+    { "id": "delta", "name": "Delta", "emoji": "🌍" },
+    { "id": "qantas", "name": "Qantas", "emoji": "🗺️" },
+    { "id": "turkish-airlines", "name": "Turkish Airlines", "emoji": "🛂" },
+    { "id": "klm", "name": "KLM", "emoji": "🛄" },
+    { "id": "ryanair", "name": "Ryanair", "emoji": "💺" },
+    { "id": "air-france", "name": "Air France", "emoji": "🌐" },
+    { "id": "united", "name": "United", "emoji": "🛰️" },
+    { "id": "etihad", "name": "Etihad", "emoji": "🎟️" },
+    { "id": "jal", "name": "JAL", "emoji": "🧭" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-05",
+  "name": "Superpowers",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "flight", "name": "Flight", "emoji": "🕊️" },
+    { "id": "invisibility", "name": "Invisibility", "emoji": "👻" },
+    { "id": "super-strength", "name": "Super strength", "emoji": "💪" },
+    { "id": "telepathy", "name": "Telepathy", "emoji": "🧠" },
+    { "id": "teleportation", "name": "Teleportation", "emoji": "✨" },
+    { "id": "time-travel", "name": "Time travel", "emoji": "⏳" },
+    { "id": "telekinesis", "name": "Telekinesis", "emoji": "🌀" },
+    { "id": "mind-reading", "name": "Mind reading", "emoji": "🦸" },
+    { "id": "shapeshifting", "name": "Shapeshifting", "emoji": "🦎" },
+    { "id": "healing", "name": "Healing", "emoji": "💚" },
+    { "id": "super-speed", "name": "Super speed", "emoji": "💨" },
+    { "id": "immortality", "name": "Immortality", "emoji": "♾️" },
+    { "id": "x-ray-vision", "name": "X-ray vision", "emoji": "🦴" },
+    { "id": "force-fields", "name": "Force fields", "emoji": "🛡️" },
+    { "id": "elemental-control", "name": "Elemental control", "emoji": "🔥" },
+    { "id": "talking-to-animals", "name": "Talking to animals", "emoji": "🐾" }
+  ]
+}

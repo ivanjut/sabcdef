@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-02",
+  "name": "Household Chores",
+  "theme": "Lifestyle",
+  "special_day": "",
+  "items": [
+    { "id": "washing-up", "name": "Washing up", "emoji": "🧽" },
+    { "id": "laundry", "name": "Laundry", "emoji": "🧺" },
+    { "id": "vacuuming", "name": "Vacuuming", "emoji": "🧹" },
+    { "id": "taking-out-bins", "name": "Taking out bins", "emoji": "🗑️" },
+    { "id": "cleaning-the-toilet", "name": "Cleaning the toilet", "emoji": "🚽" },
+    { "id": "ironing", "name": "Ironing", "emoji": "👔" },
+    { "id": "mopping", "name": "Mopping", "emoji": "🪣" },
+    { "id": "dusting", "name": "Dusting", "emoji": "🪶" },
+    { "id": "changing-sheets", "name": "Changing sheets", "emoji": "🛏️" },
+    { "id": "cleaning-the-oven", "name": "Cleaning the oven", "emoji": "🔥" },
+    { "id": "mowing-the-lawn", "name": "Mowing the lawn", "emoji": "🌱" },
+    { "id": "tidying", "name": "Tidying", "emoji": "🪟" },
+    { "id": "cleaning-windows", "name": "Cleaning windows", "emoji": "🍽️" },
+    { "id": "emptying-dishwasher", "name": "Emptying dishwasher", "emoji": "🛁" },
+    { "id": "scrubbing-the-bath", "name": "Scrubbing the bath", "emoji": "🧴" },
+    { "id": "folding-clothes", "name": "Folding clothes", "emoji": "🧼" }
+  ]
+}

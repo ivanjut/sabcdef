@@ -1,0 +1,23 @@
+{
+  "date": "2026-07-30",
+  "name": "Pets",
+  "theme": "Nature",
+  "special_day": "International Day of Friendship",
+  "items": [
+    { "id": "dog", "name": "Dog", "emoji": "🐶" },
+    { "id": "cat", "name": "Cat", "emoji": "🐱" },
+    { "id": "goldfish", "name": "Goldfish", "emoji": "🐠" },
+    { "id": "hamster", "name": "Hamster", "emoji": "🐹" },
+    { "id": "rabbit", "name": "Rabbit", "emoji": "🐰" },
+    { "id": "parrot", "name": "Parrot", "emoji": "🦜" },
+    { "id": "tortoise", "name": "Tortoise", "emoji": "🐢" },
+    { "id": "guinea-pig", "name": "Guinea pig", "emoji": "🐷" },
+    { "id": "pig", "name": "Pig", "emoji": "🐷" },
+    { "id": "snake", "name": "Snake", "emoji": "🐍" },
+    { "id": "ferret", "name": "Ferret", "emoji": "🦦" },
+    { "id": "lizard", "name": "Lizard", "emoji": "🦎" },
+    { "id": "tarantula", "name": "Tarantula", "emoji": "🕷️" },
+    { "id": "horse", "name": "Horse", "emoji": "🐴" },
+    { "id": "mouse", "name": "Mouse", "emoji": "🐭" }
+  ]
+}

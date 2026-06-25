@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-22",
+  "name": "Coffee Drinks",
+  "theme": "Drink/Dip",
+  "special_day": "",
+  "items": [
+    { "id": "espresso", "name": "Espresso", "emoji": "☕" },
+    { "id": "cappuccino", "name": "Cappuccino", "emoji": "🥤" },
+    { "id": "latte", "name": "Latte", "emoji": "🧋" },
+    { "id": "flat-white", "name": "Flat white", "emoji": "🫖" },
+    { "id": "americano", "name": "Americano", "emoji": "🍮" },
+    { "id": "cold-brew", "name": "Cold brew", "emoji": "🤎" },
+    { "id": "mocha", "name": "Mocha", "emoji": "🥛" },
+    { "id": "macchiato", "name": "Macchiato", "emoji": "🧊" },
+    { "id": "cortado", "name": "Cortado", "emoji": "☁️" },
+    { "id": "affogato", "name": "Affogato", "emoji": "🔥" },
+    { "id": "iced-latte", "name": "Iced latte", "emoji": "🟤" },
+    { "id": "iced-coffee", "name": "Iced coffee", "emoji": "🟫" },
+    { "id": "drip", "name": "Drip", "emoji": "🥃" },
+    { "id": "filter", "name": "Filter", "emoji": "🍶" },
+    { "id": "frappe", "name": "Frappé", "emoji": "⚪" },
+    { "id": "irish-coffee", "name": "Irish coffee", "emoji": "♨️" }
+  ]
+}

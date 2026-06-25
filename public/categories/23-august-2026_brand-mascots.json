@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-23",
+  "name": "Brand Mascots",
+  "theme": "Tech",
+  "special_day": "",
+  "items": [
+    { "id": "tony-the-tiger", "name": "Tony the Tiger", "emoji": "🐯" },
+    { "id": "michelin-man", "name": "Michelin Man", "emoji": "🦁" },
+    { "id": "ronald-mcdonald", "name": "Ronald McDonald", "emoji": "🐵" },
+    { "id": "coco-the-monkey", "name": "Coco the Monkey", "emoji": "🐰" },
+    { "id": "colonel-sanders", "name": "Colonel Sanders", "emoji": "🐔" },
+    { "id": "geico-gecko", "name": "Geico Gecko", "emoji": "🐻" },
+    { "id": "m-m-characters", "name": "M&M characters", "emoji": "🐶" },
+    { "id": "mr-peanut", "name": "Mr Peanut", "emoji": "🦌" },
+    { "id": "duracell-bunny", "name": "Duracell Bunny", "emoji": "🐸" },
+    { "id": "pillsbury-doughboy", "name": "Pillsbury Doughboy", "emoji": "🤖" },
+    { "id": "cap-n-crunch", "name": "Cap'n Crunch", "emoji": "👨" },
+    { "id": "chester-cheetah", "name": "Chester Cheetah", "emoji": "🐝" },
+    { "id": "kool-aid-man", "name": "Kool-Aid Man", "emoji": "🦘" },
+    { "id": "mascot-bibendum", "name": "Mascot Bibendum", "emoji": "🐉" },
+    { "id": "honey-monster", "name": "Honey Monster", "emoji": "👹" },
+    { "id": "frosties-tiger", "name": "Frosties Tiger", "emoji": "🧙" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-26",
+  "name": "Dog Breeds",
+  "theme": "Nature",
+  "special_day": "International National Dog Day",
+  "items": [
+    { "id": "labrador", "name": "Labrador", "emoji": "🐶" },
+    { "id": "golden-retriever", "name": "Golden Retriever", "emoji": "🐕" },
+    { "id": "german-shepherd", "name": "German Shepherd", "emoji": "🦮" },
+    { "id": "poodle", "name": "Poodle", "emoji": "🐕‍🦺" },
+    { "id": "bulldog", "name": "Bulldog", "emoji": "🐩" },
+    { "id": "border-collie", "name": "Border Collie", "emoji": "🐺" },
+    { "id": "dachshund", "name": "Dachshund", "emoji": "🦴" },
+    { "id": "beagle", "name": "Beagle", "emoji": "🐾" },
+    { "id": "husky", "name": "Husky", "emoji": "🦊" },
+    { "id": "corgi", "name": "Corgi", "emoji": "🐇" },
+    { "id": "shiba-inu", "name": "Shiba Inu", "emoji": "🦷" },
+    { "id": "chihuahua", "name": "Chihuahua", "emoji": "🥇" },
+    { "id": "great-dane", "name": "Great Dane", "emoji": "🏆" },
+    { "id": "pug", "name": "Pug", "emoji": "🏅" },
+    { "id": "rottweiler", "name": "Rottweiler", "emoji": "🐈" },
+    { "id": "cavalier", "name": "Cavalier", "emoji": "👑" }
+  ]
+}

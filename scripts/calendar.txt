@@ -1,0 +1,578 @@
+Date
+Day
+Category
+Theme
+Special day
+Tier
+Items to rank (unique emoji)
+
+25 Jun
+Thu
+World Cuisines
+Food
+S
+🇮🇹 Italian, 🇯🇵 Japanese, 🇲🇽 Mexican, 🇮🇳 Indian, 🇹🇭 Thai, 🇫🇷 French, 🇨🇳 Chinese, 🇰🇷 Korean, 🇬🇷 Greek, 🇱🇧 Lebanese, 🇪🇸 Spanish, 🇻🇳 Vietnamese, 🇹🇷 Turkish, 🇪🇹 Ethiopian, 🇵🇪 Peruvian, 🇲🇦 Moroccan
+
+26 Jun
+Fri
+Music Genres
+Music
+S
+🎤 Hip-hop, 🎸 Rock, 🎵 Pop, 🎷 Jazz, 🎛️ Electronic, 🤘 R&B, 🎻 Metal, 🤠 Classical, 🥁 Country, 🎶 Reggae, 🪕 Punk, 🎺 Soul, 🎹 Folk, 🪗 Blues, 🎚️ House, 🔊 Afrobeats
+
+27 Jun
+Sat
+Fast Food Chains
+Food
+S
+🍟 McDonald's, 🍗 KFC, 🍔 Burger King, 🥪 Subway, 🍕 Domino's, 🌮 Taco Bell, 🥤 Wendy's, 🛖 Pizza Hut, 🐔 Chick-fil-A, 🥜 Five Guys, 🦐 Popeyes, 🔥 Nando's, 🌴 In-N-Out, 🌯 Chipotle, 🥖 Greggs, 🐝 Jollibee
+
+28 Jun
+Sun
+Animals
+Nature
+S
+🦁 Lion, 🐘 Elephant, 🐺 Wolf, 🐙 Octopus, 🐯 Tiger, 🐬 Dolphin, 🦅 Eagle, 🐧 Penguin, 🦍 Gorilla, 🐻 Bear, 🐦‍⬛ Crow, 🐴 Horse, 🦊 Fox, 🦈 Shark, 🦉 Owl, 🦦 Otter
+
+29 Jun
+Mon
+Games / Sports
+Play
+S
+⚽ Football/Soccer, 🏀 Basketball, ♟️ Chess, 🃏 Poker, 🎾 Tennis, 🏎️ Mario Kart, 🎲 Monopoly, 🏏 Cricket, 🎮 Tetris, 🎯 Darts, 🏉 Table tennis, 🐱 Rugby, 🎱 Catan, 🏐 FIFA, 🏓 Volleyball, 🟢 Snooker, 🎟️ Uno
+
+30 Jun
+Tue
+Social Media Platforms
+Tech
+International Social Media Day
+B
+📸 Instagram, 🎵 TikTok, ▶️ YouTube, 🐦 X/Twitter, 📘 Facebook, 👽 Reddit, 💬 WhatsApp, 👻 Snapchat, 💼 LinkedIn, 📌 Pinterest, 🎮 Discord, 🧵 Threads, 📱 WeChat, 📰 Telegram, 🔵 Tumblr, ⚫ BeReal
+
+01 Jul
+Wed
+Smells
+Wildcard
+C
+🍞 Fresh bread, ⛽ Petrol, 🌧️ Rain, ☕ Coffee, 🌱 Cut grass, 🔥 Bonfire, 🚗 New car, 📚 Old books, 🌊 Sea air, 🥓 Bacon, 💜 Lavender, 🍦 Vanilla, 🐶 Wet dog, 🧴 Sunscreen, 🧺 Fresh laundry
+
+02 Jul
+Thu
+Weather Types
+Time
+B
+☀️ Sunny, 🌧️ Rainy, ❄️ Snowy, ☁️ Cloudy, 🌬️ Windy, ⛈️ Stormy, 🌫️ Foggy, 🌨️ Hail, 🌩️ Thunderstorm, 🥵 Heatwave, 💧 Drizzle, 🌦️ Sleet, 🥶 Frost, 🌈 Rainbow, 💦 Humid, 🌤️ Clear skies
+
+03 Jul
+Fri
+Fruits
+Food
+A
+🥭 Mango, 🍓 Strawberry, 🍌 Banana, 🍎 Apple, 🍉 Watermelon, 🍍 Pineapple, 🍇 Grapes, 🍊 Orange, 🍑 Peach, 🍒 Cherry, 🥝 Kiwi, 🫐 Blueberry, 🍈 Durian, 🟢 Pomegranate, 🟡 Lychee, 🟣 Passion fruit
+
+04 Jul
+Sat
+Sports
+Play
+A
+⚽ Football/Soccer, 🏀 Basketball, 🎾 Tennis, 🏏 Cricket, 🏉 Rugby, 🥊 Boxing, 🏎️ Formula 1, 🏃 Athletics, ⛳ Golf, 🏊 Swimming, 🚴 Cycling, ⚾ Baseball, 🏒 Hockey, 🥋 MMA, 🏸 Table tennis, 🤸 Badminton
+
+05 Jul
+Sun
+Superpowers
+Wildcard
+A
+🕊️ Flight, 👻 Invisibility, 💪 Super strength, 🧠 Telepathy, ✨ Teleportation, ⏳ Time travel, 🌀 Telekinesis, 🦸 Mind reading, 🦎 Shapeshifting, 💚 Healing, 💨 Super speed, ♾️ Immortality, 🦴 X-ray vision, 🛡️ Force fields, 🔥 Elemental control, 🐾 Talking to animals
+
+06 Jul
+Mon
+Famous Landmarks
+Places
+A
+🗼 Eiffel Tower, 🧱 Great Wall, 🗿 Pyramids, 🗽 Statue of Liberty, 🕌 Taj Mahal, 🏛️ Colosseum, 🕰️ Big Ben, 🎭 Sydney Opera House, ✝️ Christ the Redeemer, ⛰️ Machu Picchu, 🔺 Leaning Tower, 🏙️ Burj Khalifa, 🪨 Stonehenge, 🛕 Mount Rushmore, 🌉 Petra, 🏰 Angkor Wat
+
+07 Jul
+Tue
+Candy Bars
+Food
+World Chocolate Day
+C
+🍫 Snickers, 🍬 KitKat, 🍭 Twix, 🔴 Mars, 🌰 Cadbury Dairy Milk, 🥜 Reese's, 🟤 Toblerone, 🧡 Bounty, 🍪 Milky Way, 🍮 Kinder Bueno, 🟫 Crunch, 📱 Galaxy, 🥛 Wispa, 🟠 Twirl, 🌙 Hershey's, 🦁 Lion
+
+08 Jul
+Wed
+Superheroes
+Screen
+A
+🕷️ Spider-Man, 🦇 Batman, 🦾 Iron Man, 🦸 Superman, ⚡ Wonder Woman, 💚 Hulk, 🛡️ Captain America, 🔨 Thor, 🐆 Black Panther, 🐾 Wolverine, 🗡️ Deadpool, 🔮 Flash, ⛈️ Doctor Strange, 🟥 Storm, 🟦 Daredevil, 🟩 Green Lantern
+
+09 Jul
+Thu
+Comfort Foods
+Food
+A
+🧀 Mac & cheese, 🍜 Ramen, 🥔 Mashed potatoes, 🍲 Grilled cheese, 🍗 Chicken soup, 🍕 Pizza, 🍝 Lasagne, 🥟 Spaghetti bolognese, 🍛 Dumplings, 🐔 Fried chicken, 🥧 Curry, 🍚 Pho, 🐑 Shepherd's pie, 🌭 Risotto, 🟤 Jacket potato, 🟫 Roast dinner
+
+10 Jul
+Fri
+Theme Park Rides
+Play
+C
+🎢 Roller coaster, 🎡 Ferris wheel, 🎠 Carousel, 🚗 Bumper cars, 🛶 Log flume, 🗼 Drop tower, 👻 Ghost train, 🍵 Teacups, 🏴‍☠️ Pirate ship, 🌀 Waltzer, 🚙 Dodgems, 🛝 Helter skelter, 🏎️ Water slide, 🎪 Go-karts, 🏚️ Big dipper, 🎛️ Haunted house
+
+11 Jul
+Sat
+Party Games
+Play
+B
+🎭 Charades, 🪑 Musical chairs, 🫏 Pin the tail, 🍺 Beer pong, 🌀 Twister, 🙈 Hide and seek, 🏃 Tag, 🎁 Pass the parcel, 🗿 Musical statues, 💃 Limbo, 🔍 Scavenger hunt, 🎤 Karaoke, 🎯 Truth or dare, 🙊 Never have I ever, 🍾 Spin the bottle, ✏️ Pictionary
+
+12 Jul
+Sun
+Movie Genres
+Screen
+A
+💥 Action, 😂 Comedy, 👻 Horror, 🚀 Sci-fi, 🎭 Drama, 🔪 Thriller, 💕 Rom-com, 🎥 Documentary, 🎨 Animation, 🐉 Fantasy, 🤠 Western, 🎵 Musical, 🕵️ Noir, 🎬 War, 🔍 Mystery, 💰 Heist
+
+13 Jul
+Mon
+Cities to Live In
+Wildcard
+A
+🇯🇵 Tokyo, 🇩🇰 Copenhagen, 🇦🇹 Vienna, 🇸🇬 Singapore, 🇵🇹 Lisbon, 🇦🇺 Melbourne, 🇳🇱 Amsterdam, 🇪🇸 Barcelona, 🇩🇪 Berlin, 🇨🇭 Zurich, 🇰🇷 Seoul, 🇨🇦 Vancouver, 🏙️ Madrid, 🇫🇮 Helsinki, 🇬🇧 London, 🇸🇪 Stöde
+
+14 Jul
+Tue
+Ocean Creatures
+Nature
+A
+🐙 Octopus, 🦈 Great white shark, 🐋 Blue whale, 🐬 Dolphin, 🪼 Jellyfish, 🐚 Seahorse, 🐠 Manta ray, 🐟 Anglerfish, 🌊 Clownfish, 🦦 Sea otter, 🐳 Narwhal, 🦐 Mantis shrimp, 🐴 Orca, 🐡 Pufferfish, 🦑 Giant squid, 🐢 Sea turtle
+
+15 Jul
+Wed
+Car Brands
+Wildcard
+A
+🚗 Toyota, 🚙 BMW, 🏎️ Mercedes, 🚘 Honda, 🛻 Porsche, 🚐 Ferrari, ⚡ Tesla, 🚓 Volkswagen, 🚕 Audi, 🏁 Ford, ⚙️ Hyundai, 🔧 Mazda, 🛞 Volvo, 💨 Lamborghini, 🚦 Subaru, 🅿️ Kia
+
+16 Jul
+Thu
+Ways to Cook Eggs
+Food
+A
+🍳 Scrambled, 🥚 Fried, 🍮 Poached, 🥘 Boiled, 🫕 Omelette, ☀️ Benedict, 🔥 Sunny-side up, 🧈 Soft-boiled, 🥣 Frittata, 🌡️ Shakshuka, 🧂 Deviled, 🥄 Quiche, ♨️ Over-easy, 🟡 Coddled, 🍵 Tea egg, ⚪ Cloud eggs
+
+17 Jul
+Fri
+Emojis
+Wildcard
+World Emoji Day
+C
+😂, 💀, ❤️, 🔥, 👍, 🙏, 😭, 🤣, ✨, 🥹, 😍, 🤔, 👀, 💯, 🫡, 🤝
+
+18 Jul
+Sat
+Decades
+Time
+B
+📅 1920s, 🕰️ 1950s, ⏳ 1960s, 📻 1970s, 📼 1980s, 💿 1990s, 📀 2000s, 🎞️ 2010s, 🕺 2020s, 🪩 1940s, 🎸 1930s
+
+19 Jul
+Sun
+Ice Cream Flavors
+Food
+International Ice Cream Day
+B
+🍦 Vanilla, 🍫 Chocolate, 🍓 Strawberry, 🍨 Mint choc chip, 🌿 Cookies & cream, 🍪 Pistachio, 💚 Salted caramel, 🍬 Toffee, ☕ Coffee, 🥭 Mango, 🧡 Rum & raisin, 🥃 Neapolitan, 🟤 Cookie dough, 🌰 Hazelnut, 🩷 Bubblegum, 🫐 Raspberry ripple
+
+20 Jul
+Mon
+Birds
+Nature
+B
+🦅 Eagle, 🦉 Owl, 🐧 Penguin, 🐦 Robin, 🦜 Parrot, 🦩 Flamingo, 🦚 Peacock, 🦢 Swan, 🐦‍⬛ Crow, 🕊️ Pigeon, 🦆 Duck, 🦤 Ostrich, 🐤 Toucan, 🪶 Hummingbird, 🐓 Seagull, 🦃 Woodpecker
+
+21 Jul
+Tue
+Street Food
+Food
+B
+🌮 Tacos, 🌭 Hot dog, 🧆 Falafel, 🥙 Kebab, 🍢 Churros, 🥨 Samosa, 🌯 Spring rolls, 🦐 Crepes, 🍜 Pretzel, 🥟 Satay, 🌽 Empanada, 🍤 Gyros, 🐶 Corn dog, 🍡 Dumplings, 🫓 Nachos, 🥖 Burrito
+
+22 Jul
+Wed
+Vacation Destinations
+Nature
+B
+🇯🇵 Japan, 🇮🇹 Italy, 🇹🇭 Thailand, 🇫🇷 France, 🇮🇸 Iceland, 🇬🇷 Greece, 🇲🇽 Mexico, 🇵🇹 Portugal, 🇮🇩 Bali, 🇳🇿 New Zealand, 🇲🇦 Morocco, 🇻🇳 Vietnam, 🇪🇸 Spain, 🇵🇪 Peru, 🇭🇷 Croatia, 🇳🇴 Norway
+
+23 Jul
+Thu
+Forms of Potato
+Food
+B
+🍟 Chips/Fries, 🥔 Mashed, 🍠 Roast, 🧆 Baked, 🥟 Hash browns, 🫓 Crisps, 🧀 Wedges, 🍝 Tater tots, 🥣 Boiled, 🔥 Gnocchi, 🧅 Dauphinoise, 🥄 Croquettes, 🍴 Jacket, 🧈 Curly fries, 🟡 Rosti, 🟤 Mash
+
+24 Jul
+Fri
+Olympic Sports
+Play
+B
+🏃 100m sprint, 🤸 Gymnastics, 🏊 Swimming, 🤿 Diving, 🏀 Basketball, ⚽ Football, 🏅 Athletics, 🥊 Boxing, 🏋️ Weightlifting, 🤺 Fencing, 🏹 Archery, 🧗 Climbing, 🛹 Skateboarding, 🎾 Table tennis, 🥌 Curling, 🥋 Judo
+
+25 Jul
+Sat
+Condiments / Sauces
+Food
+B
+🍅 Ketchup, 🥚 Mayo, 🌭 Mustard, 🌶️ Sriracha, 🍶 Soy sauce, 🥫 Hot sauce, 🍖 BBQ, 🥗 Ranch, 🌿 Pesto, 🧄 Aioli, 🥣 Chilli oil, 🫙 Tahini, 🟤 Gochujang, 🟢 HP/brown sauce, 🟠 Salsa, 🔴 Harissa
+
+26 Jul
+Sun
+Modes of Transport
+Play
+B
+🚗 Car, 🚆 Train, ✈️ Plane, 🚲 Bicycle, 🚶 Walking, 🚌 Bus, 🏍️ Motorbike, 🚊 Tram, ⛴️ Ferry, 🚇 Metro, 🛴 Scooter, 🚕 Taxi, 🚁 Helicopter, 🚠 Cable car, 🛺 Tuk-tuk, 🐴 Horse
+
+27 Jul
+Mon
+Noodles
+Food
+B
+🍜 Ramen, 🍝 Pho, 🇹🇭 Pad thai, 🥢 Spaghetti, 🍲 Udon, 🌾 Chow mein, 🟡 Lo mein, 🍤 Pasta, 🇸🇬 Singapore noodles, 🥚 Egg noodles, 🥡 Glass noodles, 🟠 Instant noodles, 🍚 Rice noodles, 🧀 Mac & cheese, 🥣 Soba, 🔥 Vermicelli
+
+28 Jul
+Tue
+Mythical Creatures
+Wildcard
+B
+🐉 Dragon, 🔥 Phoenix, 🦄 Unicorn, 🦅 Griffin, 🧜 Mermaid, 🐺 Werewolf, 🧛 Vampire, 🦑 Kraken, 👁️ Cyclops, 🐂 Minotaur, ❄️ Yeti, 🦊 Kitsune, 👻 Banshee, 🦁 Chimera, 🐍 Hydra, 🐴 Centaur
+
+29 Jul
+Wed
+Holidays
+Time
+B
+🎄 Christmas, 🎆 New Year, 🎃 Halloween, 🪔 Diwali, 🌙 Eid, 🧧 Lunar New Year, 🐣 Easter, 🦃 Thanksgiving, 🕎 Hanukkah, 🎭 Carnival, 🎉 Day of the Dead, 🌈 Holi, 🍺 Oktoberfest, ❤️ Valentine's, 💀 St Patrick's, ☘️ Midsummer
+
+30 Jul
+Thu
+Pets
+Nature
+International Day of Friendship
+S
+🐶 Dog, 🐱 Cat, 🐠 Goldfish, 🐹 Hamster, 🐰 Rabbit, 🦜 Parrot, 🐢 Tortoise, 🐷 Guinea pig, 🐷 Pig, 🐍 Snake, 🦦 Ferret, 🦎 Lizard, 🕷️ Tarantula, 🐴 Horse, 🐭 Mouse
+
+31 Jul
+Fri
+School Subjects
+Time
+B
+🔢 Maths, 📖 English, 🔬 Science, 📜 History, 🌍 Geography, 🖼️ Art, 🏃 PE, 🎵 Music, ⚗️ Chemistry, ⚛️ Physics, 🧬 Biology, 🗣️ Languages, 🎭 Drama, 💻 IT/Computing, 📈 Economics, 📚 Philosophy
+
+01 Aug
+Sat
+Insects
+Nature
+B
+🐝 Honeybee, 🦋 Butterfly, 🐜 Ant, 🐞 Ladybird, 🦗 Dragonfly, 🐛 Praying mantis, 🪲 Beetle, ✨ Firefly, 🦟 Mosquito, 🪳 Grasshopper, 🕷️ Cockroach, 🦂 Wasp, 🟤 Moth, ⚫ Stick insect, 🟢 Cicada, 🟡 Tarantula hawk
+
+02 Aug
+Sun
+Household Chores
+Lifestyle
+B
+🧽 Washing up, 🧺 Laundry, 🧹 Vacuuming, 🗑️ Taking out bins, 🚽 Cleaning the toilet, 👔 Ironing, 🪣 Mopping, 🪶 Dusting, 🛏️ Changing sheets, 🔥 Cleaning the oven, 🌱 Mowing the lawn, 🪟 Tidying, 🍽️ Cleaning windows, 🛁 Emptying dishwasher, 🧴 Scrubbing the bath, 🧼 Folding clothes
+
+03 Aug
+Mon
+Dumplings
+Food
+B
+🥟 Gyoza, 🥠 Wontons, 🍤 Ravioli, 🍝 Tortellini, 🫓 Samosa, 🍜 Pierogi, 🥢 Dim sum, 🍲 Potstickers, 🥡 Empanada, ♨️ Spring rolls, 🍘 Bao buns, 🟡 Soup dumplings, 🟤 Wonton soup, 🟠 Steamed dumplings, ⚪ Xiao long bao, 🍥 Pelmeni
+
+04 Aug
+Tue
+Phone Apps
+Tech
+B
+💬 WhatsApp, 📸 Instagram, 🎵 TikTok, 🗺️ Google Maps, 🎧 Spotify, ▶️ YouTube, 📧 Gmail, 📝 Notes, 🧮 Calculator, 🌦️ Weather, 🚗 Uber, 📅 Calendar, 📷 Camera, 🦉 Duolingo, 📱 BeReal, 🌄 Photos
+
+05 Aug
+Wed
+Cakes
+Food
+B
+🍫 Chocolate, 🍰 Victoria sponge, 🧀 Red velvet, 🥕 Carrot, 🍋 Cheesecake, ☕ Black Forest, 💧 Lemon drizzle, 🟤 Tiramisu, 🟫 Battenberg, 🍌 Coffee & walnut, 🍞 Funfetti, 🎂 Bundt, 🧁 Angel food, 🟥 Opera, ⚪ Banana bread, 🍓 Basque
+
+06 Aug
+Thu
+Board Games
+Play
+B
+🎲 Monopoly, 🔤 Scrabble, 🔍 Cluedo, 🗺️ Risk, ♟️ Chess, 🐱 Catan, ❓ Trivial Pursuit, 🔴 Connect 4, 🧱 Jenga, ⚡ Operation, 🚢 Guess Who, 🐍 Battleship, 🚂 Snakes & Ladders, ✏️ Ticket to Ride, 🎯 Pictionary, 🏰 Backgammon
+
+07 Aug
+Fri
+Breakfast Cereals
+Food
+B
+🥣 Frosted Flakes, 🌽 Cheerios, 🍫 Lucky Charms, 💀 Coco Pops, 🍯 Weetabix, 🥛 Corn Flakes, 🍞 Cinnamon Toast Crunch, 🌾 Special K, 🍓 Froot Loops, 🍚 Rice Krispies, 🟤 Shreddies, 🟡 Crunchy Nut, 🍪 Cap'n Crunch, 🥜 Granola, 🟫 Muesli, 🟠 Bran Flakes
+
+08 Aug
+Sat
+Cat Breeds
+Nature
+International Cat Day
+D
+🐱 Maine Coon, 😺 Siamese, 😸 Persian, 😹 Bengal, 😻 Ragdoll, 😼 British Shorthair, 😽 Sphynx, 🙀 Scottish Fold, 😿 Norwegian Forest, 😾 Russian Blue, 🐈 Abyssinian, 🐈‍⬛ Burmese, 🐅 Tabby, 🐆 Tuxedo, 🧶 Calico, 🐾 Munchkin
+
+09 Aug
+Sun
+Types of Exercise
+Play
+B
+🏃 Running, 🏋️ Weightlifting, 🧘 Yoga, 🏊 Swimming, 🚴 Cycling, 🔥 HIIT, 🤸 Pilates, 🥊 Boxing, 🚣 Rowing, 💪 CrossFit, 🤼 Calisthenics, 🧗 Hiking, ⏱️ Burpees, 🦵 Squats, 🪢 Jump rope, 🚶 Walking
+
+10 Aug
+Mon
+Soups
+Food
+B
+🍅 Tomato, 🍜 Chicken noodle, 🍲 Pho, 🥣 Ramen, 🥕 Miso, 🧅 Minestrone, 🇫🇷 French onion, 🍄 Lentil, 🌶️ Pumpkin, 🟠 Gazpacho, 🟡 Tom yum, 🟢 Borscht, 🫘 Clam chowder, 🥄 Mushroom, 🍖 Pea & ham, 🍠 Hot & sour
+
+11 Aug
+Tue
+Planets
+Wildcard
+B
+☿️ Mercury, ♀️ Venus, 🌍 Earth, 🔴 Mars, 🪐 Jupiter, 🟤 Saturn, 🔵 Uranus, 🟣 Neptune, 🌑 Pluto, 🌙 The Moon, ☀️ The Sun, 🟠 Europa, 🟡 Titan, ☄️ Saturn's rings, 🌌 Asteroid belt, ⭐ Io
+
+12 Aug
+Wed
+Hairstyles
+Lifestyle
+C
+💇 Mullet, 💇‍♂️ Buzz cut, 💇‍♀️ Bob, ✂️ Ponytail, 💈 Afro, 👱 Bun, 👨‍🦱 Mohawk, 👩‍🦰 Man bun, 👨‍🦲 Pixie cut, 🧑‍🦱 Bald, 🦱 Dreadlocks, 🦰 Fringe, 🦳 Quiff, 💆 Perm, 👩‍🦳 Cornrows, 🧑‍🦲 Bangs
+
+13 Aug
+Thu
+Burgers
+Food
+B
+🍔 Cheeseburger, 🥓 Bacon, 🧀 Double, 🍄 Smash, 🍖 Veggie, 🌶️ Mushroom Swiss, 🥚 BBQ, 🐔 Classic, 🌱 Wagyu, 🍗 Chicken, 🍞 Slider, 🥩 Blue cheese, 🟢 Jalapeño, 🔥 Breakfast burger, 🥬 Impossible, 🍅 Halloumi
+
+14 Aug
+Fri
+Sodas
+Drink/Dip
+C
+🥤 Coca-Cola, 🔵 Pepsi, 🍋 Sprite, 🍊 Fanta, 🟤 Dr Pepper, ⛰️ Mountain Dew, 💚 7UP, 🧡 Irn-Bru, 🍺 Root beer, 🫧 Schweppes, 🟧 Mirinda, 🍦 Cream soda, 🫚 Ginger ale, 🍍 Lilt, 🕺 Tango, 🍇 Vimto
+
+15 Aug
+Sat
+Chips / Crisps
+Food
+C
+🍟 Lay's, 🥔 Doritos, 🌽 Pringles, 🧀 Walkers, 🌶️ Cheetos, 🥨 Kettle, 🫓 Ruffles, 🧂 Takis, 🌭 Tortilla, 🥓 Quavers, 🟡 Hula Hoops, ☀️ Sun Chips, 🟠 Wotsits, ⚡ Monster Munch, 🥗 Cool Ranch, 🟤 Salt & Vinegar
+
+16 Aug
+Sun
+Sitcoms
+Screen
+International Tell a Joke Day
+B
+📺 Friends, 😂 The Office, 🎭 Seinfeld, 🛋️ Brooklyn Nine-Nine, 🤣 Parks and Rec, 😹 It's Always Sunny, 🎬 Fawlty Towers, 📼 The IT Crowd, 🍿 Frasier, 😆 Community, 🌃 Modern Family, 🏢 Curb, 🍺 Arrested Development, ☕ Peep Show, 🗽 How I Met Your Mother, 🎙️ 30 Rock
+
+17 Aug
+Mon
+Card Games
+Play
+C
+🃏 Poker, ♠️ Uno, ♥️ Blackjack, ♦️ Solitaire, ♣️ Snap, 🎴 Go Fish, 🀄 Rummy, 🎰 Hearts, 🧩 Bridge, 🎲 Old Maid, 🤡 Whist, 🔢 Top Trumps, 🎯 Cards Against Humanity, 👵 Patience, 🍸 Crazy Eights, 🂡 Gin Rummy
+
+18 Aug
+Tue
+Status Symbols
+Lifestyle
+C
+⌚ Rolex, 🏎️ Supercar, 👜 Designer handbag, 🏙️ Penthouse, 🛩️ Private jet, 🎓 Ivy League degree, 🛥️ Yacht, 🖼️ Art collection, 💎 First class, 🚗 Postcode, 📮 Personalised plate, 🥪 Country club, 🚙 Watch, ⛳ Sneakers, 🍷 Wine cellar, 👟 Front-row seats
+
+19 Aug
+Wed
+Smartphones
+Tech
+World Photo Day
+C
+📱 iPhone, 📲 Samsung Galaxy, ☎️ Google Pixel, 📞 Huawei, 📟 Motorola, 🔋 Sony Xperia, 📶 Nokia, 🔌 OnePlus, 💻 Xiaomi, 🖥️ iPhone Pro, 🤳 Galaxy S, 🪫 Galaxy Z Flip, 🍏 Pixel Pro, 🤖 iPhone SE, 📸 Oppo, 🟦 Nothing Phone
+
+20 Aug
+Thu
+Everyday Inventions
+Wildcard
+C
+🛞 Wheel, 🖨️ Printing press, 🌐 Internet, ⚡ Electricity, 🧺 Washing machine, 🧊 Refrigerator, 💡 Antibiotics, ☎️ Telephone, 💊 Light bulb, 🚽 Toilet, 📄 Paper, 🧭 Compass, 📞 Vaccines, ⚙️ Engine, 📍 GPS, 💉 Air conditioning
+
+21 Aug
+Fri
+Smells
+Wildcard
+C
+🍞 Fresh bread, ⛽ Petrol, 🌧️ Rain, ☕ Coffee, 🌱 Cut grass, 🔥 Bonfire, 🚗 New car, 📚 Old books, 🌊 Sea air, 🥓 Bacon, 💜 Lavender, 🍦 Vanilla, 🐶 Wet dog, 🧴 Sunscreen, 👃 Markers, 🧺 Fresh laundry
+
+22 Aug
+Sat
+Coffee Drinks
+Drink/Dip
+C
+☕ Espresso, 🥤 Cappuccino, 🧋 Latte, 🫖 Flat white, 🍮 Americano, 🤎 Cold brew, 🥛 Mocha, 🧊 Macchiato, ☁️ Cortado, 🔥 Affogato, 🟤 Iced latte, 🟫 Iced coffee, 🥃 Drip, 🍶 Filter, ⚪ Frappé, ♨️ Irish coffee
+
+23 Aug
+Sun
+Brand Mascots
+Tech
+C
+🐯 Tony the Tiger, 🦁 Michelin Man, 🐵 Ronald McDonald, 🐰 Coco the Monkey, 🐔 Colonel Sanders, 🐻 Geico Gecko, 🐶 M&M characters, 🦌 Mr Peanut, 🐸 Duracell Bunny, 🤖 Pillsbury Doughboy, 👨 Cap'n Crunch, 🐝 Chester Cheetah, 🦘 Kool-Aid Man, 🐉 Mascot Bibendum, 👹 Honey Monster, 🧙 Frosties Tiger
+
+24 Aug
+Mon
+Pasta Shapes
+Food
+C
+🍝 Spaghetti, 🍜 Penne, 🫕 Fusilli, 🥘 Macaroni, 🍲 Lasagne, 🌾 Tagliatelle, 🍴 Linguine, 🇮🇹 Ravioli, 🥖 Gnocchi, 🧀 Farfalle, 🥡 Rigatoni, 🍛 Cannelloni, 🫓 Tortellini, 🥣 Pasta shells, 🟡 Vermicelli, 🟤 Angel hair
+
+25 Aug
+Tue
+Pies
+Food
+C
+🥧 Apple pie, 🟤 Pumpkin pie, 🍒 Cherry pie, 🎃 Pecan pie, 🍋 Key lime, 🥩 Meat pie, 🐷 Pork pie, 🐑 Shepherd's pie, 🍮 Banoffee, 🟠 Lemon meringue, 🟫 Steak & kidney, 🍯 Mince pie, 🥮 Chicken pot pie, 🫓 Custard tart, 🍏 Cottage pie, 🟡 Fruit pie
+
+26 Aug
+Wed
+Dog Breeds
+Nature
+International National Dog Day
+A
+🐶 Labrador, 🐕 Golden Retriever, 🦮 German Shepherd, 🐕‍🦺 Poodle, 🐩 Bulldog, 🐺 Border Collie, 🦴 Dachshund, 🐾 Beagle, 🦊 Husky, 🐇 Corgi, 🦷 Shiba Inu, 🥇 Chihuahua, 🏆 Great Dane, 🏅 Pug, 🐈 Rottweiler, 👑 Cavalier
+
+27 Aug
+Thu
+Reality TV Shows
+Screen
+C
+📺 Love Island, 💍 Survivor, 🌴 Big Brother, 👑 The Bachelor, 🍳 MasterChef, 🏝️ RuPaul's Drag Race, 📹 Bake Off, 🥂 Traitors, 💃 Real Housewives, 🏆 Love Is Blind, 🌹 Too Hot to Handle, 🎭 Kardashians, 📷 Gogglebox, 💋 Selling Sunset, 🏠 Naked Attraction, 💎 Married at First Sight
+
+28 Aug
+Fri
+Biscuits & Cookies
+Food
+C
+🍪 Oreo, 🍫 Chocolate chip, 🧈 Digestive, 🍮 Shortbread, 🥃 Custard cream, 🍊 Bourbon, 🫚 Hobnob, 🍰 Jaffa Cake, 🍵 Ginger nut, 💍 Rich Tea, 🪵 Garibaldi, 🛞 Nice, 👆 Party ring, 🟫 Fig roll, 🍩 Chocolate finger, 🟡 Wagon Wheel
+
+29 Aug
+Sat
+Cheeses
+Food
+C
+🧀 Cheddar, 🐄 Brie, 🐐 Parmesan, 🟡 Mozzarella, 🟠 Gouda, ⚪ Blue cheese, 🫕 Feta, 🥛 Camembert, 🍞 Halloumi, 🧈 Gruyère, 🟫 Emmental, 🐑 Cream cheese, 🧫 Goat's cheese, 🍶 Ricotta, 🟥 Red Leicester, 🟨 Babybel
+
+30 Aug
+Sun
+Fashion Brands
+Lifestyle
+C
+👗 Nike, 👜 Zara, 👠 Gucci, 👕 Adidas, 👖 Louis Vuitton, 🧥 H&M, 🧣 Prada, 🕶️ Chanel, 💎 Levi's, 👔 Balenciaga, 🧢 The North Face, 👒 Ralph Lauren, 💄 Dior, 👛 Gap, 🥿 Uniqlo, 👞 Burberry
+
+31 Aug
+Mon
+Plants
+Nature
+C
+🪴 Monstera, 🌿 Snake plant, 🌱 Pothos, 🌵 Fiddle-leaf fig, 🌳 Aloe vera, 🌴 Orchid, 🍀 Succulent, ☘️ Fern, 🌾 Peace lily, 🎍 Cactus, 🌷 Rubber plant, 🌻 Bonsai, 🌹 Lavender, 🌺 Bamboo, 🌸 Spider plant, 🍃 ZZ plant
+
+01 Sep
+Tue
+Logos
+Tech
+C
+🍎 Apple, 👟 Nike, 🏷️ McDonald's, 🥤 Coca-Cola, 🚗 Mercedes, 📦 FedEx, 🐦 Shell, 🦚 Starbucks, 🐧 Google, ☕ Adidas, 🛍️ Amazon, 🔵 Twitter bird, 🟡 Playboy, 🔴 NBC peacock, 🟢 WWF panda, 🟣 Penguin Books
+
+02 Sep
+Wed
+Breakfast Foods
+Food
+B
+🥞 Pancakes, 🥓 Bacon, 🍳 Eggs, 🍞 Toast, 🥣 Cereal, 🥐 Croissant, 🧇 Porridge, 🍴 Waffles, 📖 Full English, 🥑 Avocado toast, 🥯 Bagel, 🥤 Smoothie, 🍓 Fruit, 🥛 Yoghurt, 🧁 Muffin, 🌭 Sausage
+
+03 Sep
+Thu
+Sweets & Gummies
+Food
+B
+🐻 Haribo, 🌈 Skittles, 🔵 M&Ms, 🧸 Gummy bears, 🫘 Jelly beans, 🍭 Lollipop, 🍡 Marshmallow, 🖤 Liquorice, 🪱 Sour worms, 🍷 Wine gums, ⭐ Starburst, 🍬 Bubblegum, 🫧 Fudge, 🟫 Werther's, 🟡 Mints, 👶 Jelly babies
+
+04 Sep
+Fri
+Desserts
+Wildcard
+International Eat an Extra Dessert Day
+A
+🍰 Tiramisu, 🧁 Cheesecake, 🍮 Crème brûlée, 🍨 Brownie, 🥧 Apple pie, 🍦 Gelato, 🍪 Baklava, 🍫 Mochi, 🍯 Pavlova, 🍩 Churros, 🥮 Panna cotta, 🍡 Trifle, 🟤 Profiteroles, 🟫 Flan, 🧇 Macaron, 🍬 Sticky toffee pudding
+
+05 Sep
+Sat
+Wine Varieties
+Drink/Dip
+C
+🍷 Merlot, 🥂 Cabernet Sauvignon, 🍇 Chardonnay, 🍾 Sauvignon Blanc, 🍶 Pinot Noir, 🟣 Pinot Grigio, 🔴 Rosé, ⚪ Prosecco, 🟤 Champagne, 🌹 Malbec, 🟥 Shiraz, 🟦 Riesling, 🍑 Zinfandel, 🟠 Moscato, 🍋 Port, 🧊 Mulled wine
+
+06 Sep
+Sun
+Book Genres
+Screen
+International Read a Book Day
+C
+🐉 Fantasy, 🚀 Sci-fi, 🔍 Mystery, 📚 Romance, 🔪 Thriller, 💕 Literary fiction, 📜 Historical, 👻 Horror, 📖 Memoir, 💡 Self-help, 🦄 Romantasy, 🕵️ Crime, 📕 Biography, 📗 Poetry, 📘 YA, 📙 Classics
+
+07 Sep
+Mon
+Breads
+Food
+C
+🍞 Sourdough, 🥖 Baguette, 🥐 Ciabatta, 🫓 Naan, 🥯 Focaccia, 🧇 Rye, 🌾 Brioche, 🥨 Pita, 🥪 Bagel, 🟤 Tortilla, 🟫 Challah, 🍙 Pumpernickel, 🧈 Whole wheat, ⚪ Croissant, 🟡 Roti, 🥞 Cornbread
+
+08 Sep
+Tue
+Payment Methods
+Drink/Dip
+C
+💵 Cash, 💳 Debit card, 📲 Credit card, 🍎 Contactless, 📱 Apple Pay, 🏦 Bank transfer, 🪙 Crypto, 💰 PayPal, 🧾 Cheque, 🎁 Gift card, 💸 Direct debit, 🤝 QR pay, 🐚 Mobile wallet, 💎 Barter, 🔗 IOU, 📮 Cowrie shells
+
+09 Sep
+Wed
+Streaming Services
+Screen
+D
+🎬 Netflix, 📺 Disney+, 🍿 Prime Video, 🎞️ Max, 📽️ Hulu, 📡 Apple TV+, 🎥 Spotify, 🔴 YouTube Premium, ▶️ Paramount+, 🎟️ Peacock, 🟣 Crunchyroll, 🔵 BBC iPlayer, 🟢 Twitch, 🦚 MUBI, 🍥 Now TV, 🏰 Tubi
+
+10 Sep
+Thu
+Airlines
+Places
+D
+✈️ Singapore Airlines, 🛩️ Emirates, 🛫 Qatar Airways, 🛬 ANA, 🪂 Cathay Pacific, 🎫 Lufthansa, 🧳 British Airways, 🌍 Delta, 🗺️ Qantas, 🛂 Turkish Airlines, 🛄 KLM, 💺 Ryanair, 🌐 Air France, 🛰️ United, 🎟️ Etihad, 🧭 JAL
+
+11 Sep
+Fri
+Dips
+Drink/Dip
+D
+🥣 Hummus, 🥑 Guacamole, 🍅 Salsa, 🥛 Sour cream, 🥒 Tzatziki, 🥗 Ranch, 🧀 Queso, 🥬 Spinach dip, 🧄 Aioli, 🍆 Baba ganoush, 🌶️ Nacho cheese, 🇫🇷 French onion, 🟠 Buffalo, 🟡 Blue cheese, 🌿 Pesto, 🥚 Mayo
+
+12 Sep
+Sat
+Toast Toppings
+Food
+C
+🧈 Butter, 🍓 Jam, 🍊 Marmalade, 🥜 Peanut butter, 🍫 Nutella, 🥑 Avocado, 🫘 Beans, 🧀 Cheese, 🍯 Honey, 🖤 Marmite, 🥚 Egg, 🥓 Bacon, 🍌 Banana, 🍩 Cinnamon sugar, 🍞 Cream cheese, 🥣 Hummus

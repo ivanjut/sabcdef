@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-13",
+  "name": "Cities to Live In",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "tokyo", "name": "Tokyo", "emoji": "🇯🇵" },
+    { "id": "copenhagen", "name": "Copenhagen", "emoji": "🇩🇰" },
+    { "id": "vienna", "name": "Vienna", "emoji": "🇦🇹" },
+    { "id": "singapore", "name": "Singapore", "emoji": "🇸🇬" },
+    { "id": "lisbon", "name": "Lisbon", "emoji": "🇵🇹" },
+    { "id": "melbourne", "name": "Melbourne", "emoji": "🇦🇺" },
+    { "id": "amsterdam", "name": "Amsterdam", "emoji": "🇳🇱" },
+    { "id": "barcelona", "name": "Barcelona", "emoji": "🇪🇸" },
+    { "id": "berlin", "name": "Berlin", "emoji": "🇩🇪" },
+    { "id": "zurich", "name": "Zurich", "emoji": "🇨🇭" },
+    { "id": "seoul", "name": "Seoul", "emoji": "🇰🇷" },
+    { "id": "vancouver", "name": "Vancouver", "emoji": "🇨🇦" },
+    { "id": "madrid", "name": "Madrid", "emoji": "🏙️" },
+    { "id": "helsinki", "name": "Helsinki", "emoji": "🇫🇮" },
+    { "id": "london", "name": "London", "emoji": "🇬🇧" },
+    { "id": "stode", "name": "Stöde", "emoji": "🇸🇪" }
+  ]
+}

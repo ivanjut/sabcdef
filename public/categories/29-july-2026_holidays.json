@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-29",
+  "name": "Holidays",
+  "theme": "Time",
+  "special_day": "",
+  "items": [
+    { "id": "christmas", "name": "Christmas", "emoji": "🎄" },
+    { "id": "new-year", "name": "New Year", "emoji": "🎆" },
+    { "id": "halloween", "name": "Halloween", "emoji": "🎃" },
+    { "id": "diwali", "name": "Diwali", "emoji": "🪔" },
+    { "id": "eid", "name": "Eid", "emoji": "🌙" },
+    { "id": "lunar-new-year", "name": "Lunar New Year", "emoji": "🧧" },
+    { "id": "easter", "name": "Easter", "emoji": "🐣" },
+    { "id": "thanksgiving", "name": "Thanksgiving", "emoji": "🦃" },
+    { "id": "hanukkah", "name": "Hanukkah", "emoji": "🕎" },
+    { "id": "carnival", "name": "Carnival", "emoji": "🎭" },
+    { "id": "day-of-the-dead", "name": "Day of the Dead", "emoji": "🎉" },
+    { "id": "holi", "name": "Holi", "emoji": "🌈" },
+    { "id": "oktoberfest", "name": "Oktoberfest", "emoji": "🍺" },
+    { "id": "valentine-s", "name": "Valentine's", "emoji": "❤️" },
+    { "id": "st-patrick-s", "name": "St Patrick's", "emoji": "💀" },
+    { "id": "midsummer", "name": "Midsummer", "emoji": "☘️" }
+  ]
+}

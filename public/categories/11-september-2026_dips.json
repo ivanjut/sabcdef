@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-11",
+  "name": "Dips",
+  "theme": "Drink/Dip",
+  "special_day": "",
+  "items": [
+    { "id": "hummus", "name": "Hummus", "emoji": "🥣" },
+    { "id": "guacamole", "name": "Guacamole", "emoji": "🥑" },
+    { "id": "salsa", "name": "Salsa", "emoji": "🍅" },
+    { "id": "sour-cream", "name": "Sour cream", "emoji": "🥛" },
+    { "id": "tzatziki", "name": "Tzatziki", "emoji": "🥒" },
+    { "id": "ranch", "name": "Ranch", "emoji": "🥗" },
+    { "id": "queso", "name": "Queso", "emoji": "🧀" },
+    { "id": "spinach-dip", "name": "Spinach dip", "emoji": "🥬" },
+    { "id": "aioli", "name": "Aioli", "emoji": "🧄" },
+    { "id": "baba-ganoush", "name": "Baba ganoush", "emoji": "🍆" },
+    { "id": "nacho-cheese", "name": "Nacho cheese", "emoji": "🌶️" },
+    { "id": "french-onion", "name": "French onion", "emoji": "🇫🇷" },
+    { "id": "buffalo", "name": "Buffalo", "emoji": "🟠" },
+    { "id": "blue-cheese", "name": "Blue cheese", "emoji": "🟡" },
+    { "id": "pesto", "name": "Pesto", "emoji": "🌿" },
+    { "id": "mayo", "name": "Mayo", "emoji": "🥚" }
+  ]
+}

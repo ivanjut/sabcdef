@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-28",
+  "name": "Mythical Creatures",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "dragon", "name": "Dragon", "emoji": "🐉" },
+    { "id": "phoenix", "name": "Phoenix", "emoji": "🔥" },
+    { "id": "unicorn", "name": "Unicorn", "emoji": "🦄" },
+    { "id": "griffin", "name": "Griffin", "emoji": "🦅" },
+    { "id": "mermaid", "name": "Mermaid", "emoji": "🧜" },
+    { "id": "werewolf", "name": "Werewolf", "emoji": "🐺" },
+    { "id": "vampire", "name": "Vampire", "emoji": "🧛" },
+    { "id": "kraken", "name": "Kraken", "emoji": "🦑" },
+    { "id": "cyclops", "name": "Cyclops", "emoji": "👁️" },
+    { "id": "minotaur", "name": "Minotaur", "emoji": "🐂" },
+    { "id": "yeti", "name": "Yeti", "emoji": "❄️" },
+    { "id": "kitsune", "name": "Kitsune", "emoji": "🦊" },
+    { "id": "banshee", "name": "Banshee", "emoji": "👻" },
+    { "id": "chimera", "name": "Chimera", "emoji": "🦁" },
+    { "id": "hydra", "name": "Hydra", "emoji": "🐍" },
+    { "id": "centaur", "name": "Centaur", "emoji": "🐴" }
+  ]
+}

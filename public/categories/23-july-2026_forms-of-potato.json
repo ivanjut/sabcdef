@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-23",
+  "name": "Forms of Potato",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "chips-fries", "name": "Chips/Fries", "emoji": "🍟" },
+    { "id": "mashed", "name": "Mashed", "emoji": "🥔" },
+    { "id": "roast", "name": "Roast", "emoji": "🍠" },
+    { "id": "baked", "name": "Baked", "emoji": "🧆" },
+    { "id": "hash-browns", "name": "Hash browns", "emoji": "🥟" },
+    { "id": "crisps", "name": "Crisps", "emoji": "🫓" },
+    { "id": "wedges", "name": "Wedges", "emoji": "🧀" },
+    { "id": "tater-tots", "name": "Tater tots", "emoji": "🍝" },
+    { "id": "boiled", "name": "Boiled", "emoji": "🥣" },
+    { "id": "gnocchi", "name": "Gnocchi", "emoji": "🔥" },
+    { "id": "dauphinoise", "name": "Dauphinoise", "emoji": "🧅" },
+    { "id": "croquettes", "name": "Croquettes", "emoji": "🥄" },
+    { "id": "jacket", "name": "Jacket", "emoji": "🍴" },
+    { "id": "curly-fries", "name": "Curly fries", "emoji": "🧈" },
+    { "id": "rosti", "name": "Rosti", "emoji": "🟡" },
+    { "id": "mash", "name": "Mash", "emoji": "🟤" }
+  ]
+}

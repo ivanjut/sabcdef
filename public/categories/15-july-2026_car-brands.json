@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-15",
+  "name": "Car Brands",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "toyota", "name": "Toyota", "emoji": "🚗" },
+    { "id": "bmw", "name": "BMW", "emoji": "🚙" },
+    { "id": "mercedes", "name": "Mercedes", "emoji": "🏎️" },
+    { "id": "honda", "name": "Honda", "emoji": "🚘" },
+    { "id": "porsche", "name": "Porsche", "emoji": "🛻" },
+    { "id": "ferrari", "name": "Ferrari", "emoji": "🚐" },
+    { "id": "tesla", "name": "Tesla", "emoji": "⚡" },
+    { "id": "volkswagen", "name": "Volkswagen", "emoji": "🚓" },
+    { "id": "audi", "name": "Audi", "emoji": "🚕" },
+    { "id": "ford", "name": "Ford", "emoji": "🏁" },
+    { "id": "hyundai", "name": "Hyundai", "emoji": "⚙️" },
+    { "id": "mazda", "name": "Mazda", "emoji": "🔧" },
+    { "id": "volvo", "name": "Volvo", "emoji": "🛞" },
+    { "id": "lamborghini", "name": "Lamborghini", "emoji": "💨" },
+    { "id": "subaru", "name": "Subaru", "emoji": "🚦" },
+    { "id": "kia", "name": "Kia", "emoji": "🅿️" }
+  ]
+}

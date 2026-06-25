@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-20",
+  "name": "Birds",
+  "theme": "Nature",
+  "special_day": "",
+  "items": [
+    { "id": "eagle", "name": "Eagle", "emoji": "🦅" },
+    { "id": "owl", "name": "Owl", "emoji": "🦉" },
+    { "id": "penguin", "name": "Penguin", "emoji": "🐧" },
+    { "id": "robin", "name": "Robin", "emoji": "🐦" },
+    { "id": "parrot", "name": "Parrot", "emoji": "🦜" },
+    { "id": "flamingo", "name": "Flamingo", "emoji": "🦩" },
+    { "id": "peacock", "name": "Peacock", "emoji": "🦚" },
+    { "id": "swan", "name": "Swan", "emoji": "🦢" },
+    { "id": "crow", "name": "Crow", "emoji": "🐦‍⬛" },
+    { "id": "pigeon", "name": "Pigeon", "emoji": "🕊️" },
+    { "id": "duck", "name": "Duck", "emoji": "🦆" },
+    { "id": "ostrich", "name": "Ostrich", "emoji": "🦤" },
+    { "id": "toucan", "name": "Toucan", "emoji": "🐤" },
+    { "id": "hummingbird", "name": "Hummingbird", "emoji": "🪶" },
+    { "id": "seagull", "name": "Seagull", "emoji": "🐓" },
+    { "id": "woodpecker", "name": "Woodpecker", "emoji": "🦃" }
+  ]
+}

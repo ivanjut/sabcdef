@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-18",
+  "name": "Status Symbols",
+  "theme": "Lifestyle",
+  "special_day": "",
+  "items": [
+    { "id": "rolex", "name": "Rolex", "emoji": "⌚" },
+    { "id": "supercar", "name": "Supercar", "emoji": "🏎️" },
+    { "id": "designer-handbag", "name": "Designer handbag", "emoji": "👜" },
+    { "id": "penthouse", "name": "Penthouse", "emoji": "🏙️" },
+    { "id": "private-jet", "name": "Private jet", "emoji": "🛩️" },
+    { "id": "ivy-league-degree", "name": "Ivy League degree", "emoji": "🎓" },
+    { "id": "yacht", "name": "Yacht", "emoji": "🛥️" },
+    { "id": "art-collection", "name": "Art collection", "emoji": "🖼️" },
+    { "id": "first-class", "name": "First class", "emoji": "💎" },
+    { "id": "postcode", "name": "Postcode", "emoji": "🚗" },
+    { "id": "personalised-plate", "name": "Personalised plate", "emoji": "📮" },
+    { "id": "country-club", "name": "Country club", "emoji": "🥪" },
+    { "id": "watch", "name": "Watch", "emoji": "🚙" },
+    { "id": "sneakers", "name": "Sneakers", "emoji": "⛳" },
+    { "id": "wine-cellar", "name": "Wine cellar", "emoji": "🍷" },
+    { "id": "front-row-seats", "name": "Front-row seats", "emoji": "👟" }
+  ]
+}

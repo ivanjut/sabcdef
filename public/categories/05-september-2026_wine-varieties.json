@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-05",
+  "name": "Wine Varieties",
+  "theme": "Drink/Dip",
+  "special_day": "",
+  "items": [
+    { "id": "merlot", "name": "Merlot", "emoji": "🍷" },
+    { "id": "cabernet-sauvignon", "name": "Cabernet Sauvignon", "emoji": "🥂" },
+    { "id": "chardonnay", "name": "Chardonnay", "emoji": "🍇" },
+    { "id": "sauvignon-blanc", "name": "Sauvignon Blanc", "emoji": "🍾" },
+    { "id": "pinot-noir", "name": "Pinot Noir", "emoji": "🍶" },
+    { "id": "pinot-grigio", "name": "Pinot Grigio", "emoji": "🟣" },
+    { "id": "rose", "name": "Rosé", "emoji": "🔴" },
+    { "id": "prosecco", "name": "Prosecco", "emoji": "⚪" },
+    { "id": "champagne", "name": "Champagne", "emoji": "🟤" },
+    { "id": "malbec", "name": "Malbec", "emoji": "🌹" },
+    { "id": "shiraz", "name": "Shiraz", "emoji": "🟥" },
+    { "id": "riesling", "name": "Riesling", "emoji": "🟦" },
+    { "id": "zinfandel", "name": "Zinfandel", "emoji": "🍑" },
+    { "id": "moscato", "name": "Moscato", "emoji": "🟠" },
+    { "id": "port", "name": "Port", "emoji": "🍋" },
+    { "id": "mulled-wine", "name": "Mulled wine", "emoji": "🧊" }
+  ]
+}

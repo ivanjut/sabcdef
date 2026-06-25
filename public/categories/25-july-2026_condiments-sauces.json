@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-25",
+  "name": "Condiments / Sauces",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "ketchup", "name": "Ketchup", "emoji": "🍅" },
+    { "id": "mayo", "name": "Mayo", "emoji": "🥚" },
+    { "id": "mustard", "name": "Mustard", "emoji": "🌭" },
+    { "id": "sriracha", "name": "Sriracha", "emoji": "🌶️" },
+    { "id": "soy-sauce", "name": "Soy sauce", "emoji": "🍶" },
+    { "id": "hot-sauce", "name": "Hot sauce", "emoji": "🥫" },
+    { "id": "bbq", "name": "BBQ", "emoji": "🍖" },
+    { "id": "ranch", "name": "Ranch", "emoji": "🥗" },
+    { "id": "pesto", "name": "Pesto", "emoji": "🌿" },
+    { "id": "aioli", "name": "Aioli", "emoji": "🧄" },
+    { "id": "chilli-oil", "name": "Chilli oil", "emoji": "🥣" },
+    { "id": "tahini", "name": "Tahini", "emoji": "🫙" },
+    { "id": "gochujang", "name": "Gochujang", "emoji": "🟤" },
+    { "id": "hp-brown-sauce", "name": "HP/brown sauce", "emoji": "🟢" },
+    { "id": "salsa", "name": "Salsa", "emoji": "🟠" },
+    { "id": "harissa", "name": "Harissa", "emoji": "🔴" }
+  ]
+}

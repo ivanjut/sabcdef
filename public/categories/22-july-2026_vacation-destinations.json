@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-22",
+  "name": "Vacation Destinations",
+  "theme": "Nature",
+  "special_day": "",
+  "items": [
+    { "id": "japan", "name": "Japan", "emoji": "🇯🇵" },
+    { "id": "italy", "name": "Italy", "emoji": "🇮🇹" },
+    { "id": "thailand", "name": "Thailand", "emoji": "🇹🇭" },
+    { "id": "france", "name": "France", "emoji": "🇫🇷" },
+    { "id": "iceland", "name": "Iceland", "emoji": "🇮🇸" },
+    { "id": "greece", "name": "Greece", "emoji": "🇬🇷" },
+    { "id": "mexico", "name": "Mexico", "emoji": "🇲🇽" },
+    { "id": "portugal", "name": "Portugal", "emoji": "🇵🇹" },
+    { "id": "bali", "name": "Bali", "emoji": "🇮🇩" },
+    { "id": "new-zealand", "name": "New Zealand", "emoji": "🇳🇿" },
+    { "id": "morocco", "name": "Morocco", "emoji": "🇲🇦" },
+    { "id": "vietnam", "name": "Vietnam", "emoji": "🇻🇳" },
+    { "id": "spain", "name": "Spain", "emoji": "🇪🇸" },
+    { "id": "peru", "name": "Peru", "emoji": "🇵🇪" },
+    { "id": "croatia", "name": "Croatia", "emoji": "🇭🇷" },
+    { "id": "norway", "name": "Norway", "emoji": "🇳🇴" }
+  ]
+}

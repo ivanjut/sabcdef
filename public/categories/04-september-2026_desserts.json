@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-04",
+  "name": "Desserts",
+  "theme": "Wildcard",
+  "special_day": "International Eat an Extra Dessert Day",
+  "items": [
+    { "id": "tiramisu", "name": "Tiramisu", "emoji": "🍰" },
+    { "id": "cheesecake", "name": "Cheesecake", "emoji": "🧁" },
+    { "id": "creme-brulee", "name": "Crème brûlée", "emoji": "🍮" },
+    { "id": "brownie", "name": "Brownie", "emoji": "🍨" },
+    { "id": "apple-pie", "name": "Apple pie", "emoji": "🥧" },
+    { "id": "gelato", "name": "Gelato", "emoji": "🍦" },
+    { "id": "baklava", "name": "Baklava", "emoji": "🍪" },
+    { "id": "mochi", "name": "Mochi", "emoji": "🍫" },
+    { "id": "pavlova", "name": "Pavlova", "emoji": "🍯" },
+    { "id": "churros", "name": "Churros", "emoji": "🍩" },
+    { "id": "panna-cotta", "name": "Panna cotta", "emoji": "🥮" },
+    { "id": "trifle", "name": "Trifle", "emoji": "🍡" },
+    { "id": "profiteroles", "name": "Profiteroles", "emoji": "🟤" },
+    { "id": "flan", "name": "Flan", "emoji": "🟫" },
+    { "id": "macaron", "name": "Macaron", "emoji": "🧇" },
+    { "id": "sticky-toffee-pudding", "name": "Sticky toffee pudding", "emoji": "🍬" }
+  ]
+}

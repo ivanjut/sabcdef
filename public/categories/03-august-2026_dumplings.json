@@ -1,0 +1,24 @@
+{
+  "date": "2026-08-03",
+  "name": "Dumplings",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "gyoza", "name": "Gyoza", "emoji": "🥟" },
+    { "id": "wontons", "name": "Wontons", "emoji": "🥠" },
+    { "id": "ravioli", "name": "Ravioli", "emoji": "🍤" },
+    { "id": "tortellini", "name": "Tortellini", "emoji": "🍝" },
+    { "id": "samosa", "name": "Samosa", "emoji": "🫓" },
+    { "id": "pierogi", "name": "Pierogi", "emoji": "🍜" },
+    { "id": "dim-sum", "name": "Dim sum", "emoji": "🥢" },
+    { "id": "potstickers", "name": "Potstickers", "emoji": "🍲" },
+    { "id": "empanada", "name": "Empanada", "emoji": "🥡" },
+    { "id": "spring-rolls", "name": "Spring rolls", "emoji": "♨️" },
+    { "id": "bao-buns", "name": "Bao buns", "emoji": "🍘" },
+    { "id": "soup-dumplings", "name": "Soup dumplings", "emoji": "🟡" },
+    { "id": "wonton-soup", "name": "Wonton soup", "emoji": "🟤" },
+    { "id": "steamed-dumplings", "name": "Steamed dumplings", "emoji": "🟠" },
+    { "id": "xiao-long-bao", "name": "Xiao long bao", "emoji": "⚪" },
+    { "id": "pelmeni", "name": "Pelmeni", "emoji": "🍥" }
+  ]
+}

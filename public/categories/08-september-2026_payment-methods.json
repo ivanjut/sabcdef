@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-08",
+  "name": "Payment Methods",
+  "theme": "Drink/Dip",
+  "special_day": "",
+  "items": [
+    { "id": "cash", "name": "Cash", "emoji": "💵" },
+    { "id": "debit-card", "name": "Debit card", "emoji": "💳" },
+    { "id": "credit-card", "name": "Credit card", "emoji": "📲" },
+    { "id": "contactless", "name": "Contactless", "emoji": "🍎" },
+    { "id": "apple-pay", "name": "Apple Pay", "emoji": "📱" },
+    { "id": "bank-transfer", "name": "Bank transfer", "emoji": "🏦" },
+    { "id": "crypto", "name": "Crypto", "emoji": "🪙" },
+    { "id": "paypal", "name": "PayPal", "emoji": "💰" },
+    { "id": "cheque", "name": "Cheque", "emoji": "🧾" },
+    { "id": "gift-card", "name": "Gift card", "emoji": "🎁" },
+    { "id": "direct-debit", "name": "Direct debit", "emoji": "💸" },
+    { "id": "qr-pay", "name": "QR pay", "emoji": "🤝" },
+    { "id": "mobile-wallet", "name": "Mobile wallet", "emoji": "🐚" },
+    { "id": "barter", "name": "Barter", "emoji": "💎" },
+    { "id": "iou", "name": "IOU", "emoji": "🔗" },
+    { "id": "cowrie-shells", "name": "Cowrie shells", "emoji": "📮" }
+  ]
+}

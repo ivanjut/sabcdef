@@ -1,0 +1,24 @@
+{
+  "date": "2026-07-21",
+  "name": "Street Food",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "tacos", "name": "Tacos", "emoji": "🌮" },
+    { "id": "hot-dog", "name": "Hot dog", "emoji": "🌭" },
+    { "id": "falafel", "name": "Falafel", "emoji": "🧆" },
+    { "id": "kebab", "name": "Kebab", "emoji": "🥙" },
+    { "id": "churros", "name": "Churros", "emoji": "🍢" },
+    { "id": "samosa", "name": "Samosa", "emoji": "🥨" },
+    { "id": "spring-rolls", "name": "Spring rolls", "emoji": "🌯" },
+    { "id": "crepes", "name": "Crepes", "emoji": "🦐" },
+    { "id": "pretzel", "name": "Pretzel", "emoji": "🍜" },
+    { "id": "satay", "name": "Satay", "emoji": "🥟" },
+    { "id": "empanada", "name": "Empanada", "emoji": "🌽" },
+    { "id": "gyros", "name": "Gyros", "emoji": "🍤" },
+    { "id": "corn-dog", "name": "Corn dog", "emoji": "🐶" },
+    { "id": "dumplings", "name": "Dumplings", "emoji": "🍡" },
+    { "id": "nachos", "name": "Nachos", "emoji": "🫓" },
+    { "id": "burrito", "name": "Burrito", "emoji": "🥖" }
+  ]
+}
