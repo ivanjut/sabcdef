@@ -925,6 +925,49 @@ body.preview-mode .submit-btn { display: none; }
 }
 .profile-dialog input:focus,
 .field-select:focus { outline: none; border-color: var(--accent); }
+
+/* Searchable country picker (profile dialog) */
+.country-picker { position: relative; }
+.country-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 10;
+  max-height: 244px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+.country-list[hidden] { display: none; }
+.country-group {
+  padding: 8px 8px 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+}
+.country-option {
+  padding: 9px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.country-option:hover,
+.country-option.is-active { background: var(--bg-elev-2); }
+.country-option[aria-selected="true"] { color: var(--accent); font-weight: 600; }
+.country-none { color: var(--text-dim); }
+.country-empty { padding: 9px 10px; color: var(--text-dim); font-size: 0.9rem; }
 .profile-dialog-actions {
   display: flex;
   justify-content: flex-end;

@@ -440,7 +440,7 @@ function getVisibility() {
 }
 
 function wireProfile() {
-  populateCountrySelect();
+  wireCountryPicker();
   renderProfile();
 
   $("#profile-btn").addEventListener("click", () => openProfileDialog("edit"));
@@ -479,17 +479,159 @@ function ensureOnboarded() {
   if (!getProfile()) saveProfile({ name: "", country: "" });
 }
 
-function populateCountrySelect() {
-  const select = $("#profile-country-input");
-  if (!select) return;
-  const frag = document.createDocumentFragment();
-  for (const c of COUNTRIES) {
-    const opt = document.createElement("option");
-    opt.value = c.code;
-    opt.textContent = `${flagEmoji(c.code)} ${c.name}`;
-    frag.appendChild(opt);
+// ---- Searchable country picker --------------------------------------------
+// A type-to-filter combobox over COUNTRIES with the popular countries pinned on
+// top. The committed selection (an ISO code, or "" for none) lives in the hidden
+// #profile-country-input so the rest of the profile code is unchanged; the
+// visible search box always reflects that selection when it isn't being edited.
+
+const POPULAR_COUNTRY_CODES = ["US", "GB", "FR", "IN", "NG", "JP"]; // USA, UK, France, India, Nigeria, Japan
+let countryActiveIndex = -1; // highlighted option for arrow-key navigation
+
+function countryByCode(code) {
+  return COUNTRIES.find((c) => c.code === code) || null;
+}
+
+// "🇫🇷 France" for a code, or "" when there's no country selected.
+function countryDisplay(code) {
+  const c = countryByCode(code);
+  return c ? `${flagEmoji(c.code)} ${c.name}` : "";
+}
+
+function countryOptionHtml(c) {
+  return `<li class="country-option" role="option" data-code="${c.code}">${flagEmoji(c.code)} ${escapeHtml(c.name)}</li>`;
+}
+
+// Build the dropdown for the current query: with no query, "No country" + the
+// pinned Popular group + the full alphabetical list; while searching, just the
+// name/code matches.
+function renderCountryOptions(query = "") {
+  const list = $("#profile-country-listbox");
+  if (!list) return;
+  const q = query.trim().toLowerCase();
+  const selected = $("#profile-country-input").value;
+
+  let html = "";
+  if (!q) {
+    html += `<li class="country-option country-none" role="option" data-code="">No country</li>`;
+    const popular = POPULAR_COUNTRY_CODES.map(countryByCode).filter(Boolean);
+    html += `<li class="country-group" role="presentation">Popular</li>`;
+    html += popular.map(countryOptionHtml).join("");
+    html += `<li class="country-group" role="presentation">All countries</li>`;
+    html += COUNTRIES.map(countryOptionHtml).join("");
+  } else {
+    const matches = COUNTRIES.filter(
+      (c) => c.name.toLowerCase().includes(q) || c.code.toLowerCase() === q
+    );
+    html = matches.length
+      ? matches.map(countryOptionHtml).join("")
+      : `<li class="country-empty" role="presentation">No matches</li>`;
   }
-  select.appendChild(frag);
+  list.innerHTML = html;
+
+  // Mark the committed selection; reset the keyboard highlight.
+  list.querySelectorAll(".country-option").forEach((el) =>
+    el.setAttribute("aria-selected", el.dataset.code === selected ? "true" : "false")
+  );
+  countryActiveIndex = -1;
+}
+
+function openCountryList() {
+  $("#profile-country-listbox").hidden = false;
+  $("#profile-country-search").setAttribute("aria-expanded", "true");
+}
+
+function closeCountryList() {
+  $("#profile-country-listbox").hidden = true;
+  const input = $("#profile-country-search");
+  input.setAttribute("aria-expanded", "false");
+  countryActiveIndex = -1;
+  // Drop any in-progress query and show the committed selection again.
+  input.value = countryDisplay($("#profile-country-input").value);
+}
+
+// Commit a country code (or "") to the hidden input and reflect it in the box.
+function setCountrySelection(code) {
+  $("#profile-country-input").value = code || "";
+  $("#profile-country-search").value = countryDisplay(code || "");
+}
+
+function selectCountry(code) {
+  setCountrySelection(code);
+  closeCountryList();
+}
+
+function moveCountryActive(delta) {
+  const opts = [...$("#profile-country-listbox").querySelectorAll(".country-option")];
+  if (!opts.length) return;
+  countryActiveIndex = (countryActiveIndex + delta + opts.length) % opts.length;
+  opts.forEach((el, i) => el.classList.toggle("is-active", i === countryActiveIndex));
+  opts[countryActiveIndex].scrollIntoView({ block: "nearest" });
+}
+
+function wireCountryPicker() {
+  const input = $("#profile-country-search");
+  const list = $("#profile-country-listbox");
+  const picker = $("#country-picker");
+  if (!input || !list || !picker) return;
+
+  // Focusing clears the box so the first keystroke starts a fresh search; the
+  // committed selection is restored on close if nothing new is picked.
+  input.addEventListener("focus", () => {
+    input.value = "";
+    renderCountryOptions("");
+    openCountryList();
+  });
+
+  input.addEventListener("input", () => {
+    renderCountryOptions(input.value);
+    openCountryList();
+  });
+
+  input.addEventListener("keydown", (e) => {
+    const opts = [...list.querySelectorAll(".country-option")];
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (list.hidden) { renderCountryOptions(input.value); openCountryList(); }
+      moveCountryActive(1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      moveCountryActive(-1);
+    } else if (e.key === "Enter") {
+      if (!list.hidden) {
+        e.preventDefault(); // never submit the form straight from the search box
+        if (countryActiveIndex >= 0 && opts[countryActiveIndex]) {
+          selectCountry(opts[countryActiveIndex].dataset.code);
+        }
+      }
+    } else if (e.key === "Escape") {
+      if (!list.hidden) {
+        e.preventDefault();
+        e.stopPropagation(); // close the list, not the whole dialog
+        closeCountryList();
+      }
+    }
+  });
+
+  // mousedown keeps focus on the input (so its blur doesn't beat the click);
+  // click commits the chosen option.
+  list.addEventListener("mousedown", (e) => {
+    if (e.target.closest(".country-option")) e.preventDefault();
+  });
+  list.addEventListener("click", (e) => {
+    const opt = e.target.closest(".country-option");
+    if (opt) selectCountry(opt.dataset.code);
+  });
+
+  // Close on focus leaving the picker (e.g. Tab) or a click outside it.
+  input.addEventListener("blur", () => {
+    setTimeout(() => {
+      if (!picker.contains(document.activeElement)) closeCountryList();
+    }, 0);
+  });
+  document.addEventListener("mousedown", (e) => {
+    if (!picker.contains(e.target)) closeCountryList();
+  });
 }
 
 function renderProfile() {
@@ -523,7 +665,8 @@ function openProfileDialog(mode = "edit") {
   const onboarding = mode === "onboarding";
 
   $("#profile-name-input").value = profile.name || "";
-  $("#profile-country-input").value = profile.country || "";
+  setCountrySelection(profile.country || "");
+  closeCountryList();
   // Default new/never-set profiles to public (checked).
   $("#profile-visibility-input").checked = profile.visibility !== "private";
 

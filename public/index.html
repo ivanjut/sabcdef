@@ -222,12 +222,25 @@
           autocomplete="nickname"
         />
       </label>
-      <label class="field">
-        <span class="field-label">Country</span>
-        <select id="profile-country-input" class="field-select">
-          <option value="">No country</option>
-        </select>
-      </label>
+      <div class="field">
+        <span class="field-label" id="profile-country-label">Country</span>
+        <div class="country-picker" id="country-picker">
+          <input type="hidden" id="profile-country-input" />
+          <input
+            id="profile-country-search"
+            class="country-search"
+            type="text"
+            role="combobox"
+            aria-expanded="false"
+            aria-controls="profile-country-listbox"
+            aria-autocomplete="list"
+            aria-labelledby="profile-country-label"
+            placeholder="Search countries…"
+            autocomplete="off"
+          />
+          <ul id="profile-country-listbox" class="country-list" role="listbox" aria-label="Countries" hidden></ul>
+        </div>
+      </div>
       <div class="notify-row">
         <div class="notify-row-text">
           <span class="notify-row-title">Show on global feed</span>
