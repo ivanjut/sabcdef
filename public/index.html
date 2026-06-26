@@ -145,7 +145,7 @@
     </section>
 
     <!-- Forum -->
-    <section class="forum" aria-label="Discussion">
+    <section id="forum" class="forum" aria-label="Discussion">
       <div class="forum-head">
         <h2>Discussion <span id="comment-count" class="count">0</span></h2>
         <div class="sort-toggle" role="tablist" aria-label="Sort comments">
@@ -331,7 +331,44 @@
       </div>
       <button id="yesterday-dialog-close" class="ranking-dialog-close" type="button" aria-label="Close">✕</button>
     </div>
-    <div id="yesterday-dialog-body" class="ranking-dialog-body"></div>
+    <!-- Results and the discussion share one scroll area so the thread reads as
+         a continuation of the results rather than a separate clipped panel. -->
+    <div class="yr-scroll">
+      <div id="yesterday-dialog-body" class="ranking-dialog-body"></div>
+
+      <!-- A discussion thread of its own, scoped to yesterday's day. Mirrors the
+           main forum but lives inside this modal; wired in app.js. -->
+      <section id="yr-forum" class="forum yr-forum" aria-label="Yesterday's discussion" hidden>
+        <div class="forum-head">
+          <h2>Discussion <span id="yr-comment-count" class="count">0</span></h2>
+          <div class="sort-toggle" role="tablist" aria-label="Sort comments">
+            <button class="sort-opt is-active" data-sort="top" role="tab">Top</button>
+            <button class="sort-opt" data-sort="new" role="tab">New</button>
+          </div>
+        </div>
+
+        <form id="yr-comment-form" class="composer">
+          <textarea
+            id="yr-body-input"
+            class="body-input"
+            maxlength="4000"
+            rows="3"
+            placeholder="Discuss yesterday's results…"
+            required
+          ></textarea>
+          <div class="composer-actions">
+            <span id="yr-composer-error" class="error" role="alert"></span>
+            <span class="composer-identity">Posting as
+              <button type="button" id="yr-composer-identity-btn" class="identity-btn">anon</button>
+            </span>
+            <button class="btn btn-primary" type="submit">Post</button>
+          </div>
+        </form>
+
+        <div id="yr-comments" class="comments"></div>
+        <p id="yr-comments-empty" class="empty" hidden>No comments yet. Start the debate.</p>
+      </section>
+    </div>
   </dialog>
 
   <!-- Tier list dialog: shows a commenter's saved tier list, populated in app.js -->

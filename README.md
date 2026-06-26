@@ -3,7 +3,7 @@
 A new category every day that you rank into tiers (S → F), with an open
 Reddit-style forum to debate the tier lists. Mobile-first, works on any screen.
 
-**Live:** https://ivanjut.github.io/sabcdef/
+**Live:** https://sabcdef.com/
 
 ## Stack
 
@@ -70,7 +70,7 @@ else works and the header bell stays hidden.
      VAPID_PUBLIC_KEY=<public>  VAPID_PRIVATE_KEY=<private> \
      VAPID_SUBJECT=mailto:you@example.com \
      WEBHOOK_SECRET=<a-long-random-string> \
-     APP_URL=https://ivanjut.github.io/sabcdef/
+     APP_URL=https://sabcdef.com/   # canonical origin, not a redirecting URL
    ```
 
    Finally, edit the two placeholders in

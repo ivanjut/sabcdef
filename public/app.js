@@ -46,8 +46,13 @@ function toast(msg, variant) {
   if (!el) {
     el = document.createElement("div");
     el.className = "toast";
-    document.body.appendChild(el);
   }
+  // A modal <dialog> renders in the top layer, above body content; show the
+  // toast inside the frontmost open dialog (if any) so it isn't hidden behind
+  // it. The toast is position:fixed, so the host doesn't move it on screen.
+  const openDialogs = document.querySelectorAll("dialog[open]");
+  const host = openDialogs.length ? openDialogs[openDialogs.length - 1] : document.body;
+  if (el.parentElement !== host) host.appendChild(el);
   el.textContent = msg;
   el.classList.remove("toast--success", "toast--error");
   if (variant === "success" || variant === "error") el.classList.add(`toast--${variant}`);
@@ -79,10 +84,7 @@ const store = {
 
 const state = {
   today: null, // { day, name, theme, special_day, items, tierLabels }
-  comments: [], // flat list from Supabase
-  reactions: {}, // { suggestionCommentId: [ { voter_id, tier, author, country, created_at } ] }
   tierLists: [], // public submissions for the day (the global feed), newest first
-  sort: "top",
   // When the page is opened from a share link, we render someone else's tiers
   // read-only instead of the local game.
   readOnly: false,
@@ -90,6 +92,49 @@ const state = {
   previewAuthor: "", // sharer's display name, from the share link
   previewCountry: "" // sharer's ISO alpha-2 country code, from the share link
 };
+
+// ---- Discussion forums ------------------------------------------------------
+// The page runs two independent discussion threads off the same backend: the
+// live "today" forum below the board, and a "yesterday's results" forum inside
+// the results modal. A forum bundles its own data (comments + suggestion
+// reactions + sort order) with three day-related hooks and the DOM ids it
+// renders into, so every function below operates on whichever forum it's handed:
+//   • threadKey()   — value stored in / queried from the comments.day column;
+//                     identifies which thread a comment belongs to.
+//   • snapshotDay() — the day whose saved board a new comment snapshots, so
+//                     "See Tier List" shows how the author actually ranked.
+//   • categoryOf()  — the category those snapshots encode/decode against.
+function createForum({ threadKey, snapshotDay, categoryOf, sel, allowSuggest = false }) {
+  return { threadKey, snapshotDay, categoryOf, sel, allowSuggest, comments: [], reactions: {}, sort: "top" };
+}
+
+const mainForum = createForum({
+  threadKey: () => state.today.day,
+  snapshotDay: () => state.today.day,
+  categoryOf: () => state.today,
+  allowSuggest: true,
+  sel: {
+    root: "#forum", list: "#comments", count: "#comment-count", empty: "#comments-empty",
+    form: "#comment-form", body: "#body-input", error: "#composer-error"
+  }
+});
+
+// A fresh thread dedicated to discussing yesterday's averaged results. It's kept
+// separate from yesterday's own live discussion via a distinct thread key — the
+// "#results" suffix can't collide with a real YYYY-MM-DD day — so the previous
+// day's live comments never appear here. New comments still snapshot the poster's
+// *yesterday* board, so others can see how they ranked. "Yesterday" is relative
+// to the real today (independent of any shared-list preview).
+const resultsThreadKey = (day) => `${day}#results`;
+const yesterdayForum = createForum({
+  threadKey: () => resultsThreadKey(previousDay(dayString())),
+  snapshotDay: () => previousDay(dayString()),
+  categoryOf: () => categoryForDay(previousDay(dayString())),
+  sel: {
+    root: "#yr-forum", list: "#yr-comments", count: "#yr-comment-count", empty: "#yr-comments-empty",
+    form: "#yr-comment-form", body: "#yr-body-input", error: "#yr-composer-error"
+  }
+});
 
 const tiersKey = (day) => `sabcdef:tiers:${day}`;
 // The encoded board this device last submitted for a day — drives the Submit
@@ -220,10 +265,12 @@ async function init() {
   if (!previewing && !getProfile()) openProfileDialog("onboarding");
 
   if (isConfigured) {
-    wireComposer();
+    wireComposer(mainForum);
+    wireComposer(yesterdayForum);
     wireSuggestComposer();
-    wireSortToggle();
-    await loadComments();
+    wireSortToggle(mainForum);
+    wireSortToggle(yesterdayForum);
+    await loadComments(mainForum);
     await loadTierLists();
   } else {
     showForumOffline();
@@ -295,8 +342,10 @@ function wireProfile() {
   renderProfile();
 
   $("#profile-btn").addEventListener("click", () => openProfileDialog("edit"));
-  // The composer's "Posting as <name>" is also a shortcut into the editor.
-  $("#composer-identity-btn")?.addEventListener("click", () => openProfileDialog("edit"));
+  // Each composer's "Posting as <name>" is also a shortcut into the editor.
+  document.querySelectorAll(".identity-btn").forEach((b) =>
+    b.addEventListener("click", () => openProfileDialog("edit"))
+  );
 
   const dialog = $("#profile-dialog");
 
@@ -361,8 +410,9 @@ function renderProfile() {
 
   // Comments are posted under the profile name (or "anon" if it's blank),
   // prefixed with the country flag to match how they'll appear on a comment.
-  const idBtn = $("#composer-identity-btn");
-  if (idBtn) idBtn.textContent = `${flagPrefix(profile.country)}${name || "anon"}`;
+  // Both forums (today + yesterday) share the same identity, so update each.
+  const idText = `${flagPrefix(profile.country)}${name || "anon"}`;
+  document.querySelectorAll(".identity-btn").forEach((b) => (b.textContent = idText));
 }
 
 function openProfileDialog(mode = "edit") {
@@ -556,7 +606,13 @@ function showMenuPopover(anchor, innerHtml, onSelect) {
   picker.setAttribute("role", "menu");
   picker.innerHTML = innerHtml;
 
-  document.body.append(backdrop, picker);
+  // A modal <dialog> renders in the browser's top layer, above everything in the
+  // normal layer regardless of z-index. So when the trigger is inside a dialog
+  // (e.g. a comment's delete menu in the results modal) the popover must mount
+  // in that same dialog, or it appears *behind* it. Both elements are
+  // position:fixed, so the host doesn't change where they land on screen.
+  const host = anchor.closest("dialog") || document.body;
+  host.append(backdrop, picker);
   positionPicker(picker, anchor);
 
   backdrop.addEventListener("click", closeMenuPopover);
@@ -607,7 +663,10 @@ function showInfoPopover(anchor, innerHtml) {
   pop.setAttribute("role", "tooltip");
   pop.innerHTML = innerHtml;
 
-  document.body.append(backdrop, pop);
+  // Mount in the trigger's dialog when there is one, so a modal's top layer
+  // doesn't hide it (see showMenuPopover).
+  const host = anchor.closest("dialog") || document.body;
+  host.append(backdrop, pop);
   positionPicker(pop, anchor);
 
   backdrop.addEventListener("click", closeInfoPopover);
@@ -1151,39 +1210,40 @@ function showForumOffline() {
   $("#comment-count").textContent = "0";
 }
 
-async function loadComments() {
+async function loadComments(forum) {
   const { data, error } = await supabase
     .from("comments")
     .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted")
-    .eq("day", state.today.day)
+    .eq("day", forum.threadKey())
     .order("created_at", { ascending: true });
 
   if (error) {
-    $("#comments-empty").hidden = false;
-    $("#comments-empty").textContent = `Couldn't load the discussion: ${error.message}`;
+    const empty = $(forum.sel.empty);
+    empty.hidden = false;
+    empty.textContent = `Couldn't load the discussion: ${error.message}`;
     return;
   }
-  state.comments = data || [];
-  const suggestionIds = state.comments.filter((c) => c.kind === "suggestion").map((c) => c.id);
-  await loadReactions(suggestionIds);
-  renderComments();
+  forum.comments = data || [];
+  const suggestionIds = forum.comments.filter((c) => c.kind === "suggestion").map((c) => c.id);
+  await loadReactions(forum, suggestionIds);
+  renderComments(forum);
 }
 
-// Pull the tier reactions for the day's suggestions, grouped by comment id.
-async function loadReactions(commentIds) {
-  state.reactions = {};
+// Pull the tier reactions for the forum's suggestions, grouped by comment id.
+async function loadReactions(forum, commentIds) {
+  forum.reactions = {};
   if (!commentIds.length) return;
   const { data, error } = await supabase
     .from("suggestion_reactions")
     .select("comment_id,voter_id,tier,author,country,created_at")
     .in("comment_id", commentIds);
   if (error) return; // reactions are non-essential; the discussion still loads
-  for (const r of data || []) (state.reactions[r.comment_id] ||= []).push(r);
+  for (const r of data || []) (forum.reactions[r.comment_id] ||= []).push(r);
 }
 
-function buildTree(flat) {
+function buildTree(forum) {
   const nodes = new Map();
-  flat.forEach((c) => nodes.set(c.id, { ...c, children: [] }));
+  forum.comments.forEach((c) => nodes.set(c.id, { ...c, children: [] }));
   const roots = [];
   nodes.forEach((node) => {
     if (node.parent_id != null && nodes.has(node.parent_id)) {
@@ -1194,7 +1254,7 @@ function buildTree(flat) {
   });
 
   const cmp =
-    state.sort === "top"
+    forum.sort === "top"
       ? (a, b) => b.score - a.score || a.created_at.localeCompare(b.created_at)
       : (a, b) => b.created_at.localeCompare(a.created_at);
 
@@ -1206,17 +1266,19 @@ function buildTree(flat) {
   return roots;
 }
 
-function renderComments() {
-  const container = $("#comments");
-  const roots = buildTree(state.comments);
+function renderComments(forum) {
+  const container = $(forum.sel.list);
+  if (!container) return;
+  const roots = buildTree(forum);
 
-  $("#comment-count").textContent = state.comments.length;
-  $("#comments-empty").hidden = state.comments.length > 0;
-  if (!state.comments.length) $("#comments-empty").textContent = "No comments yet. Start the debate.";
+  $(forum.sel.count).textContent = forum.comments.length;
+  const empty = $(forum.sel.empty);
+  empty.hidden = forum.comments.length > 0;
+  if (!forum.comments.length) empty.textContent = "No comments yet. Start the debate.";
 
   container.innerHTML = "";
   const votes = store.get(votesKey, {});
-  roots.forEach((node) => container.appendChild(renderNode(node, votes, 0)));
+  roots.forEach((node) => container.appendChild(renderNode(forum, node, votes, 0)));
 }
 
 // ---- "My posts" ownership (for the delete menu) ----------------------------
@@ -1239,7 +1301,7 @@ function unmarkMine(id) {
   store.set(mineKey, myPostIds().filter((x) => x !== id));
 }
 
-function renderNode(node, votes, depth) {
+function renderNode(forum, node, votes, depth) {
   const myVote = votes[node.id] || 0;
   const isSuggestion = node.kind === "suggestion";
 
@@ -1270,7 +1332,7 @@ function renderNode(node, votes, depth) {
     if (node.children.length) {
       const thread = document.createElement("div");
       thread.className = depth < 5 ? "comment-thread" : "";
-      node.children.forEach((child) => thread.appendChild(renderNode(child, votes, depth + 1)));
+      node.children.forEach((child) => thread.appendChild(renderNode(forum, child, votes, depth + 1)));
       wrapper.appendChild(thread);
     }
     return wrapper;
@@ -1285,8 +1347,8 @@ function renderNode(node, votes, depth) {
 
   const actions = isSuggestion
     ? `<button class="reply-btn" data-action="reply">Reply</button>
-       <button class="react-btn" data-action="react">${reactBtnLabel(node.id)}</button>
-       <button class="ranking-btn" data-action="votes">See Rankings <span class="rcount">${reactionCount(node.id)}</span></button>`
+       <button class="react-btn" data-action="react">${reactBtnLabel(forum, node.id)}</button>
+       <button class="ranking-btn" data-action="votes">See Rankings <span class="rcount">${reactionCount(forum, node.id)}</span></button>`
     : `<button class="reply-btn" data-action="reply">Reply</button>
        ${hasTierList(node.tier_list) ? `<button class="ranking-btn" data-action="tierlist">See Tier List</button>` : ""}`;
 
@@ -1315,13 +1377,13 @@ function renderNode(node, votes, depth) {
     </div>
   `;
 
-  el.querySelector(".vote-btn.up").addEventListener("click", () => vote(node.id, 1));
-  el.querySelector(".vote-btn.down").addEventListener("click", () => vote(node.id, -1));
-  el.querySelector('[data-action="reply"]').addEventListener("click", () => toggleReplyForm(el, node.id));
-  el.querySelector('[data-action="tierlist"]')?.addEventListener("click", () => openTierListDialog(node));
-  el.querySelector('[data-action="react"]')?.addEventListener("click", (e) => openReactionPicker(e.currentTarget, node));
-  el.querySelector('[data-action="votes"]')?.addEventListener("click", () => openVotesDialog(node));
-  el.querySelector('[data-action="menu"]')?.addEventListener("click", (e) => openCommentMenu(e.currentTarget, node));
+  el.querySelector(".vote-btn.up").addEventListener("click", () => vote(forum, node.id, 1));
+  el.querySelector(".vote-btn.down").addEventListener("click", () => vote(forum, node.id, -1));
+  el.querySelector('[data-action="reply"]').addEventListener("click", () => toggleReplyForm(forum, el, node.id));
+  el.querySelector('[data-action="tierlist"]')?.addEventListener("click", () => openTierListDialog(forum, node));
+  el.querySelector('[data-action="react"]')?.addEventListener("click", (e) => openReactionPicker(forum, e.currentTarget, node));
+  el.querySelector('[data-action="votes"]')?.addEventListener("click", () => openVotesDialog(forum, node));
+  el.querySelector('[data-action="menu"]')?.addEventListener("click", (e) => openCommentMenu(forum, e.currentTarget, node));
 
   wrapper.appendChild(el);
 
@@ -1329,7 +1391,7 @@ function renderNode(node, votes, depth) {
     const thread = document.createElement("div");
     // Cap visual indentation so deep chains don't run off a phone screen.
     thread.className = depth < 5 ? "comment-thread" : "";
-    node.children.forEach((child) => thread.appendChild(renderNode(child, votes, depth + 1)));
+    node.children.forEach((child) => thread.appendChild(renderNode(forum, child, votes, depth + 1)));
     wrapper.appendChild(thread);
   }
   return wrapper;
@@ -1340,18 +1402,18 @@ function renderNode(node, votes, depth) {
 // menu offers a single "Delete" action; the actual ownership check is enforced
 // server-side by delete_comment (the device id must match), so this is safe even
 // though the menu's visibility is decided from local state.
-function openCommentMenu(anchor, node) {
+function openCommentMenu(forum, anchor, node) {
   const label = node.kind === "suggestion" ? "suggestion" : "comment";
   showMenuPopover(
     anchor,
     `<button type="button" class="menu-item is-danger" data-value="delete">Delete ${label}</button>`,
     (value) => {
-      if (value === "delete") deleteComment(node);
+      if (value === "delete") deleteComment(forum, node);
     }
   );
 }
 
-async function deleteComment(node) {
+async function deleteComment(forum, node) {
   const label = node.kind === "suggestion" ? "suggestion" : "comment";
   const { data, error } = await supabase.rpc("delete_comment", {
     c_id: node.id,
@@ -1366,7 +1428,7 @@ async function deleteComment(node) {
   // ours but the server disagrees) — drop the stale marker and bail.
   if (data === "denied") {
     unmarkMine(node.id);
-    renderComments();
+    renderComments(forum);
     toast(`You can only delete a ${label} from the device that posted it`);
     return;
   }
@@ -1375,44 +1437,44 @@ async function deleteComment(node) {
   // The server soft-deletes when the post has replies (keep a tombstone) and hard
   // deletes otherwise. Mirror whichever it did so we don't have to reload.
   if (data === "tombstoned") {
-    tombstoneCommentLocally(node.id);
+    tombstoneCommentLocally(forum, node.id);
   } else {
-    removeCommentLocally(node.id);
+    removeCommentLocally(forum, node.id);
   }
-  renderComments();
+  renderComments(forum);
   toast(`${label[0].toUpperCase()}${label.slice(1)} deleted`);
 }
 
 // Mirror a server-side soft delete: keep the row (its replies stay threaded under
 // it) but scrub its content and flag it so renderNode shows the tombstone.
-function tombstoneCommentLocally(id) {
-  const c = state.comments.find((x) => x.id === id);
+function tombstoneCommentLocally(forum, id) {
+  const c = forum.comments.find((x) => x.id === id);
   if (!c) return;
   c.deleted = true;
   c.body = "[deleted]";
   c.author = "[deleted]";
   c.country = null;
   c.tier_list = null;
-  delete state.reactions[id];
+  delete forum.reactions[id];
 }
 
 // Remove a comment and all of its replies from local state. The DB cascades the
 // delete (parent_id ... on delete cascade), so we mirror that here rather than
 // reload, sweeping up descendants by walking parent_id.
-function removeCommentLocally(id) {
+function removeCommentLocally(forum, id) {
   const removed = new Set([id]);
   let grew = true;
   while (grew) {
     grew = false;
-    for (const c of state.comments) {
+    for (const c of forum.comments) {
       if (c.parent_id != null && removed.has(c.parent_id) && !removed.has(c.id)) {
         removed.add(c.id);
         grew = true;
       }
     }
   }
-  state.comments = state.comments.filter((c) => !removed.has(c.id));
-  for (const rid of removed) delete state.reactions[rid];
+  forum.comments = forum.comments.filter((c) => !removed.has(c.id));
+  for (const rid of removed) delete forum.reactions[rid];
 }
 
 // ---- Comment tier-list popup ------------------------------------------------
@@ -1443,16 +1505,17 @@ function tierListHtml(today, placement) {
   return `<div class="tiers">${rows}</div>`;
 }
 
-function openTierListDialog(node) {
+function openTierListDialog(forum, node) {
   const dialog = $("#tierlist-dialog");
   if (!dialog) return;
-  // Comments are loaded for the current day, so state.today is the right
-  // category to decode the positional tier list against.
-  const placement = decodeTierList(state.today, node.tier_list);
+  // Decode the positional tier list against the category of the forum's day
+  // (today for the main forum, yesterday for the results-modal forum).
+  const category = forum.categoryOf();
+  const placement = decodeTierList(category, node.tier_list);
 
   $("#tierlist-dialog-title").textContent = `${flagPrefix(node.country)}${node.author || "anon"}'s tier list`;
-  $("#tierlist-dialog-sub").textContent = `${state.today.name} · ${state.today.day}`;
-  $("#tierlist-dialog-body").innerHTML = tierListHtml(state.today, placement);
+  $("#tierlist-dialog-sub").textContent = `${category.name} · ${category.day}`;
+  $("#tierlist-dialog-body").innerHTML = tierListHtml(category, placement);
 
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
@@ -1514,34 +1577,21 @@ function tierStats(category, rows) {
   return stats;
 }
 
-// The mean expressed on the tier scale: "A" when it lands on a tier, or "A.3"
-// meaning three tenths of the way from A toward the next (lower) tier B.
-function fractionalTierLabel(mean) {
-  const lo = Math.min(TIER_LABELS.length - 1, Math.floor(mean));
-  const tenths = Math.round((mean - lo) * 10);
-  if (tenths === 0) return TIER_LABELS[lo];
-  if (tenths === 10) return TIER_LABELS[lo + 1] ?? TIER_LABELS[lo];
-  return `${TIER_LABELS[lo]}.${tenths}`;
-}
-
 const clampPct = (v) => Math.max(0, Math.min(100, v));
 
 // One breakdown row per ranked item: a name, a track showing the spread (band)
-// and the fractional average (marker), then the rounded tier and the fractional
-// label. Contested rows are tagged.
+// and the average (marker), then the rounded tier. Contested rows are tagged.
 function yesterdayItemRow(s) {
   const span = TIER_LABELS.length - 1; // index range 0…6
   const markerPct = clampPct((s.mean / span) * 100);
   const lowPct = clampPct(((s.mean - s.std) / span) * 100);
   const highPct = clampPct(((s.mean + s.std) / span) * 100);
-  const frac = fractionalTierLabel(s.mean);
-  const title = `avg ${s.mean.toFixed(2)} on the S–F scale · ranged ${TIER_LABELS[s.min]}–${TIER_LABELS[s.max]} across ${s.n} list${s.n === 1 ? "" : "s"}`;
   return `
-    <div class="yr-item${s.contested ? " is-contested" : ""}" title="${escapeHtml(title)}">
+    <div class="yr-item${s.contested ? " is-contested" : ""}">
       <span class="yr-name">
         <span class="emoji">${escapeHtml(s.item.emoji || "•")}</span>
         <span class="yr-label">${escapeHtml(s.item.name)}</span>
-        ${s.contested ? `<span class="yr-flag">contested</span>` : ""}
+        ${s.contested ? `<span class="yr-flag" role="img" aria-label="Contested">🔥</span>` : ""}
       </span>
       <span class="yr-scale" aria-hidden="true">
         <span class="yr-spread" style="left:${lowPct}%;width:${Math.max(0, highPct - lowPct)}%"></span>
@@ -1549,7 +1599,6 @@ function yesterdayItemRow(s) {
       </span>
       <span class="yr-meta">
         <span class="yr-tier" style="background:var(--tier-${s.tier})">${s.tier}</span>
-        <span class="yr-frac">${frac}</span>
       </span>
     </div>`;
 }
@@ -1587,8 +1636,7 @@ function yesterdayBodyHtml(category, stats, n) {
       <h3 class="yr-section-title">Average position</h3>
       <p class="yr-legend">
         Each item's average across ${n} list${n === 1 ? "" : "s"}, on the S→F scale.
-        The dot marks the average (e.g. <strong>A.3</strong> = just past A toward B);
-        the band shows how spread out the rankings were.
+        The colored line marks the average; the band shows how spread out the rankings were.
       </p>
       <div class="yr-items">${rows}</div>
     </div>
@@ -1610,6 +1658,13 @@ async function openYesterdayDialog() {
 
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
+
+  // The discussion thread for yesterday's day lives in this modal. It's
+  // independent of whether anyone submitted, so load it whenever the backend is
+  // available — in parallel with the results below.
+  const forumEl = $("#yr-forum");
+  if (forumEl) forumEl.hidden = !isConfigured;
+  if (isConfigured) loadComments(yesterdayForum);
 
   if (!isConfigured) {
     body.innerHTML = `<p class="empty">Results are offline — add your Supabase keys in config.js to enable them.</p>`;
@@ -1689,9 +1744,10 @@ function renderTierLists() {
         <span class="tierlist-time">${timeAgo(row.updated_at || row.created_at)}</span>
       </span>
       <span class="tierlist-cta">See Tier List</span>`;
-    // openTierListDialog reads .tier_list/.author/.country — adapt the feed row.
+    // The feed shows today's public submissions, so decode against the main
+    // forum's category. openTierListDialog reads .tier_list/.author/.country.
     item.addEventListener("click", () =>
-      openTierListDialog({ tier_list: row.tiers, author: row.author, country: row.country })
+      openTierListDialog(mainForum, { tier_list: row.tiers, author: row.author, country: row.country })
     );
     log.appendChild(item);
   }
@@ -1738,12 +1794,15 @@ function wireSuggestComposer() {
 }
 
 async function postSuggestion(item) {
+  // Suggestions only make sense for the live day, so they always post to the
+  // main forum (the yesterday forum has no suggest composer).
+  const forum = mainForum;
   const profile = getProfile() || {};
   const name = (profile.name || "").trim().slice(0, 32) || "anon";
   const country = profile.country || null;
   const { data, error } = await supabase
     .from("comments")
-    .insert({ day: state.today.day, parent_id: null, author: name, country, body: item, kind: "suggestion", device_id: getVoterId() })
+    .insert({ day: forum.threadKey(), parent_id: null, author: name, country, body: item, kind: "suggestion", device_id: getVoterId() })
     .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted")
     .single();
 
@@ -1757,33 +1816,33 @@ async function postSuggestion(item) {
   // Remember it's ours so we can offer the delete menu on this device.
   markMine(data.id);
 
-  state.comments.push(data);
-  state.reactions[data.id] = [];
-  renderComments();
+  forum.comments.push(data);
+  forum.reactions[data.id] = [];
+  renderComments(forum);
 }
 
 // ---- Suggestion tier reactions ----------------------------------------------
 
-function reactionsFor(commentId) {
-  return state.reactions[commentId] || [];
+function reactionsFor(forum, commentId) {
+  return forum.reactions[commentId] || [];
 }
 
-function reactionCount(commentId) {
-  return reactionsFor(commentId).length;
+function reactionCount(forum, commentId) {
+  return reactionsFor(forum, commentId).length;
 }
 
-function myReactionTier(commentId) {
+function myReactionTier(forum, commentId) {
   const voterId = getVoterId();
-  return reactionsFor(commentId).find((r) => r.voter_id === voterId)?.tier || null;
+  return reactionsFor(forum, commentId).find((r) => r.voter_id === voterId)?.tier || null;
 }
 
-function reactBtnLabel(commentId) {
-  const tier = myReactionTier(commentId);
+function reactBtnLabel(forum, commentId) {
+  const tier = myReactionTier(forum, commentId);
   return tier ? `Ranked: ${tier}` : "Vote";
 }
 
-function openReactionPicker(anchorBtn, node) {
-  const mine = myReactionTier(node.id);
+function openReactionPicker(forum, anchorBtn, node) {
+  const mine = myReactionTier(forum, node.id);
   const grid = TIER_LABELS.map((t) => {
     const cls = `tier-picker-opt${t === mine ? " is-current" : ""}`;
     return `<button type="button" class="${cls}" data-value="${t}" style="background:var(--tier-${t})">${t}</button>`;
@@ -1793,27 +1852,27 @@ function openReactionPicker(anchorBtn, node) {
     anchorBtn,
     `<div class="tier-picker-head">Rank <strong>${escapeHtml(node.body)}</strong></div>
      <div class="tier-picker-grid">${grid}</div>`,
-    (tier) => setReaction(node, tier)
+    (tier) => setReaction(forum, node, tier)
   );
 }
 
 // Set (or, if you re-pick your current tier, withdraw) this device's reaction.
-async function setReaction(node, tier) {
+async function setReaction(forum, node, tier) {
   const voterId = getVoterId();
   const profile = getProfile() || {};
   const name = (profile.name || "").trim().slice(0, 32) || "anon";
   const country = profile.country || null;
 
-  const list = reactionsFor(node.id);
+  const list = reactionsFor(forum, node.id);
   const mine = list.find((r) => r.voter_id === voterId);
   const removing = mine && mine.tier === tier;
 
   // Optimistic update: replace any existing reaction from this device.
   const others = list.filter((r) => r.voter_id !== voterId);
-  state.reactions[node.id] = removing
+  forum.reactions[node.id] = removing
     ? others
     : [...others, { comment_id: node.id, voter_id: voterId, tier, author: name, country, created_at: new Date().toISOString() }];
-  updateSuggestionMeta(node.id);
+  updateSuggestionMeta(forum, node.id);
 
   const { error } = removing
     ? await supabase.rpc("unreact_suggestion", { c_id: node.id, voter: voterId })
@@ -1821,40 +1880,40 @@ async function setReaction(node, tier) {
 
   if (error) {
     toast(error.message);
-    await reloadReactionsFor(node.id); // resync on failure
-    updateSuggestionMeta(node.id);
+    await reloadReactionsFor(forum, node.id); // resync on failure
+    updateSuggestionMeta(forum, node.id);
     return;
   }
   toast(removing ? "Vote removed" : `Ranked ${tier}`);
 }
 
 // Re-pull a single suggestion's reactions (used to recover from a failed write).
-async function reloadReactionsFor(commentId) {
+async function reloadReactionsFor(forum, commentId) {
   const { data, error } = await supabase
     .from("suggestion_reactions")
     .select("comment_id,voter_id,tier,author,country,created_at")
     .eq("comment_id", commentId);
-  if (!error) state.reactions[commentId] = data || [];
+  if (!error) forum.reactions[commentId] = data || [];
 }
 
 // Refresh just the count + "Vote"/"Ranked" label on a suggestion in place, so
 // reacting doesn't blow away open reply forms elsewhere in the thread.
-function updateSuggestionMeta(commentId) {
-  const el = document.querySelector(`.comment[data-id="${commentId}"]`);
+function updateSuggestionMeta(forum, commentId) {
+  const el = $(forum.sel.list)?.querySelector(`.comment[data-id="${commentId}"]`);
   if (!el) return;
   const countEl = el.querySelector('[data-action="votes"] .rcount');
-  if (countEl) countEl.textContent = reactionCount(commentId);
+  if (countEl) countEl.textContent = reactionCount(forum, commentId);
   const reactBtn = el.querySelector('[data-action="react"]');
-  if (reactBtn) reactBtn.textContent = reactBtnLabel(commentId);
+  if (reactBtn) reactBtn.textContent = reactBtnLabel(forum, commentId);
 }
 
 // ---- See Rankings dialog -----------------------------------------------------
 
-function openVotesDialog(node) {
+function openVotesDialog(forum, node) {
   const dialog = $("#votes-dialog");
   if (!dialog) return;
 
-  const reactions = reactionsFor(node.id);
+  const reactions = reactionsFor(forum, node.id);
   const counts = Object.fromEntries(TIER_LABELS.map((t) => [t, 0]));
   reactions.forEach((r) => {
     if (counts[r.tier] != null) counts[r.tier] += 1;
@@ -1887,7 +1946,7 @@ function openVotesDialog(node) {
     .join("");
 
   $("#votes-dialog-title").textContent = `Rankings for “${node.body}”`;
-  $("#votes-dialog-sub").textContent = `${total} ${total === 1 ? "vote" : "votes"} · ${state.today.name}`;
+  $("#votes-dialog-sub").textContent = `${total} ${total === 1 ? "vote" : "votes"} · ${forum.categoryOf().name}`;
   $("#votes-dialog-body").innerHTML = `
     <div class="dist">${dist}</div>
     ${
@@ -1917,7 +1976,7 @@ function wireVotesDialog() {
   });
 }
 
-function toggleReplyForm(commentEl, parentId) {
+function toggleReplyForm(forum, commentEl, parentId) {
   const existing = commentEl.querySelector(":scope > .comment-body > .reply-form");
   if (existing) {
     existing.remove();
@@ -1938,7 +1997,7 @@ function toggleReplyForm(commentEl, parentId) {
     const body = form.querySelector(".body-input").value.trim();
     if (!body) return;
     try {
-      await postComment({ parentId, body });
+      await postComment(forum, { parentId, body });
       form.remove();
     } catch (err) {
       toast(err.message);
@@ -1949,7 +2008,7 @@ function toggleReplyForm(commentEl, parentId) {
   form.querySelector(".body-input").focus();
 }
 
-async function vote(id, dir) {
+async function vote(forum, id, dir) {
   const votes = store.get(votesKey, {});
   const current = votes[id] || 0;
 
@@ -1957,8 +2016,9 @@ async function vote(id, dir) {
   const delta = next - current; // one of -2,-1,1,2 (never 0 here)
   if (delta === 0) return;
 
-  // Optimistic UI update
-  const row = document.querySelector(`.comment[data-id="${id}"]`);
+  // Optimistic UI update (scoped to this forum's list so the two threads
+  // never touch each other's rows).
+  const row = $(forum.sel.list)?.querySelector(`.comment[data-id="${id}"]`);
   const scoreEl = row?.querySelector(":scope > .votes > .score");
   const upBtn = row?.querySelector(":scope > .votes > .up");
   const downBtn = row?.querySelector(":scope > .votes > .down");
@@ -1974,21 +2034,23 @@ async function vote(id, dir) {
   const { data, error } = await supabase.rpc("vote_comment", { c_id: id, delta });
   if (error) {
     toast(error.message);
-    await loadComments(); // resync on failure
+    await loadComments(forum); // resync on failure
     return;
   }
   if (scoreEl) scoreEl.textContent = data;
-  const c = state.comments.find((c) => c.id === id);
+  const c = forum.comments.find((c) => c.id === id);
   if (c) c.score = data;
 }
 
-function wireComposer() {
-  const form = $("#comment-form");
+function wireComposer(forum) {
+  const form = $(forum.sel.form);
+  if (!form) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const body = $("#body-input").value.trim();
-    const errEl = $("#composer-error");
+    const bodyEl = $(forum.sel.body);
+    const body = bodyEl.value.trim();
+    const errEl = $(forum.sel.error);
     errEl.textContent = "";
 
     if (!body) {
@@ -1996,27 +2058,30 @@ function wireComposer() {
       return;
     }
     try {
-      await postComment({ body });
-      $("#body-input").value = "";
+      await postComment(forum, { body });
+      bodyEl.value = "";
     } catch (err) {
       errEl.textContent = err.message;
     }
   });
 }
 
-async function postComment({ parentId = null, body }) {
+async function postComment(forum, { parentId = null, body }) {
   // The author + country come from the on-device profile ("anon" / none unset).
   const profile = getProfile() || {};
   const name = (profile.name || "").trim().slice(0, 32) || "anon";
   const country = profile.country || null; // ISO alpha-2; shown as a flag by the name
-  // Snapshot the author's current tier list so it can be shown alongside the
-  // comment later. Stored null when nothing is placed yet (no "See Tier List").
-  const placement = store.get(tiersKey(state.today.day), {});
-  const tierList = encodeTierList(state.today, placement);
+  const day = forum.threadKey();
+  // Snapshot the author's saved board for this forum's snapshot day so it can be
+  // shown alongside the comment later — for the results forum that's their
+  // *yesterday* board, even though the thread key is distinct. Null when nothing
+  // is placed (no "See Tier List").
+  const placement = store.get(tiersKey(forum.snapshotDay()), {});
+  const tierList = encodeTierList(forum.categoryOf(), placement);
   const { data, error } = await supabase
     .from("comments")
     .insert({
-      day: state.today.day,
+      day,
       parent_id: parentId,
       author: name,
       country,
@@ -2039,17 +2104,19 @@ async function postComment({ parentId = null, body }) {
   // Remember it's ours so we can offer the delete menu on this device.
   markMine(data.id);
 
-  state.comments.push(data);
-  renderComments();
+  forum.comments.push(data);
+  renderComments(forum);
 }
 
-function wireSortToggle() {
-  document.querySelectorAll(".sort-opt").forEach((btn) => {
+function wireSortToggle(forum) {
+  const root = $(forum.sel.root);
+  if (!root) return;
+  root.querySelectorAll(".sort-opt").forEach((btn) => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".sort-opt").forEach((b) => b.classList.remove("is-active"));
+      root.querySelectorAll(".sort-opt").forEach((b) => b.classList.remove("is-active"));
       btn.classList.add("is-active");
-      state.sort = btn.dataset.sort;
-      renderComments();
+      forum.sort = btn.dataset.sort;
+      renderComments(forum);
     });
   });
 }

@@ -317,12 +317,19 @@ async function handleComment(record: CommentRecord): Promise<Stats> {
     );
   }
   if (broadcastRows.length) {
-    const dayName = await categoryNameForDay(record.day);
+    // The "yesterday's results" thread stores its day as "<YYYY-MM-DD>#results";
+    // resolve the category against the real date so the title still names it, and
+    // give that thread its own wording so it reads distinctly from the live one.
+    const isResults = (record.day ?? "").includes("#results");
+    const dayName = await categoryNameForDay((record.day ?? "").split("#")[0]);
+    const title = isResults
+      ? `New comment on yesterday's ${dayName} results`
+      : isSuggestion
+        ? `New suggestion for ${dayName}`
+        : `New comment for ${dayName}`;
     add(
       await deliver(broadcastRows, {
-        title: isSuggestion
-          ? `New suggestion for ${dayName}`
-          : `New comment for ${dayName}`,
+        title,
         body: `${author}: ${snippet}`,
         url: APP_URL,
         tag: `day-${record.day ?? "today"}`

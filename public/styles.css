@@ -721,14 +721,8 @@ body.preview-mode .submit-btn { display: none; }
 .yr-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .yr-flag {
   flex: 0 0 auto;
-  font-size: 0.6rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  padding: 1px 6px;
+  font-size: 0.85rem;
+  line-height: 1;
 }
 /* The fractional-position track: a band for the spread, a marker for the mean.
    Kept rectangular (near-square corners) so the spread band is cut off straight
@@ -767,14 +761,6 @@ body.preview-mode .submit-btn { display: none; }
   font-weight: 800;
   font-size: 0.78rem;
   color: #15171c;
-}
-.yr-frac {
-  min-width: 30px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: var(--text-dim);
 }
 .yr-contested {
   margin-top: 20px;
@@ -1094,6 +1080,25 @@ body.preview-mode .submit-btn { display: none; }
   padding: 16px;
   overflow-y: auto;
   max-height: calc(100vh - 64px - 64px);
+}
+/* Yesterday's modal scrolls the results + the discussion thread together, so the
+   thread reads as a continuation rather than a separate, independently-clipped
+   panel. The shared container owns the scroll; the inner body no longer does. */
+.yr-scroll {
+  overflow-y: auto;
+  max-height: calc(100vh - 64px - 64px);
+  /* Breathing room so the last comment / results row never sits flush against
+     the dialog's bottom edge. */
+  padding-bottom: 32px;
+}
+.yr-scroll > .ranking-dialog-body {
+  max-height: none;
+  overflow: visible;
+}
+.yr-forum {
+  margin-top: 0;
+  padding: 16px;
+  border-top: 1px solid var(--border);
 }
 /* Chips inside the dialog are display-only. */
 .ranking-chip { cursor: default; touch-action: auto; }
