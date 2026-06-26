@@ -1044,6 +1044,15 @@ function exitPreview() {
   state.today = getToday();
   renderCategoryHead();
   renderTierList();
+
+  // Onboarding is skipped while viewing a shared link, so a visitor who arrived
+  // via a share may not have a name set yet. Now that they're starting their own
+  // fresh tier list, prompt for a display name + country. We re-prompt even if
+  // they previously skipped (empty name persisted) — arriving through a share is
+  // exactly when we want to encourage attaching a name. Gated on a missing name
+  // so this only fires here, not on the normal boot path for repeat visitors.
+  const profile = getProfile();
+  if (!profile || !(profile.name || "").trim()) openProfileDialog("onboarding");
 }
 
 function renderPreviewBanner() {
