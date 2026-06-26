@@ -308,6 +308,21 @@ body.preview-mode .next-category { display: none; }
 }
 .submit-btn { flex: 0 0 auto; }
 body.preview-mode .submit-btn { display: none; }
+/* Greyed out once the current board matches what was last submitted — there's
+   nothing new to send. Re-enabled (by updateSubmitAttention) after any edit. */
+.submit-btn:disabled,
+.submit-btn.is-submitted {
+  background: var(--bg-elev-2);
+  border-color: var(--border);
+  color: var(--text-dim);
+  cursor: default;
+  filter: none;
+  animation: none;
+}
+.submit-btn:disabled:hover,
+.submit-btn.is-submitted:hover { filter: none; }
+.submit-btn:disabled:active,
+.submit-btn.is-submitted:active { transform: none; }
 /* Drawn attention once the whole board is filled and there are unsubmitted
    changes (toggled by updateSubmitAttention in app.js). */
 .submit-btn.is-ready { animation: submit-pulse 1.5s ease-in-out infinite; }
@@ -886,6 +901,8 @@ body.preview-mode .submit-btn { display: none; }
   backdrop-filter: blur(2px);
 }
 .profile-dialog form { padding: 20px; }
+/* The submit-dialog has no inner <form>, so it carries the padding itself. */
+#submit-dialog { padding: 20px; }
 .profile-dialog-title { margin: 0 0 6px; font-size: 1.25rem; line-height: 1.2; }
 .profile-dialog-sub { margin: 0 0 18px; color: var(--text-dim); font-size: 0.88rem; }
 .field { display: block; margin-bottom: 14px; }
@@ -1208,3 +1225,6 @@ body.preview-mode .chip { cursor: default; }
   z-index: 50;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* Colour-coded outcomes: green confirms a submit, red flags an error. */
+.toast--success { background: #15803d; border-color: #22c55e; color: #fff; }
+.toast--error { background: #b91c1c; border-color: #ef4444; color: #fff; }

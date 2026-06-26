@@ -39,7 +39,9 @@ function timeAgo(iso) {
 }
 
 let toastTimer;
-function toast(msg) {
+// `variant` colour-codes the pill: "success" → green, "error" → red. Omit for
+// the neutral default.
+function toast(msg, variant) {
   let el = $(".toast");
   if (!el) {
     el = document.createElement("div");
@@ -47,6 +49,8 @@ function toast(msg) {
     document.body.appendChild(el);
   }
   el.textContent = msg;
+  el.classList.remove("toast--success", "toast--error");
+  if (variant === "success" || variant === "error") el.classList.add(`toast--${variant}`);
   requestAnimationFrame(() => el.classList.add("show"));
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove("show"), 1800);
@@ -202,6 +206,7 @@ async function init() {
 
   wireToolbar();
   wireSubmit();
+  wireSubmitDialog();
   wireShareMenu();
   wireChipPicker();
   wireTierListDialog();
@@ -525,7 +530,8 @@ function saveTierPlacements() {
     });
   });
   store.set(tiersKey(state.today.day), placement);
-  updateSubmitAttention();
+  // A placement is a user action — filling the last slot here pops the prompt.
+  updateSubmitAttention({ promptOnComplete: true });
 }
 
 // ---- Tap / click to assign --------------------------------------------------
@@ -741,15 +747,37 @@ function poolIsEmpty() {
   return Boolean(pool) && pool.querySelectorAll(".chip").length === 0;
 }
 
-// Pulse the Submit button when the board is full *and* differs from what this
-// device last submitted — i.e. there's something new worth submitting. Cleared
-// after a submit, or whenever items are still unranked.
-function updateSubmitAttention() {
+// Guards a submit in flight: blocks double-submits and stops mid-request
+// re-renders from flipping the button's disabled state out from under us.
+let submitInFlight = false;
+// Re-armed whenever the board leaves the "ready" state, so the completion
+// dialog nudges once per fill rather than on every drag while it's already full.
+let submitPromptArmed = true;
+
+// Drive the Submit button's appearance from the board state:
+//   • "is-ready"     — board full with unsubmitted changes: pulse for attention;
+//   • "is-submitted" — board matches the last submit: grey out + disable;
+//   • otherwise       — clickable, no pulse (mid-edit, or after a correction).
+// When `promptOnComplete` is set (i.e. a user just placed a chip), filling the
+// board also pops the "ready to submit?" dialog — once, until the board changes.
+function updateSubmitAttention({ promptOnComplete = false } = {}) {
   const btn = $("#submit-btn");
   if (!btn || state.readOnly) return;
   const enc = encodeTierList(state.today, store.get(tiersKey(state.today.day), {}));
   const lastSubmitted = store.get(submittedKey(state.today.day), null);
-  btn.classList.toggle("is-ready", poolIsEmpty() && enc !== lastSubmitted);
+  const submitted = lastSubmitted !== null && enc === lastSubmitted;
+  const ready = poolIsEmpty() && !submitted;
+  btn.classList.toggle("is-ready", ready);
+  btn.classList.toggle("is-submitted", submitted);
+  // While a request is in flight it owns `disabled`; otherwise grey out exactly
+  // when there's nothing new to submit, and re-enable once the board changes.
+  if (!submitInFlight) btn.disabled = submitted;
+
+  if (!ready) submitPromptArmed = true;
+  else if (promptOnComplete && submitPromptArmed) {
+    submitPromptArmed = false;
+    openSubmitDialog();
+  }
 }
 
 // Persist the current board at the profile's visibility and return its stable
@@ -783,23 +811,56 @@ async function persistTierList() {
 }
 
 async function submitTierList() {
-  if (state.readOnly || !isConfigured) return;
+  if (state.readOnly || !isConfigured || submitInFlight) return;
   const btn = $("#submit-btn");
+  submitInFlight = true;
   btn.disabled = true;
   try {
     const res = await persistTierList();
     if (!res.ok) {
-      toast(res.reason === "empty" ? "Rank at least one item first." : res.error?.message || "Couldn't submit your tier list");
+      toast(res.reason === "empty" ? "Rank at least one item first." : res.error?.message || "Couldn't submit your tier list", "error");
       return;
     }
     await loadTierLists(); // resync the feed from the server (also re-renders)
-    updateSubmitAttention();
-    toast(res.visibility === "public" ? "Tier list submitted" : "Submitted privately");
+    toast(res.visibility === "public" ? "Tier list submitted" : "Submitted privately", "success");
   } catch (err) {
-    toast(err.message || "Couldn't submit your tier list");
+    toast(err.message || "Couldn't submit your tier list", "error");
   } finally {
-    btn.disabled = false;
+    submitInFlight = false;
+    // Settle the button: greyed out if the submit stuck, clickable again on failure.
+    updateSubmitAttention();
   }
+}
+
+// ---- Ready-to-submit dialog -------------------------------------------------
+// Popped (once) the moment the board is filled, nudging the user to submit or
+// keep editing. Submitting from here runs the same path as the Submit button.
+function openSubmitDialog() {
+  const dialog = $("#submit-dialog");
+  if (!dialog || dialog.open) return;
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+}
+
+function closeSubmitDialog() {
+  const dialog = $("#submit-dialog");
+  if (!dialog) return;
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+}
+
+function wireSubmitDialog() {
+  const dialog = $("#submit-dialog");
+  if (!dialog) return;
+  $("#submit-dialog-cancel")?.addEventListener("click", closeSubmitDialog);
+  $("#submit-dialog-confirm")?.addEventListener("click", () => {
+    closeSubmitDialog();
+    submitTierList();
+  });
+  // Click on the backdrop dismisses, same as the app's other dialogs.
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) closeSubmitDialog();
+  });
 }
 
 // ---- Share ------------------------------------------------------------------

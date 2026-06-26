@@ -192,6 +192,19 @@
     <div class="wrap">New category every day · tier lists saved locally</div>
   </footer>
 
+  <!-- Ready-to-submit dialog: pops once the board is fully ranked, nudging the
+       user to submit their list or keep editing -->
+  <dialog id="submit-dialog" class="profile-dialog">
+    <h2 class="profile-dialog-title">Ready to submit?</h2>
+    <p class="profile-dialog-sub">
+      You've ranked every item. Submit your tier list, or keep editing.
+    </p>
+    <div class="profile-dialog-actions">
+      <button id="submit-dialog-cancel" class="btn btn-ghost" type="button">Continue editing</button>
+      <button id="submit-dialog-confirm" class="btn btn-primary" type="button">Submit</button>
+    </div>
+  </dialog>
+
   <!-- Profile dialog: shown on first visit (onboarding) and reused for editing -->
   <dialog id="profile-dialog" class="profile-dialog">
     <form id="profile-form">
