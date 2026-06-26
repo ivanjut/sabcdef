@@ -2,6 +2,9 @@ node_modules/
 *.log
 .DS_Store
 
+# Supabase CLI scratch dir (version cache etc.) — not project state.
+supabase/.temp/
+
 # Edge Function secrets (VAPID private key, webhook secret) — never commit these.
 .env
 .env.*
