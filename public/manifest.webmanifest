@@ -6,6 +6,9 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "background_color": "#0f1115",
   "theme_color": "#0f1115",
   "categories": ["games", "social", "entertainment"],
