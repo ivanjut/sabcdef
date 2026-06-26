@@ -15,31 +15,31 @@ S
 
 26 Jun
 Fri
-Music Genres
-Music
-S
-🎤 Hip-hop, 🎸 Rock, 🎵 Pop, 🎷 Jazz, 🎛️ Electronic, 🤘 R&B, 🎻 Metal, 🤠 Classical, 🥁 Country, 🎶 Reggae, 🪕 Punk, 🎺 Soul, 🎹 Folk, 🪗 Blues, 🎚️ House, 🔊 Afrobeats
-
-27 Jun
-Sat
-Fast Food Chains
-Food
-S
-🍟 McDonald's, 🍗 KFC, 🍔 Burger King, 🥪 Subway, 🍕 Domino's, 🌮 Taco Bell, 🥤 Wendy's, 🛖 Pizza Hut, 🐔 Chick-fil-A, 🥜 Five Guys, 🦐 Popeyes, 🔥 Nando's, 🌴 In-N-Out, 🌯 Chipotle, 🥖 Greggs, 🐝 Jollibee
-
-28 Jun
-Sun
 Animals
 Nature
 S
 🦁 Lion, 🐘 Elephant, 🐺 Wolf, 🐙 Octopus, 🐯 Tiger, 🐬 Dolphin, 🦅 Eagle, 🐧 Penguin, 🦍 Gorilla, 🐻 Bear, 🐦‍⬛ Crow, 🐴 Horse, 🦊 Fox, 🦈 Shark, 🦉 Owl, 🦦 Otter
 
+27 Jun
+Sat
+Superpowers
+Wildcard
+A
+🕊️ Flight, 👻 Invisibility, 💪 Super strength, 🧠 Telepathy, ✨ Teleportation, ⏳ Time travel, 🌀 Telekinesis, 🦸 Mind reading, 🦎 Shapeshifting, 💚 Healing, 💨 Super speed, ♾️ Immortality, 🦴 X-ray vision, 🛡️ Force fields, 🔥 Elemental control, 🐾 Talking to animals
+
+28 Jun
+Sun
+Music Genres
+Music
+S
+🎤 Hip-hop, 🎸 Rock, 🎵 Pop, 🎷 Jazz, 🎛️ Electronic, 🤘 R&B, 🎻 Metal, 🤠 Classical, 🥁 Country, 🎶 Reggae, 🪕 Punk, 🎺 Soul, 🎹 Folk, 🪗 Blues, 🎚️ House, 🔊 Afrobeats
+
 29 Jun
 Mon
-Games / Sports
+Sports
 Play
-S
-⚽ Football/Soccer, 🏀 Basketball, ♟️ Chess, 🃏 Poker, 🎾 Tennis, 🏎️ Mario Kart, 🎲 Monopoly, 🏏 Cricket, 🎮 Tetris, 🎯 Darts, 🏉 Table tennis, 🐱 Rugby, 🎱 Catan, 🏐 FIFA, 🏓 Volleyball, 🟢 Snooker, 🎟️ Uno
+A
+⚽ Football/Soccer, 🏀 Basketball, 🎾 Tennis, 🏏 Cricket, 🏉 Rugby, 🥊 Boxing, 🏎️ Formula 1, 🏃 Athletics, ⛳ Golf, 🏊 Swimming, 🚴 Cycling, ⚾ Baseball, 🏒 Hockey, 🥋 MMA, 🏸 Table tennis, 🤸 Badminton
 
 30 Jun
 Tue
@@ -72,17 +72,17 @@ A
 
 04 Jul
 Sat
-Sports
-Play
-A
-⚽ Football/Soccer, 🏀 Basketball, 🎾 Tennis, 🏏 Cricket, 🏉 Rugby, 🥊 Boxing, 🏎️ Formula 1, 🏃 Athletics, ⛳ Golf, 🏊 Swimming, 🚴 Cycling, ⚾ Baseball, 🏒 Hockey, 🥋 MMA, 🏸 Table tennis, 🤸 Badminton
+Payment Methods
+Drink/Dip
+C
+💵 Cash, 💳 Debit card, 📲 Credit card, 🍎 Contactless, 📱 Apple Pay, 🏦 Bank transfer, 🪙 Crypto, 💰 PayPal, 🧾 Cheque, 🎁 Gift card, 💸 Direct debit, 🤝 QR pay, 🐚 Mobile wallet, 💎 Barter, 🔗 IOU, 📮 Cowrie shells
 
 05 Jul
 Sun
-Superpowers
-Wildcard
-A
-🕊️ Flight, 👻 Invisibility, 💪 Super strength, 🧠 Telepathy, ✨ Teleportation, ⏳ Time travel, 🌀 Telekinesis, 🦸 Mind reading, 🦎 Shapeshifting, 💚 Healing, 💨 Super speed, ♾️ Immortality, 🦴 X-ray vision, 🛡️ Force fields, 🔥 Elemental control, 🐾 Talking to animals
+Fast Food Chains
+Food
+S
+🍟 McDonald's, 🍗 KFC, 🍔 Burger King, 🥪 Subway, 🍕 Domino's, 🌮 Taco Bell, 🥤 Wendy's, 🛖 Pizza Hut, 🐔 Chick-fil-A, 🥜 Five Guys, 🦐 Popeyes, 🔥 Nando's, 🌴 In-N-Out, 🌯 Chipotle, 🥖 Greggs, 🐝 Jollibee
 
 06 Jul
 Mon
@@ -544,34 +544,27 @@ C
 
 08 Sep
 Tue
-Payment Methods
-Drink/Dip
-C
-💵 Cash, 💳 Debit card, 📲 Credit card, 🍎 Contactless, 📱 Apple Pay, 🏦 Bank transfer, 🪙 Crypto, 💰 PayPal, 🧾 Cheque, 🎁 Gift card, 💸 Direct debit, 🤝 QR pay, 🐚 Mobile wallet, 💎 Barter, 🔗 IOU, 📮 Cowrie shells
-
-09 Sep
-Wed
 Streaming Services
 Screen
 D
 🎬 Netflix, 📺 Disney+, 🍿 Prime Video, 🎞️ Max, 📽️ Hulu, 📡 Apple TV+, 🎥 Spotify, 🔴 YouTube Premium, ▶️ Paramount+, 🎟️ Peacock, 🟣 Crunchyroll, 🔵 BBC iPlayer, 🟢 Twitch, 🦚 MUBI, 🍥 Now TV, 🏰 Tubi
 
-10 Sep
-Thu
+09 Sep
+Wed
 Airlines
 Places
 D
 ✈️ Singapore Airlines, 🛩️ Emirates, 🛫 Qatar Airways, 🛬 ANA, 🪂 Cathay Pacific, 🎫 Lufthansa, 🧳 British Airways, 🌍 Delta, 🗺️ Qantas, 🛂 Turkish Airlines, 🛄 KLM, 💺 Ryanair, 🌐 Air France, 🛰️ United, 🎟️ Etihad, 🧭 JAL
 
-11 Sep
-Fri
+10 Sep
+Thu
 Dips
 Drink/Dip
 D
 🥣 Hummus, 🥑 Guacamole, 🍅 Salsa, 🥛 Sour cream, 🥒 Tzatziki, 🥗 Ranch, 🧀 Queso, 🥬 Spinach dip, 🧄 Aioli, 🍆 Baba ganoush, 🌶️ Nacho cheese, 🇫🇷 French onion, 🟠 Buffalo, 🟡 Blue cheese, 🌿 Pesto, 🥚 Mayo
 
-12 Sep
-Sat
+11 Sep
+Fri
 Toast Toppings
 Food
 C

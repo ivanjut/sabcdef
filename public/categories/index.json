@@ -2,16 +2,16 @@
   "files": [
     "24-june-2026_weekend-activities.json",
     "25-june-2026_world-cuisines.json",
-    "26-june-2026_music-genres.json",
-    "27-june-2026_fast-food-chains.json",
-    "28-june-2026_animals.json",
-    "29-june-2026_games-sports.json",
+    "26-june-2026_animals.json",
+    "27-june-2026_superpowers.json",
+    "28-june-2026_music-genres.json",
+    "29-june-2026_sports.json",
     "30-june-2026_social-media-platforms.json",
     "01-july-2026_smells.json",
     "02-july-2026_weather-types.json",
     "03-july-2026_fruits.json",
-    "04-july-2026_sports.json",
-    "05-july-2026_superpowers.json",
+    "04-july-2026_payment-methods.json",
+    "05-july-2026_fast-food-chains.json",
     "06-july-2026_famous-landmarks.json",
     "07-july-2026_candy-bars.json",
     "08-july-2026_superheroes.json",
@@ -76,10 +76,9 @@
     "05-september-2026_wine-varieties.json",
     "06-september-2026_book-genres.json",
     "07-september-2026_breads.json",
-    "08-september-2026_payment-methods.json",
-    "09-september-2026_streaming-services.json",
-    "10-september-2026_airlines.json",
-    "11-september-2026_dips.json",
-    "12-september-2026_toast-toppings.json"
+    "08-september-2026_streaming-services.json",
+    "09-september-2026_airlines.json",
+    "10-september-2026_dips.json",
+    "11-september-2026_toast-toppings.json"
   ]
 }
