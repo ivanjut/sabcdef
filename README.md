@@ -145,7 +145,7 @@ public/
   supabase.js            Creates the Supabase client
   identity.js            Anonymous per-device id (shared by forum + push)
   push.js                Service-worker registration + notification opt-in UI
-  sw.js                  Service worker: receives push, shows notifications
+  sw.js                  Service worker: receives push, shows notifications, deep-links taps
   manifest.webmanifest   PWA manifest (installable)
   icon-*.png             App / maskable / Apple-touch icons
 supabase/

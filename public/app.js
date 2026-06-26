@@ -276,10 +276,112 @@ async function init() {
     showForumOffline();
   }
 
+  // Notification deep links: a tapped comment/reply notification routes to its
+  // post. wireNotificationNav handles the case where the app is already open;
+  // initDeepLink handles a cold launch. Both are no-ops on a normal open.
+  wireNotificationNav();
+  initDeepLink().catch((err) => console.error("Deep link failed:", err));
+
   // Push notifications (daily category + new comments). Self-contained: it
   // reveals the header bell only when supported + configured, and never blocks
   // the rest of the app if it fails.
   initPush().catch((err) => console.error("Push init failed:", err));
+}
+
+// ---- Notification deep links ----------------------------------------------
+// A tapped comment/reply notification carries ?comment=<id>&thread=<day> (built
+// by supabase/functions/send-push, opened by public/sw.js). We route to that
+// post two ways:
+//   • Cold launch — read the params from the launch URL, or, when iOS dropped
+//     them on launch, from the service worker's stash (consumePendingNav).
+//   • Already open — the SW posts a "notification-nav" message we handle live.
+// The daily nudge carries no params, so it just lands on the home page.
+
+const PENDING_CACHE = "tierdrop-pending-nav";
+const PENDING_KEY = "/__pending_nav__";
+
+// Read (and clear) the destination the service worker stashed for a cold launch.
+// Ignores anything older than a minute so a long-ago tap can't hijack a normal
+// open.
+async function consumePendingNav() {
+  try {
+    if (!self.caches) return null;
+    const cache = await caches.open(PENDING_CACHE);
+    const res = await cache.match(PENDING_KEY);
+    if (!res) return null;
+    await cache.delete(PENDING_KEY);
+    const { url, ts } = await res.json();
+    if (!url || !ts || Date.now() - ts > 60_000) return null;
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+function wireNotificationNav() {
+  if (!("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.addEventListener("message", (e) => {
+    if (e.data && e.data.type === "notification-nav" && e.data.url) {
+      navigateToCommentFromUrl(e.data.url);
+    }
+  });
+}
+
+// On boot, honor a deep link from the launch URL or the SW stash (the stash is
+// the fallback for when iOS dropped the query string on a cold launch).
+async function initDeepLink() {
+  const stashed = await consumePendingNav(); // always clears the stash
+  const here = new URLSearchParams(location.search);
+  const target = here.get("comment") ? location.href : stashed;
+  if (target) await navigateToCommentFromUrl(target);
+}
+
+// Strip our deep-link params so a refresh or re-share doesn't repeat the jump.
+function cleanDeepLinkParams() {
+  const url = new URL(location.href);
+  if (!url.searchParams.has("comment") && !url.searchParams.has("thread")) return;
+  url.searchParams.delete("comment");
+  url.searchParams.delete("thread");
+  history.replaceState(null, "", url.pathname + url.search + url.hash);
+}
+
+async function navigateToCommentFromUrl(rawUrl) {
+  let params;
+  try {
+    params = new URL(rawUrl, location.href).searchParams;
+  } catch {
+    return;
+  }
+  const commentId = params.get("comment");
+  if (!commentId) return;
+  const thread = params.get("thread") || "";
+  cleanDeepLinkParams();
+  await routeToComment(commentId, thread);
+}
+
+// Send the viewer to the comment in whichever live thread holds it: today's main
+// discussion (in the page) or yesterday's results discussion (in its dialog).
+async function routeToComment(commentId, thread) {
+  if (thread === resultsThreadKey(previousDay(dayString()))) {
+    await openYesterdayDialog(commentId);
+    return;
+  }
+  // Default to today's main thread; init() has already loaded its comments.
+  if (!focusComment("#comments", commentId)) {
+    toast("Couldn't find that comment — it may be from an earlier day.");
+  }
+}
+
+// Scroll a comment into view and flash it. Returns false if it isn't rendered.
+function focusComment(listSel, commentId) {
+  const el = document.querySelector(`${listSel} .comment[data-id="${CSS.escape(String(commentId))}"]`);
+  if (!el) return false;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.remove("comment-flash"); // restart the animation on a repeat tap
+  void el.offsetWidth;
+  el.classList.add("comment-flash");
+  setTimeout(() => el.classList.remove("comment-flash"), 2200);
+  return true;
 }
 
 // ---- Theme ----------------------------------------------------------------
@@ -1643,7 +1745,7 @@ function yesterdayBodyHtml(category, stats, n) {
     ${contestedHtml}`;
 }
 
-async function openYesterdayDialog() {
+async function openYesterdayDialog(focusCommentId = null) {
   const dialog = $("#yesterday-dialog");
   if (!dialog) return;
 
@@ -1664,7 +1766,15 @@ async function openYesterdayDialog() {
   // available — in parallel with the results below.
   const forumEl = $("#yr-forum");
   if (forumEl) forumEl.hidden = !isConfigured;
-  if (isConfigured) loadComments(yesterdayForum);
+  const commentsLoaded = isConfigured ? loadComments(yesterdayForum) : Promise.resolve();
+  // Opened from a notification: scroll to that comment once the thread renders.
+  if (focusCommentId != null) {
+    commentsLoaded.then(() => {
+      if (!focusComment("#yr-comments", focusCommentId)) {
+        toast("Couldn't find that comment — it may be from an earlier day.");
+      }
+    });
+  }
 
   if (!isConfigured) {
     body.innerHTML = `<p class="empty">Results are offline — add your Supabase keys in config.js to enable them.</p>`;
@@ -1700,7 +1810,7 @@ function wireYesterdayDialog() {
   const dialog = $("#yesterday-dialog");
   const btn = $("#yesterday-btn");
   if (!dialog || !btn) return;
-  btn.addEventListener("click", openYesterdayDialog);
+  btn.addEventListener("click", () => openYesterdayDialog());
   $("#yesterday-dialog-close")?.addEventListener("click", closeYesterdayDialog);
   // A click on the backdrop reports the dialog itself as the target.
   dialog.addEventListener("click", (e) => {

@@ -448,6 +448,19 @@ body.preview-mode .submit-btn { display: none; }
   display: flex;
   gap: 1px;
   padding: 10px 0;
+  /* Keep a notification-targeted comment clear of the sticky header when we
+     scroll it into view (see focusComment in app.js). */
+  scroll-margin-top: 70px;
+  scroll-margin-bottom: 24px;
+  border-radius: 8px;
+}
+/* Brief highlight on the comment a tapped notification opened. */
+.comment-flash {
+  animation: comment-flash 2.2s ease-out;
+}
+@keyframes comment-flash {
+  0%, 30% { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+  100% { background: transparent; }
 }
 .comment-thread { /* nested replies: line flush with the parent comment's left edge */
   margin-left: 0;

@@ -171,6 +171,21 @@ function truncate(text: string, max = 120): string {
   return clean.length > max ? clean.slice(0, max - 1) + "…" : clean;
 }
 
+// Notification tap targets. These are RELATIVE to the app's scope ("./…"), never
+// absolute (https://…): on an installed iOS PWA, opening/navigating to an
+// absolute URL kicks the user out into Safari, while an in-scope relative URL
+// stays inside the app. The service worker (public/sw.js) resolves and routes
+// these; the app (public/app.js) reads ?comment=/?thread= to scroll to the post.
+const HOME_URL = "./";
+
+// Deep link to a specific comment/reply. `thread` is the comments.day value
+// (e.g. "2026-06-26" or "2026-06-25#results"); URLSearchParams encodes its "#"
+// as %23 so it stays in the query, not a fragment.
+function commentUrl(commentId: number, thread: string): string {
+  const qs = new URLSearchParams({ comment: String(commentId), thread: thread ?? "" });
+  return `./?${qs.toString()}`;
+}
+
 // Send one notification to a set of subscriptions; prune any that are gone.
 async function deliver(rows: Row[], notification: Record<string, unknown>): Promise<Stats> {
   if (!rows.length) return { sent: 0, failed: 0, pruned: 0 };
@@ -232,7 +247,8 @@ async function handleDaily(body: Record<string, unknown>): Promise<Stats> {
     {
       title: (body.title as string) ?? "",
       body: (body.body as string) ?? "Today's category just dropped!",
-      url: (body.url as string) ?? APP_URL,
+      // The daily nudge just opens the app's home (today's category).
+      url: (body.url as string) ?? HOME_URL,
       tag: (body.tag as string) ?? `daily-${currentGlobalDay(now)}`
     }
   );
@@ -311,7 +327,8 @@ async function handleComment(record: CommentRecord): Promise<Stats> {
       await deliver(replyRows, {
         title: `${author} replied to you`,
         body: snippet,
-        url: APP_URL,
+        // Open straight to the new reply.
+        url: commentUrl(record.id, record.day ?? ""),
         tag: `reply-${record.parent_id}`
       })
     );
@@ -331,7 +348,8 @@ async function handleComment(record: CommentRecord): Promise<Stats> {
       await deliver(broadcastRows, {
         title,
         body: `${author}: ${snippet}`,
-        url: APP_URL,
+        // Open straight to the new comment in its thread.
+        url: commentUrl(record.id, record.day ?? ""),
         tag: `day-${record.day ?? "today"}`
       })
     );
