@@ -48,28 +48,93 @@ interface Stats {
 
 const SELECT = "endpoint,p256dh,auth,device_id";
 
-// Category names, in the SAME ORDER as public/categories.js. The daily category
-// is derived from the date exactly the way the client does (categoryForDay in
-// app.js), so notifications can name it. Keep this list in sync if you edit
-// categories.js (add/remove/reorder).
-const CATEGORY_NAMES = [
-  "Pizza Toppings",
-  "Fast Food Chains",
-  "Video Game Genres",
-  "Hot Drinks",
-  "Weekend Activities",
-  "Pets",
-  "Desserts",
-  "Numbers"
+// Notifications name the day's category by reading the SAME calendar the client
+// reads — the per-day config files the site serves under /categories/ (see
+// public/categories.js and categoryForDay() in public/app.js). Reading the live
+// calendar means there's no second, hand-maintained list of names to drift out
+// of sync (which is exactly what used to mislabel notifications).
+const CATEGORIES_BASE = `${APP_URL.replace(/\/+$/, "")}/categories`;
+const MONTHS = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december"
 ];
 
-// The (already title-cased) category name for a YYYY-MM-DD day, or a safe
-// fallback if the day is missing/unparseable.
-function categoryNameForDay(day: string): string {
-  const epochDays = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86_400_000);
-  if (!Number.isFinite(epochDays) || CATEGORY_NAMES.length === 0) return "today's category";
-  const n = CATEGORY_NAMES.length;
-  return CATEGORY_NAMES[((epochDays % n) + n) % n];
+// Per-instance caches: a warm function reuses these across invocations so it
+// doesn't refetch the manifest/config (or re-resolve a day) every time.
+let manifestFilesPromise: Promise<string[]> | null = null;
+const configCache = new Map<string, Promise<{ date: string; name: string } | null>>();
+const dayNameCache = new Map<string, string>();
+
+async function fetchJson(url: string): Promise<any> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`GET ${url} → ${res.status}`);
+  return res.json();
+}
+
+// The config filenames in date order (mirrors the client's CATEGORIES array).
+function categoryFiles(): Promise<string[]> {
+  if (!manifestFilesPromise) {
+    manifestFilesPromise = fetchJson(`${CATEGORIES_BASE}/index.json`)
+      .then((m) => (Array.isArray(m) ? m : m?.files ?? []))
+      .catch((err) => {
+        manifestFilesPromise = null; // allow a retry after a transient failure
+        throw err;
+      });
+  }
+  return manifestFilesPromise;
+}
+
+function loadConfig(file: string): Promise<{ date: string; name: string } | null> {
+  let p = configCache.get(file);
+  if (!p) {
+    p = fetchJson(`${CATEGORIES_BASE}/${file}`)
+      .then((c) => ({ date: c.date as string, name: c.name as string }))
+      .catch(() => null);
+    configCache.set(file, p);
+  }
+  return p;
+}
+
+// The category name shown for a YYYY-MM-DD day, resolved exactly like the app's
+// categoryForDay(): an exact date match in the calendar, else a deterministic
+// rotation over the (date-ordered) list (rotationForDay()). Only if the calendar
+// can't be reached do we return a generic label — so a notification never names
+// the wrong category.
+async function categoryNameForDay(day: string): Promise<string> {
+  if (!day) return "today's category";
+  const cached = dayNameCache.get(day);
+  if (cached) return cached;
+
+  let name = "today's category";
+  try {
+    const files = await categoryFiles();
+    if (files.length) {
+      // Primary: the file whose name encodes this date (dd-monthname-year_*),
+      // confirmed against its `date` field so a filename change can't mislabel.
+      const [y, m, d] = day.split("-");
+      const prefix = `${d}-${MONTHS[Number(m) - 1]}-${y}_`;
+      const named = files.find((f) => f.startsWith(prefix));
+      let cfg = named ? await loadConfig(named) : null;
+
+      // Fallback for days outside the calendar: rotate over the list by
+      // epoch-days, identical to rotationForDay() in app.js.
+      if (!cfg || cfg.date !== day) {
+        const epochDays = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86_400_000);
+        if (Number.isFinite(epochDays)) {
+          const idx = ((epochDays % files.length) + files.length) % files.length;
+          cfg = await loadConfig(files[idx]);
+        }
+      }
+
+      if (cfg?.name) {
+        name = cfg.name;
+        dayNameCache.set(day, name); // cache only a real resolution, not the fallback
+      }
+    }
+  } catch (err) {
+    console.error(`categoryNameForDay(${day}) failed:`, err);
+  }
+  return name;
 }
 
 // The category rotates at this UTC hour worldwide — keep in sync with
@@ -162,7 +227,6 @@ async function handleDaily(body: Record<string, unknown>): Promise<Stats> {
   }
   if (!due.length) return { sent: 0, failed: 0, pruned: 0 };
 
-  const category = categoryNameForDay(currentGlobalDay(now));
   const stats = await deliver(
     due.map((d) => d.row),
     {
@@ -253,11 +317,12 @@ async function handleComment(record: CommentRecord): Promise<Stats> {
     );
   }
   if (broadcastRows.length) {
+    const dayName = await categoryNameForDay(record.day);
     add(
       await deliver(broadcastRows, {
         title: isSuggestion
-          ? `New suggestion for ${categoryNameForDay(record.day)}`
-          : `New comment for ${categoryNameForDay(record.day)}`,
+          ? `New suggestion for ${dayName}`
+          : `New comment for ${dayName}`,
         body: `${author}: ${snippet}`,
         url: APP_URL,
         tag: `day-${record.day ?? "today"}`
