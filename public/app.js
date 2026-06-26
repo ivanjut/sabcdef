@@ -1636,7 +1636,7 @@ function yesterdayBodyHtml(category, stats, n) {
       <h3 class="yr-section-title">Average position</h3>
       <p class="yr-legend">
         Each item's average across ${n} list${n === 1 ? "" : "s"}, on the S→F scale.
-        The colored line marks the average; the band shows how spread out the rankings were.
+        The colored line marks the average; the band shows how spread the rankings were to one standard deviation.
       </p>
       <div class="yr-items">${rows}</div>
     </div>
