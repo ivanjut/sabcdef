@@ -1650,6 +1650,25 @@ function wireTierListDialog() {
 
 const CONTESTED_STD = 1.7; // ≈ rankings spread well beyond three tiers
 
+// Map an item's mean tier index (0 = S … 6 = F) to its averaged tier label.
+//
+// The two end tiers each own a FULL unit of average — S = [0, 1), F = [5, 6] —
+// so an item the majority parks at an extreme isn't bumped inward by a few
+// dissenting votes (e.g. a mostly-S item averaging 0.54 reads as S, not A). The
+// five middle tiers (A–E) split the remaining [1, 5] range evenly, 0.8 wide
+// each. (A plain Math.round instead gives S/F only half-width buckets, which is
+// why those tiers used to be so hard to reach.)
+function tierForMean(mean) {
+  const last = TIER_LABELS.length - 1; // 6 → F
+  if (mean < 1) return TIER_LABELS[0]; // S: [0, 1)
+  if (mean >= last - 1) return TIER_LABELS[last]; // F: [last-1, last]
+  const width = (last - 2) / (last - 1); // middle bucket width (0.8 for 7 tiers)
+  // The 1e-9 nudge keeps an average that lands exactly on a boundary (e.g. 3.4 =
+  // 17/5) in the bucket it opens, rather than one tier low from float dust. It's
+  // far smaller than any gap between two distinct averages, so it's otherwise inert.
+  return TIER_LABELS[1 + Math.floor((mean - 1) / width + 1e-9)]; // A–E across [1, last-1)
+}
+
 function tierStats(category, rows) {
   // Decode each submission once, then summarise per item (keeping id types intact).
   const placements = rows.map((row) => decodeTierList(category, row.tiers));
@@ -1670,7 +1689,7 @@ function tierStats(category, rows) {
       std,
       min: Math.min(...idxs),
       max: Math.max(...idxs),
-      tier: TIER_LABELS[Math.round(mean)],
+      tier: tierForMean(mean),
       contested: idxs.length >= 2 && std >= CONTESTED_STD
     });
   }
