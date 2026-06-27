@@ -64,6 +64,11 @@ end $$;
 -- hard-deleted instead (see delete_comment). Defaults false for existing rows.
 alter table public.comments add column if not exists deleted boolean not null default false;
 
+-- An edit flag. Set when the author rewrites their comment's body via
+-- update_comment; the UI then shows a light-grey "(edited)" marker. Defaults
+-- false for existing rows.
+alter table public.comments add column if not exists edited boolean not null default false;
+
 create index if not exists comments_day_idx    on public.comments (day);
 create index if not exists comments_parent_idx on public.comments (parent_id);
 
@@ -90,9 +95,9 @@ create policy "insert comments" on public.comments
     and score = 1            -- clients cannot seed an inflated score
   );
 
--- No UPDATE/DELETE policies => anon cannot edit comments and cannot delete them
--- directly. Removal goes through delete_comment below (a SECURITY DEFINER function
--- that checks the device id, then either hard-deletes or soft-deletes the row).
+-- No UPDATE/DELETE policies => anon cannot edit or delete comments directly.
+-- Removal goes through delete_comment below, and edits through update_comment —
+-- both SECURITY DEFINER functions that first check the caller's device id.
 
 -- ── Voting ───────────────────────────────────────────────────────────────────
 -- A controlled increment. SECURITY DEFINER lets it bump score even though anon
@@ -185,10 +190,53 @@ begin
 end;
 $$;
 
+-- ── Editing your own comment ──────────────────────────────────────────────────
+-- Like delete_comment, anon has no direct UPDATE policy, so edits go through this
+-- SECURITY DEFINER function. It rewrites the body ONLY when the caller's device id
+-- matches the one stamped on the (non-deleted) comment, and flags the row as
+-- edited so the UI can show "(edited)". Returns 'denied' (not the owner, gone, or
+-- already deleted) or 'ok'.
+create or replace function public.update_comment(c_id bigint, d_id text, new_body text)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  owns boolean;
+begin
+  if d_id is null or char_length(d_id) = 0 then
+    return 'denied';
+  end if;
+  if new_body is null or char_length(btrim(new_body)) = 0 or char_length(new_body) > 4000 then
+    raise exception 'invalid body';
+  end if;
+
+  select true into owns
+    from public.comments
+   where id = c_id
+     and deleted = false
+     and device_id is not null
+     and device_id = left(d_id, 64);
+
+  if not coalesce(owns, false) then
+    return 'denied';
+  end if;
+
+  update public.comments
+     set body   = new_body,
+         edited = true
+   where id = c_id;
+
+  return 'ok';
+end;
+$$;
+
 -- ── Grants ───────────────────────────────────────────────────────────────────
 grant select, insert on public.comments to anon, authenticated;
 grant execute on function public.vote_comment(bigint, integer) to anon, authenticated;
 grant execute on function public.delete_comment(bigint, text) to anon, authenticated;
+grant execute on function public.update_comment(bigint, text, text) to anon, authenticated;
 
 -- ── Suggestion tier reactions ─────────────────────────────────────────────────
 -- Each visitor — identified by an anonymous, client-generated voter_id kept in

@@ -500,6 +500,12 @@ body.preview-mode .submit-btn { display: none; }
 }
 .comment-author { color: var(--text); font-weight: 600; }
 .comment-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Light-grey marker on a comment the author has edited. */
+.comment-edited { color: var(--text-dim); font-size: 0.82em; font-weight: 400; }
+/* Hidden while the inline editor is open (.comment-actions is display:flex, so it
+   needs an explicit rule to honour the hidden attribute). */
+.comment-text[hidden],
+.comment-actions[hidden] { display: none; }
 /* Soft-deleted comment kept only to anchor its replies. */
 .comment.is-deleted { padding-left: 0; }
 .comment-tombstone { color: var(--text-dim); font-style: italic; }

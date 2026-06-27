@@ -1458,7 +1458,7 @@ function showForumOffline() {
 async function loadComments(forum) {
   const { data, error } = await supabase
     .from("comments")
-    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted")
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted,edited")
     .eq("day", forum.threadKey())
     .order("created_at", { ascending: true });
 
@@ -1586,9 +1586,11 @@ function renderNode(forum, node, votes, depth) {
   // Suggestions get a badge + a prominent item name, and a "Vote" button that
   // ranks the item into a tier, plus a "See Rankings" breakdown of those votes.
   // Everything else (score, reply) works the same as a normal comment.
+  // A light-grey "(edited)" marker trails the body once the author has edited it.
+  const editedTag = node.edited ? ` <span class="comment-edited">(edited)</span>` : "";
   const text = isSuggestion
-    ? `<div class="comment-text"><span class="suggest-item">${escapeHtml(node.body)}</span></div>`
-    : `<div class="comment-text">${escapeHtml(node.body)}</div>`;
+    ? `<div class="comment-text"><span class="suggest-item">${escapeHtml(node.body)}</span>${editedTag}</div>`
+    : `<div class="comment-text">${escapeHtml(node.body)}${editedTag}</div>`;
 
   const actions = isSuggestion
     ? `<button class="reply-btn" data-action="reply">Reply</button>
@@ -1642,20 +1644,108 @@ function renderNode(forum, node, votes, depth) {
   return wrapper;
 }
 
-// ---- Deleting your own comment ----------------------------------------------
-// The meatball menu only renders on posts this device authored (see isMine). The
-// menu offers a single "Delete" action; the actual ownership check is enforced
-// server-side by delete_comment (the device id must match), so this is safe even
-// though the menu's visibility is decided from local state.
+// ---- Editing / deleting your own comment ------------------------------------
+// The meatball menu only renders on posts this device authored (see isMine). It
+// offers "Edit" and "Delete"; the actual ownership check is enforced server-side
+// by update_comment / delete_comment (the device id must match), so this is safe
+// even though the menu's visibility is decided from local state.
 function openCommentMenu(forum, anchor, node) {
   const label = node.kind === "suggestion" ? "suggestion" : "comment";
   showMenuPopover(
     anchor,
-    `<button type="button" class="menu-item is-danger" data-value="delete">Delete ${label}</button>`,
+    `<button type="button" class="menu-item" data-value="edit">Edit ${label}</button>
+     <button type="button" class="menu-item is-danger" data-value="delete">Delete ${label}</button>`,
     (value) => {
-      if (value === "delete") deleteComment(forum, node);
+      if (value === "edit") startEditComment(forum, node);
+      else if (value === "delete") deleteComment(forum, node);
     }
   );
+}
+
+// Swap a comment's text for an inline editor (textarea + Save/Cancel), pre-filled
+// with the current body. Mirrors the reply form. On save it calls update_comment;
+// a re-render then shows the new body with its "(edited)" marker.
+function startEditComment(forum, node) {
+  const el = $(forum.sel.list)?.querySelector(`.comment[data-id="${CSS.escape(String(node.id))}"]`);
+  const body = el?.querySelector(":scope > .comment-body");
+  if (!body) return;
+  const existing = body.querySelector(":scope > .edit-form");
+  if (existing) {
+    existing.querySelector(".body-input")?.focus();
+    return;
+  }
+
+  const textEl = body.querySelector(":scope > .comment-text");
+  const actionsEl = body.querySelector(":scope > .comment-actions");
+
+  const form = document.createElement("form");
+  form.className = "reply-form edit-form";
+  form.innerHTML = `
+    <textarea class="body-input" rows="3" maxlength="4000" required></textarea>
+    <div class="reply-form-actions">
+      <button type="button" class="btn btn-ghost" data-action="cancel">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  `;
+  const ta = form.querySelector(".body-input");
+  ta.value = node.body; // set as a value (not HTML) so it isn't re-escaped
+
+  // Hide the static text + actions while the editor is open.
+  if (textEl) textEl.hidden = true;
+  if (actionsEl) actionsEl.hidden = true;
+  const restore = () => {
+    form.remove();
+    if (textEl) textEl.hidden = false;
+    if (actionsEl) actionsEl.hidden = false;
+  };
+
+  form.querySelector('[data-action="cancel"]').addEventListener("click", restore);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const newBody = ta.value.trim();
+    if (!newBody) return;
+    if (newBody === node.body) {
+      restore(); // nothing changed
+      return;
+    }
+    const ok = await updateComment(forum, node, newBody);
+    if (!ok) restore(); // failure (re-render already happened for 'denied'; harmless here)
+  });
+
+  (actionsEl || textEl).after(form);
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length); // caret at the end
+}
+
+async function updateComment(forum, node, newBody) {
+  const label = node.kind === "suggestion" ? "suggestion" : "comment";
+  const { data, error } = await supabase.rpc("update_comment", {
+    c_id: node.id,
+    d_id: getVoterId(),
+    new_body: newBody
+  });
+
+  if (error) {
+    toast(`Couldn't save: ${error.message}`);
+    return false;
+  }
+  // 'denied' means the device id didn't match — drop the stale marker and bail.
+  if (data === "denied") {
+    unmarkMine(node.id);
+    renderComments(forum);
+    toast(`You can only edit a ${label} from the device that posted it`);
+    return false;
+  }
+
+  // Mirror the change locally so we don't have to reload.
+  const c = forum.comments.find((x) => x.id === node.id);
+  if (c) {
+    c.body = newBody;
+    c.edited = true;
+  }
+  renderComments(forum);
+  toast(`${label[0].toUpperCase()}${label.slice(1)} updated`);
+  return true;
 }
 
 async function deleteComment(forum, node) {
@@ -2075,7 +2165,7 @@ async function postSuggestion(item) {
   const { data, error } = await supabase
     .from("comments")
     .insert({ day: forum.threadKey(), parent_id: null, author: name, country, body: item, kind: "suggestion", device_id: getVoterId() })
-    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted")
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted,edited")
     .single();
 
   if (error) throw new Error(error.message);
@@ -2363,7 +2453,7 @@ async function postComment(forum, { parentId = null, body }) {
       // device for a "reply" notification. Not authenticated — see identity.js.
       device_id: getVoterId()
     })
-    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted")
+    .select("id,parent_id,author,country,body,tier_list,score,created_at,kind,deleted,edited")
     .single();
 
   if (error) throw new Error(error.message);
