@@ -29,10 +29,10 @@ A
 
 28 Jun
 Sun
-Music Genres
-Music
-S
-🎤 Hip-hop, 🎸 Rock, 🎵 Pop, 🎷 Jazz, 🎛️ Electronic, 🤘 R&B, 🎻 Metal, 🤠 Classical, 🥁 Country, 🎶 Reggae, 🪕 Punk, 🎺 Soul, 🎹 Folk, 🪗 Blues, 🎚️ House, 🔊 Afrobeats
+Fruits
+Food
+A
+🥭 Mango, 🍓 Strawberry, 🍌 Banana, 🍎 Apple, 🍉 Watermelon, 🍍 Pineapple, 🍇 Grapes, 🍊 Orange, 🍑 Peach, 🍒 Cherry, 🥝 Kiwi, 🫐 Blueberry, 🍈 Durian, 🟢 Pomegranate, 🟡 Lychee, 🟣 Passion fruit, 🍅 Tomato
 
 29 Jun
 Mon
@@ -65,10 +65,10 @@ B
 
 03 Jul
 Fri
-Fruits
-Food
-A
-🥭 Mango, 🍓 Strawberry, 🍌 Banana, 🍎 Apple, 🍉 Watermelon, 🍍 Pineapple, 🍇 Grapes, 🍊 Orange, 🍑 Peach, 🍒 Cherry, 🥝 Kiwi, 🫐 Blueberry, 🍈 Durian, 🟢 Pomegranate, 🟡 Lychee, 🟣 Passion fruit
+Music Genres
+Music
+S
+🎤 Hip-hop, 🎸 Rock, 🎵 Pop, 🎷 Jazz, 🎛️ Electronic, 🤘 R&B, 🎻 Metal, 🤠 Classical, 🥁 Country, 🎶 Reggae, 🪕 Punk, 🎺 Soul, 🎹 Folk, 🪗 Blues, 🎚️ House, 🔊 Afrobeats
 
 04 Jul
 Sat

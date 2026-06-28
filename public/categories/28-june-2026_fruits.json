@@ -1,5 +1,5 @@
 {
-  "date": "2026-07-03",
+  "date": "2026-06-28",
   "name": "Fruits",
   "theme": "Food",
   "special_day": "",
@@ -19,6 +19,7 @@
     { "id": "durian", "name": "Durian", "emoji": "🍈" },
     { "id": "pomegranate", "name": "Pomegranate", "emoji": "🟢" },
     { "id": "lychee", "name": "Lychee", "emoji": "🟡" },
-    { "id": "passion-fruit", "name": "Passion fruit", "emoji": "🟣" }
+    { "id": "passion-fruit", "name": "Passion fruit", "emoji": "🟣" },
+    { "id": "tomato", "name": "Tomato", "emoji": "🍅" }
   ]
 }
