@@ -149,8 +149,10 @@ public/
   manifest.webmanifest   PWA manifest (installable)
   icon-*.png             App / maskable / Apple-touch icons
 supabase/
-  schema.sql             Forum + push_subscriptions tables, RLS, RPC functions
+  schema.sql             Forum + push_subscriptions + categories + daily_averages tables, RLS, RPC functions
+  categories-seed.sql    Generated: mirrors public/categories/*.json into the DB (categories + items)
   notifications-setup.sql  pg_cron daily job + new-comment trigger (placeholders)
+  daily-averages-setup.sql pg_cron daily snapshot + one-time backfill of daily_averages
   functions/send-push/   Edge Function that sends the Web Push messages
 serve.js                 Zero-dependency static server for local dev
 .github/workflows/

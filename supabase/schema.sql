@@ -572,3 +572,151 @@ $$;
 
 grant execute on function public.upsert_push_subscription(text, text, text, text, boolean, boolean, text, integer, text) to anon, authenticated;
 grant execute on function public.delete_push_subscription(text) to anon, authenticated;
+
+-- ── Categories (DB mirror of the served calendar) ─────────────────────────────
+-- The client loads each day's category + items from static JSON
+-- (public/categories/*.json, generated from scripts/calendar.txt); these tables
+-- mirror that same data into the DB so aggregates (daily_averages) can be derived
+-- WITH item identity rather than bare positions. Seed/refresh them with
+-- supabase/categories-seed.sql, generated from the served JSON by
+-- scripts/generate-category-seed.mjs. Read-only to clients; written only by that
+-- seed (run as a privileged role). The client keeps reading the JSON, so the core
+-- game stays static/offline — these tables are for server-side derivation only.
+create table if not exists public.categories (
+  day         text primary key,        -- YYYY-MM-DD (a TierDrop day)
+  name        text not null,
+  theme       text,
+  special_day text
+);
+
+-- One row per item per day. `position` is the 0-based index in the day's item
+-- list and MUST match the order boards are encoded in (tier_lists.tiers) — a
+-- stored board's nth character is the item at position n. A day's item order must
+-- stay fixed once boards exist for it.
+create table if not exists public.category_items (
+  day      text    not null references public.categories(day) on delete cascade,
+  position integer not null,
+  item_id  text    not null,           -- stable slug (e.g. 'mexican')
+  name     text    not null,
+  emoji    text,
+  primary key (day, position),
+  unique (day, item_id)
+);
+
+alter table public.categories enable row level security;
+alter table public.category_items enable row level security;
+drop policy if exists "read categories" on public.categories;
+drop policy if exists "read category_items" on public.category_items;
+create policy "read categories" on public.categories for select using (true);
+create policy "read category_items" on public.category_items for select using (true);
+grant select on public.categories to anon, authenticated;
+grant select on public.category_items to anon, authenticated;
+
+-- ── Daily global averages (permanent record) ──────────────────────────────────
+-- A permanent, per-day snapshot of the group average across everyone's PUBLIC
+-- tier lists — the same numbers the "Yesterday's results" screen computes live,
+-- but persisted so the history survives. One row per day.
+--
+-- `items` is a JSON array, one entry per ranked item, joined to category_items so
+-- it is self-describing:
+--   { "pos": <0-based position>, "item_id": <slug>, "name": <item name>,
+--     "mean": <avg tier 0=S…6=F>, "std": <population std>,
+--     "n": <how many placed this item> }
+-- (item_id/name are null for a day whose category_items haven't been seeded yet.)
+-- The row's `n` is the number of public tier lists that day.
+create table if not exists public.daily_averages (
+  day         text        primary key,             -- YYYY-MM-DD (a TierDrop day)
+  n           integer     not null,                -- public tier lists averaged
+  items       jsonb       not null default '[]',   -- per-position stats (see above)
+  computed_at timestamptz not null default now()
+);
+
+-- Aggregate, non-sensitive data derived from already-public boards: world-readable.
+-- Writes happen only through snapshot_daily_averages (SECURITY DEFINER) — anon has
+-- no insert/update/delete policy.
+alter table public.daily_averages enable row level security;
+drop policy if exists "read daily_averages" on public.daily_averages;
+create policy "read daily_averages" on public.daily_averages
+  for select
+  using (true);
+
+-- Compute and upsert one day's averages from its PUBLIC submissions. Mirrors the
+-- client's tierStats: map each placed tier letter S…F to 0…6, skip unplaced
+-- positions ('-'), average per position, population std. Idempotent (upserts by
+-- day); deletes the row and returns 0 when the day has no public boards. Returns
+-- the number of public tier lists averaged.
+create or replace function public.snapshot_daily_averages(p_day text)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  total_n    integer;
+  items_json jsonb;
+begin
+  select count(*) into total_n
+  from public.tier_lists
+  where day = p_day
+    and visibility = 'public'
+    and tiers ~ '[SABCDEF]';          -- placed at least one ranked item
+
+  if coalesce(total_n, 0) = 0 then
+    delete from public.daily_averages where day = p_day;   -- keep the table truthful
+    return 0;
+  end if;
+
+  with pub as (
+    select tiers
+    from public.tier_lists
+    where day = p_day
+      and visibility = 'public'
+      and tiers ~ '[SABCDEF]'
+  ),
+  cells as (
+    select g.pos - 1 as pos,                  -- 0-based, matches category_items.position
+           position(substr(t.tiers, g.pos, 1) in 'SABCDEF') - 1 as idx
+    from pub t
+    cross join lateral generate_series(1, char_length(t.tiers)) as g(pos)
+  ),
+  placed as (
+    select pos, idx from cells where idx >= 0          -- drop '-' (unplaced)
+  ),
+  per_pos as (
+    select pos,
+           avg(idx)::numeric                  as mean,
+           coalesce(stddev_pop(idx), 0)::numeric as std,
+           count(*)::integer                  as n
+    from placed
+    group by pos
+  )
+  -- Join to category_items so each entry is self-describing (item_id + name).
+  -- LEFT JOIN so averages still compute (id/name null) if a day isn't seeded yet.
+  select jsonb_agg(
+           jsonb_build_object(
+             'pos',     pp.pos,
+             'item_id', ci.item_id,
+             'name',    ci.name,
+             'mean',    round(pp.mean, 6),
+             'std',     round(pp.std, 6),
+             'n',       pp.n
+           )
+           order by pp.pos
+         )
+  into items_json
+  from per_pos pp
+  left join public.category_items ci
+    on ci.day = p_day and ci.position = pp.pos;
+
+  insert into public.daily_averages (day, n, items, computed_at)
+  values (p_day, total_n, coalesce(items_json, '[]'::jsonb), now())
+  on conflict (day) do update
+    set n           = excluded.n,
+        items       = excluded.items,
+        computed_at = excluded.computed_at;
+
+  return total_n;
+end;
+$$;
+
+grant select on public.daily_averages to anon, authenticated;
