@@ -2057,7 +2057,7 @@ function renderClosest(best) {
     <h3 class="yr-section-title">🎯 Closest to the average</h3>
     <p class="yr-closest-text">
       <strong>${who}</strong> had the tier list closest to the group average
-      <span class="yr-closest-meta">(~${mad.toFixed(1)} tiers off per item)</span>.
+      <span class="yr-closest-meta">(${mad.toFixed(2)} tiers off per item)</span>.
     </p>
     <button type="button" class="btn btn-ghost yr-closest-btn">See ${flagPrefix(row.country)}${escapeHtml(row.author || "anon")}'s tier list</button>
   `;
