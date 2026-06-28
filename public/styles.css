@@ -794,6 +794,20 @@ body.preview-mode .submit-btn { display: none; }
 .yr-contested-list strong { color: var(--text); }
 .yr-consensus { margin: 20px 0 0; font-size: 0.85rem; color: var(--text-dim); }
 
+/* "Closest to the average" callout — sits below the results, above discussion.
+   A hard top-border divider (matching .yr-forum) rather than a rounded card. */
+.yr-closest {
+  margin-top: 0;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+.yr-closest[hidden] { display: none; }
+.yr-closest .yr-section-title { margin-bottom: 8px; }
+.yr-closest-text { margin: 0 0 12px; font-size: 0.9rem; }
+.yr-closest-text strong { color: var(--text); }
+.yr-closest-meta { color: var(--text-dim); font-size: 0.85em; }
+.yr-closest-btn { width: 100%; }
+
 /* ---- Tier Lists log ---- */
 .tierlists { margin-top: 30px; }
 .tierlists[hidden] { display: none; }

@@ -1997,6 +1997,75 @@ function yesterdayBodyHtml(category, stats, n) {
     ${contestedHtml}`;
 }
 
+// ---- Closest to the average -------------------------------------------------
+// Among the day's PUBLIC submissions (RLS only returns public rows), find whose
+// board hugged the group consensus closest: the lowest mean absolute deviation,
+// per placed item, from each item's average tier index (stats[].mean). Boards
+// that placed fewer than half the ranked items are skipped so a near-empty board
+// can't win on a technicality. Returns { row, mad, coverage } or null.
+function closestToAverage(category, stats, rows) {
+  const meanById = new Map(stats.map((s) => [s.item.id, s.mean]));
+  const comparable = meanById.size;
+  if (!comparable) return null;
+  const minCoverage = Math.max(1, Math.ceil(comparable / 2));
+
+  let best = null;
+  for (const row of rows) {
+    const placement = decodeTierList(category, row.tiers);
+    let sum = 0;
+    let coverage = 0;
+    for (const [id, mean] of meanById) {
+      const idx = TIER_LABELS.indexOf(placement[id]);
+      if (idx >= 0) {
+        sum += Math.abs(idx - mean);
+        coverage++;
+      }
+    }
+    if (coverage < minCoverage) continue;
+    const cand = { row, mad: sum / coverage, coverage };
+    if (!best || isCloserMatch(cand, best)) best = cand;
+  }
+  return best;
+}
+
+// Order two candidates: smaller deviation wins; ties go to the more complete
+// board, then a deterministic author/board tiebreak so the pick is stable across
+// reloads (rows arrive in no guaranteed order).
+function isCloserMatch(a, b) {
+  if (a.mad !== b.mad) return a.mad < b.mad;
+  if (a.coverage !== b.coverage) return a.coverage > b.coverage;
+  const an = a.row.author || "anon";
+  const bn = b.row.author || "anon";
+  if (an !== bn) return an.localeCompare(bn) < 0;
+  return (a.row.tiers || "").localeCompare(b.row.tiers || "") < 0;
+}
+
+// Render (or clear, when best is null) the "closest to the average" callout, with
+// a button to open that submitter's full board in the existing tier-list dialog.
+function renderClosest(best) {
+  const el = $("#yr-closest");
+  if (!el) return;
+  if (!best) {
+    el.hidden = true;
+    el.innerHTML = "";
+    return;
+  }
+  const { row, mad } = best;
+  const who = `${flagPrefix(row.country)}${escapeHtml(row.author || "anon")}`;
+  el.hidden = false;
+  el.innerHTML = `
+    <h3 class="yr-section-title">🎯 Closest to the average</h3>
+    <p class="yr-closest-text">
+      <strong>${who}</strong> had the tier list closest to the group average
+      <span class="yr-closest-meta">(~${mad.toFixed(1)} tiers off per item)</span>.
+    </p>
+    <button type="button" class="btn btn-ghost yr-closest-btn">See ${flagPrefix(row.country)}${escapeHtml(row.author || "anon")}'s tier list</button>
+  `;
+  el.querySelector(".yr-closest-btn").addEventListener("click", () =>
+    openTierListDialog(yesterdayForum, { tier_list: row.tiers, author: row.author, country: row.country })
+  );
+}
+
 async function openYesterdayDialog(focusCommentId = null) {
   const dialog = $("#yesterday-dialog");
   if (!dialog) return;
@@ -2009,6 +2078,7 @@ async function openYesterdayDialog(focusCommentId = null) {
   $("#yesterday-dialog-title").textContent = "Yesterday's results";
   $("#yesterday-dialog-sub").textContent = `${category.name} · ${day}`;
   body.innerHTML = `<p class="empty">Loading…</p>`;
+  renderClosest(null); // clear any prior "closest" callout while (re)loading
 
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
@@ -2033,7 +2103,13 @@ async function openYesterdayDialog(focusCommentId = null) {
     return;
   }
 
-  const { data, error } = await supabase.from("tier_lists").select("tiers").eq("day", day);
+  // Only public rows come back (RLS), so both the average and the "closest" pick
+  // are over public submissions. Pull author/country too, to name the closest
+  // match and open their board.
+  const { data, error } = await supabase
+    .from("tier_lists")
+    .select("author,country,tiers")
+    .eq("day", day);
   if (error) {
     body.innerHTML = `<p class="empty">Couldn't load yesterday's results.</p>`;
     return;
@@ -2048,7 +2124,10 @@ async function openYesterdayDialog(focusCommentId = null) {
 
   const n = rows.length;
   $("#yesterday-dialog-sub").textContent = `Average of ${n} tier list${n === 1 ? "" : "s"} · ${category.name} · ${day}`;
-  body.innerHTML = yesterdayBodyHtml(category, tierStats(category, rows), n);
+  const stats = tierStats(category, rows);
+  body.innerHTML = yesterdayBodyHtml(category, stats, n);
+  // Spotlight whose board was closest to the consensus (needs 2+ to be meaningful).
+  renderClosest(n >= 2 ? closestToAverage(category, stats, rows) : null);
 }
 
 function closeYesterdayDialog() {
