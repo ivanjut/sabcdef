@@ -105,6 +105,40 @@ workflow, which publishes `public/`. Pages is set to the "GitHub Actions" source
 To point Pages at a different folder or repo, edit the `path:` in
 `.github/workflows/deploy.yml`.
 
+## Editing the categories
+
+Categories are authored in [`scripts/calendar.txt`](scripts/calendar.txt) (a
+table of Date · Day · Category · Theme · [Special day] · Tier · Items) and
+compiled into the per-day JSON the app serves. After changing the table:
+
+1. **Regenerate the served JSON** (writes `public/categories/*.json` + the
+   `index.json` manifest the client loads):
+
+   ```bash
+   node scripts/generate-categories.mjs
+   ```
+
+2. **Regenerate + apply the DB seed.** The database keeps a mirror of the calendar
+   (`categories` / `category_items`) so daily averages can be derived with item
+   names. Rebuild the seed from the JSON, then run it in the Supabase **SQL
+   Editor**:
+
+   ```bash
+   node scripts/generate-category-seed.mjs   # writes supabase/categories-seed.sql
+   ```
+
+   Then apply [`supabase/categories-seed.sql`](supabase/categories-seed.sql).
+   (Only needed if you've set up the daily-averages tables — see
+   `supabase/daily-averages-setup.sql`. The client itself only reads the JSON.)
+
+3. **Commit and push** — the deploy workflow publishes the updated JSON.
+
+**Don't reorder or remove a day's items once boards have been submitted for it.**
+Placements are stored positionally (the nth character of a saved board is the
+nth item), so changing the order would misalign existing boards and their stored
+averages. Renaming an item or fixing an emoji is safe; adding new items to the
+end of a not-yet-played day is safe too.
+
 ## How it works
 
 - **Daily category** — each date maps to a category config in
