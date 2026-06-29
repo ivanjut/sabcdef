@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-01",
+  "name": "Music Genres",
+  "theme": "Nature",
+  "special_day": "International Reggae Day",
+  "items": [
+    { "id": "pop", "name": "Pop", "emoji": "🎵" },
+    { "id": "hip-hop-rap", "name": "Hip-Hop / Rap", "emoji": "🎤" },
+    { "id": "rock", "name": "Rock", "emoji": "🎸" },
+    { "id": "metal", "name": "Metal", "emoji": "🤘" },
+    { "id": "country", "name": "Country", "emoji": "🤠" },
+    { "id": "electronic", "name": "Electronic", "emoji": "🎛️" },
+    { "id": "disco", "name": "Disco", "emoji": "🪩" },
+    { "id": "reggae", "name": "Reggae", "emoji": "🥁" },
+    { "id": "k-pop", "name": "K-Pop", "emoji": "🇰🇷" },
+    { "id": "folk", "name": "Folk", "emoji": "🪕" },
+    { "id": "techno", "name": "Techno", "emoji": "📀" },
+    { "id": "jazz", "name": "Jazz", "emoji": "🎺" },
+    { "id": "classical", "name": "Classical", "emoji": "🎻" },
+    { "id": "indie-alt", "name": "Indie / Alt", "emoji": "🚬" },
+    { "id": "grime", "name": "Grime", "emoji": "🚮" },
+    { "id": "lo-fi", "name": "Lo-Fi", "emoji": "☕" },
+    { "id": "r-n-b", "name": "R'n'B", "emoji": "🎹" },
+    { "id": "ice-cream-truck-van", "name": "Ice Cream Truck / Van", "emoji": "🍦" }
+  ]
+}

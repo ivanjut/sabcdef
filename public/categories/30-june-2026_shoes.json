@@ -1,0 +1,26 @@
+{
+  "date": "2026-06-30",
+  "name": "Shoes",
+  "theme": "Tech",
+  "special_day": "National OOTD Day",
+  "items": [
+    { "id": "trainers-sneakers", "name": "Trainers / Sneakers", "emoji": "👟" },
+    { "id": "toe-shoes", "name": "Toe Shoes", "emoji": "🧤" },
+    { "id": "loafers", "name": "Loafers", "emoji": "👞" },
+    { "id": "flip-flops", "name": "Flip-Flops", "emoji": "🩴" },
+    { "id": "slippers", "name": "Slippers", "emoji": "🥿" },
+    { "id": "slides", "name": "Slides", "emoji": "🛝" },
+    { "id": "cowboy-boots", "name": "Cowboy Boots", "emoji": "🤠" },
+    { "id": "combat-boots", "name": "Combat Boots", "emoji": "🪖" },
+    { "id": "crocs", "name": "Crocs", "emoji": "🐊" },
+    { "id": "ugg-boots", "name": "UGG Boots", "emoji": "🐑" },
+    { "id": "birkenstocks", "name": "Birkenstocks", "emoji": "🌿" },
+    { "id": "cleats-football-boots", "name": "Cleats / Football Boots", "emoji": "⚽" },
+    { "id": "heelys", "name": "Heelys", "emoji": "🛞" },
+    { "id": "timberlands", "name": "Timberlands", "emoji": "🥾" },
+    { "id": "stilettos", "name": "Stilettos", "emoji": "👠" },
+    { "id": "clown-shoes", "name": "Clown Shoes", "emoji": "🤡" },
+    { "id": "wellies-rain-boots", "name": "Wellies / Rain Boots", "emoji": "🌧️" },
+    { "id": "bare-feet", "name": "Bare Feet", "emoji": "🦶" }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-05",
+  "name": "Drinks",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "coffee", "name": "Coffee", "emoji": "☕" },
+    { "id": "tea", "name": "Tea", "emoji": "🫖" },
+    { "id": "soda-soft-drink", "name": "Soda / Soft Drink", "emoji": "🥤" },
+    { "id": "beer", "name": "Beer", "emoji": "🍺" },
+    { "id": "wine", "name": "Wine", "emoji": "🍷" },
+    { "id": "water", "name": "Water", "emoji": "💧" },
+    { "id": "hot-chocolate", "name": "Hot Chocolate", "emoji": "🍫" },
+    { "id": "apple-juice", "name": "Apple Juice", "emoji": "🧃" },
+    { "id": "milk", "name": "Milk", "emoji": "🥛" },
+    { "id": "tomato-juice", "name": "Tomato Juice", "emoji": "🥫" },
+    { "id": "sparkling-water", "name": "Sparkling Water", "emoji": "🫧" },
+    { "id": "orange-juice", "name": "Orange Juice", "emoji": "🍊" },
+    { "id": "matcha", "name": "Matcha", "emoji": "🍵" },
+    { "id": "energy-drink", "name": "Energy Drink", "emoji": "⚡" },
+    { "id": "milkshake", "name": "Milkshake", "emoji": "🍦" },
+    { "id": "smoothie", "name": "Smoothie", "emoji": "🫐" },
+    { "id": "lemonade", "name": "Lemonade", "emoji": "🍋" },
+    { "id": "prune-juice", "name": "Prune Juice", "emoji": "🟣" }
+  ]
+}

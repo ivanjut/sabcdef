@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-03",
+  "name": "Weather",
+  "theme": "Food",
+  "special_day": "",
+  "items": [
+    { "id": "sunny", "name": "Sunny", "emoji": "☀️" },
+    { "id": "rain", "name": "Rain", "emoji": "🌧️" },
+    { "id": "snow", "name": "Snow", "emoji": "❄️" },
+    { "id": "drizzle", "name": "Drizzle", "emoji": "💧" },
+    { "id": "heatwave", "name": "Heatwave", "emoji": "🥵" },
+    { "id": "thunderstorm", "name": "Thunderstorm", "emoji": "⚡" },
+    { "id": "fog", "name": "Fog", "emoji": "🌁" },
+    { "id": "light-wind", "name": "Light Wind", "emoji": "💨" },
+    { "id": "heavy-wind", "name": "Heavy Wind", "emoji": "💨💨" },
+    { "id": "humid", "name": "Humid", "emoji": "💦" },
+    { "id": "hail", "name": "Hail", "emoji": "🧊" },
+    { "id": "frost", "name": "Frost", "emoji": "🥶" },
+    { "id": "tornado", "name": "Tornado", "emoji": "🌪️" },
+    { "id": "mist", "name": "Mist", "emoji": "🌫️" },
+    { "id": "monsoon", "name": "Monsoon", "emoji": "🌊" },
+    { "id": "hurricane", "name": "Hurricane", "emoji": "🌀" },
+    { "id": "sleet", "name": "Sleet", "emoji": "🌨️" },
+    { "id": "rainbow", "name": "Rainbow", "emoji": "🌈" }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-02",
+  "name": "Snacks",
+  "theme": "Time",
+  "special_day": "",
+  "items": [
+    { "id": "crisps-chips", "name": "Crisps / Chips", "emoji": "🥔" },
+    { "id": "chocolate", "name": "Chocolate", "emoji": "🍫" },
+    { "id": "popcorn", "name": "Popcorn", "emoji": "🍿" },
+    { "id": "biscuits-cookies", "name": "Biscuits / Cookies", "emoji": "🍪" },
+    { "id": "boiled-egg", "name": "Boiled Egg", "emoji": "🥚" },
+    { "id": "cheese", "name": "Cheese", "emoji": "🧀" },
+    { "id": "granola-bar", "name": "Granola Bar", "emoji": "🌾" },
+    { "id": "breadsticks", "name": "Breadsticks", "emoji": "🥖" },
+    { "id": "hummus", "name": "Hummus", "emoji": "🫘" },
+    { "id": "nuts", "name": "Nuts", "emoji": "🥜" },
+    { "id": "veggie-sticks", "name": "Veggie Sticks", "emoji": "🥕" },
+    { "id": "rice-cakes", "name": "Rice Cakes", "emoji": "⚪" },
+    { "id": "toast", "name": "Toast", "emoji": "🍞" },
+    { "id": "crackers", "name": "Crackers", "emoji": "🍘" },
+    { "id": "olives", "name": "Olives", "emoji": "🫒" },
+    { "id": "gingerbread-man", "name": "Gingerbread Man", "emoji": "🫚" },
+    { "id": "pretzel", "name": "Pretzel", "emoji": "🥨" },
+    { "id": "crumbs-at-the-bottom-of-the-bag", "name": "Crumbs at the bottom of the bag", "emoji": "🤏" }
+  ]
+}

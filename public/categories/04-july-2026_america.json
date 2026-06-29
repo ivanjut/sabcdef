@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-04",
+  "name": "America",
+  "theme": "Play",
+  "special_day": "US Independence Day",
+  "items": [
+    { "id": "hamburger", "name": "Hamburger", "emoji": "🍔" },
+    { "id": "hot-dog", "name": "Hot Dog", "emoji": "🌭" },
+    { "id": "yellow-school-bus", "name": "Yellow School Bus", "emoji": "🚌" },
+    { "id": "baseball", "name": "Baseball", "emoji": "⚾" },
+    { "id": "drive-thru", "name": "Drive-Thru", "emoji": "🚗" },
+    { "id": "red-solo-cup", "name": "Red Solo Cup", "emoji": "🛢️" },
+    { "id": "apple-pie", "name": "Apple Pie", "emoji": "🥧" },
+    { "id": "pickup-truck", "name": "Pickup Truck", "emoji": "🛻" },
+    { "id": "area-51", "name": "Area 51", "emoji": "👽" },
+    { "id": "hollywood", "name": "Hollywood", "emoji": "🎬" },
+    { "id": "coca-cola", "name": "Coca-Cola", "emoji": "🥤" },
+    { "id": "mac-cheese", "name": "Mac & Cheese", "emoji": "🧀" },
+    { "id": "route-66", "name": "Route 66", "emoji": "🛣️" },
+    { "id": "peanut-butter-jelly", "name": "Peanut Butter & Jelly", "emoji": "🥪" },
+    { "id": "apollo-moon-landing", "name": "Apollo Moon Landing", "emoji": "🌝" },
+    { "id": "motels", "name": "Motels", "emoji": "🛎️" },
+    { "id": "thanksgiving-turkey", "name": "Thanksgiving Turkey", "emoji": "🦃" },
+    { "id": "tipping", "name": "Tipping", "emoji": "💵" }
+  ]
+}

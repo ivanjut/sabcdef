@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-06",
+  "name": "Transportation",
+  "theme": "Places",
+  "special_day": "",
+  "items": [
+    { "id": "plane", "name": "Plane", "emoji": "✈️" },
+    { "id": "motorbike", "name": "Motorbike", "emoji": "🏍️" },
+    { "id": "bicycle", "name": "Bicycle", "emoji": "🚲" },
+    { "id": "helicopter", "name": "Helicopter", "emoji": "🚁" },
+    { "id": "boat", "name": "Boat", "emoji": "⛵" },
+    { "id": "taxi-uber", "name": "Taxi / Uber", "emoji": "🚕" },
+    { "id": "train", "name": "Train", "emoji": "🚆" },
+    { "id": "horse", "name": "Horse", "emoji": "🐴" },
+    { "id": "bus", "name": "Bus", "emoji": "🚌" },
+    { "id": "lorry-truck", "name": "Lorry / Truck", "emoji": "🚚" },
+    { "id": "car", "name": "Car", "emoji": "🚗" },
+    { "id": "walking", "name": "Walking", "emoji": "🚶" },
+    { "id": "rollerblades", "name": "Rollerblades", "emoji": "🛼" },
+    { "id": "scooter", "name": "Scooter", "emoji": "🛴" },
+    { "id": "jet-ski", "name": "Jet Ski", "emoji": "🌊" },
+    { "id": "quad-bike", "name": "Quad bike", "emoji": "🏎️" },
+    { "id": "hitchhiking", "name": "Hitchhiking", "emoji": "👍" },
+    { "id": "jetpack", "name": "Jetpack", "emoji": "🚀" }
+  ]
+}
