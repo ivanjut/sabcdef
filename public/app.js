@@ -143,6 +143,9 @@ const submittedKey = (day) => `sabcdef:submitted:${day}`;
 // The server-issued share_id of this device's last submission for a day, so a
 // share link can point at the stored row without re-writing an unchanged board.
 const shareIdKey = (day) => `sabcdef:tlshare:${day}`;
+// Per-day reroll progress for this device: { revealedCount, dismissed: [itemId] }.
+// Drives the slot-machine reveal (see the Reroll section below).
+const rerollKey = (day) => `sabcdef:reroll:${day}`;
 const votesKey = "sabcdef:votes";
 const themeKey = "sabcdef:theme";
 const profileKey = "sabcdef:profile"; // { name, country, visibility } — country is an ISO alpha-2 code; visibility is "public" | "private"
@@ -734,6 +737,57 @@ function startCountdown() {
   setInterval(tick, 1000);
 }
 
+// ---- Reroll (slot-machine item reveal) -------------------------------------
+// Only the first REROLL_BASE_VISIBLE items show at base; the rest are revealed in
+// successive "reroll" pulls. Rerolling discards whatever is still unranked — those
+// skipped items are gone for good on this device (the slot-machine effect) — and
+// reveals the next batch. The first pull is gated on ranking REROLL_UNLOCK_MIN of
+// the base set; once unlocked, further pulls are free.
+//
+// Encoding stays positional over the full item list (encodeTierList), so unseen
+// and skipped items just encode as unranked "-": no schema or DB change, and
+// shorter categories (<18 items) degrade gracefully — they simply have fewer (or
+// zero) pulls.
+const REROLL_BASE_VISIBLE = 12;
+const REROLL_STEPS = [3, 2, 1]; // items revealed per successive pull → 12, 15, 17, 18
+const REROLL_UNLOCK_MIN = 6; // of the base set, before the first pull unlocks
+
+// Cumulative reveal counts for a given item total, each capped at the total:
+// 18 items → [12, 15, 17, 18]; 16 items → [12, 15, 16, 16].
+function revealStops(total) {
+  const stops = [Math.min(REROLL_BASE_VISIBLE, total)];
+  let n = REROLL_BASE_VISIBLE;
+  for (const step of REROLL_STEPS) stops.push(Math.min((n += step), total));
+  return stops;
+}
+
+// The smallest reveal count greater than the current one (the next pull's target),
+// or the current count when everything is already revealed.
+function nextRevealStop(revealedCount, total) {
+  return revealStops(total).find((s) => s > revealedCount) ?? revealedCount;
+}
+
+// This device's reroll progress for a day, clamped to the category's size.
+function getRerollState(day, total) {
+  const base = Math.min(REROLL_BASE_VISIBLE, total);
+  const saved = store.get(rerollKey(day), null);
+  const revealedCount = Number.isInteger(saved?.revealedCount)
+    ? Math.max(base, Math.min(saved.revealedCount, total))
+    : base;
+  const dismissed = Array.isArray(saved?.dismissed) ? saved.dismissed : [];
+  return { revealedCount, dismissed };
+}
+
+// Count revealed, not-yet-dismissed items currently placed into a tier (not the
+// pool). Used both to gate the first pull and to render the button's progress.
+function countRanked(items, placement, revealedCount, dismissedSet) {
+  let n = 0;
+  items.forEach((item, i) => {
+    if (i < revealedCount && !dismissedSet.has(item.id) && TIER_LABELS.includes(placement[item.id])) n++;
+  });
+  return n;
+}
+
 // ---- Tier list ------------------------------------------------------------
 
 function renderTierList() {
@@ -764,16 +818,24 @@ function renderTierList() {
   const saved = state.readOnly ? state.preview || {} : store.get(tiersKey(day), {}); // { itemId: tierLabel }
   poolEl.innerHTML = "";
 
-  for (const item of items) {
+  // The reroll mechanic limits which items are in play: only the first
+  // `revealedCount`, minus any rerolled away (dismissed). A read-only shared
+  // preview is exempt — we render the author's whole board exactly as encoded.
+  const reroll = state.readOnly ? null : getRerollState(day, items.length);
+  const dismissed = reroll ? new Set(reroll.dismissed) : null;
+
+  items.forEach((item, i) => {
+    if (reroll && (i >= reroll.revealedCount || dismissed.has(item.id))) return;
     const chip = makeChip(item);
     const tier = saved[item.id];
     const target = tier && tier !== "pool" ? $(`.tier-dropzone[data-tier="${tier}"]`) : poolEl;
     (target || poolEl).appendChild(chip);
-  }
+  });
 
   if (!state.readOnly) {
     initSortable();
     updateSubmitAttention();
+    updateRerollButton();
   }
 }
 
@@ -827,6 +889,8 @@ function saveTierPlacements() {
   store.set(tiersKey(state.today.day), placement);
   // A placement is a user action — filling the last slot here pops the prompt.
   updateSubmitAttention({ promptOnComplete: true });
+  // Keep the reroll lock in sync as items move in/out of tiers (no submit needed).
+  updateRerollButton();
 }
 
 // ---- Tap / click to assign --------------------------------------------------
@@ -1023,9 +1087,93 @@ function assignChipToTier(chip, tier) {
 function wireToolbar() {
   $("#reset-btn").addEventListener("click", () => {
     store.set(tiersKey(state.today.day), {});
+    store.set(rerollKey(state.today.day), null); // back to the base reveal
     renderTierList();
     toast("Tier list reset");
   });
+  $("#reroll-btn")?.addEventListener("click", doReroll);
+}
+
+// Drive the Reroll button from the board state. Hidden in preview or once every
+// item is revealed. Disabled (with a progress label) until enough of the base set
+// is ranked for the first pull; after that it stays available until exhausted.
+function updateRerollButton() {
+  const btn = $("#reroll-btn");
+  if (!btn) return;
+  const wrap = btn.closest(".pool-wrap");
+  const { day, items } = state.today;
+  const total = items.length;
+  const { revealedCount, dismissed } = getRerollState(day, total);
+
+  if (state.readOnly || revealedCount >= total) {
+    btn.hidden = true;
+    wrap?.classList.remove("has-reroll"); // drop the reserved corner space
+    return;
+  }
+  btn.hidden = false;
+  wrap?.classList.add("has-reroll");
+
+  const atBase = revealedCount <= Math.min(REROLL_BASE_VISIBLE, total);
+  const ranked = countRanked(items, store.get(tiersKey(day), {}), revealedCount, new Set(dismissed));
+  const locked = atBase && ranked < REROLL_UNLOCK_MIN;
+
+  // The visible label ("Reroll" + refresh icon) is static; locked/unlocked is
+  // conveyed by styling (see .reroll-btn in styles.css) and the tooltip.
+  btn.disabled = locked;
+  btn.classList.toggle("is-locked", locked);
+  btn.setAttribute("aria-disabled", String(locked));
+  if (locked) {
+    const need = REROLL_UNLOCK_MIN - ranked;
+    btn.title = `Rank ${need} more item${need === 1 ? "" : "s"} to unlock a reroll`;
+  } else {
+    const added = nextRevealStop(revealedCount, total) - revealedCount;
+    btn.title = `Swap any unranked items for ${added} new one${added === 1 ? "" : "s"}`;
+  }
+}
+
+// A reroll pull: discard everything still unranked among the revealed items
+// (permanently, on this device), reveal the next batch, then re-render and flash
+// the fresh chips. No-op when locked or when there's nothing left to reveal.
+function doReroll() {
+  if (state.readOnly) return;
+  const { day, items } = state.today;
+  const total = items.length;
+  const { revealedCount, dismissed } = getRerollState(day, total);
+  if (revealedCount >= total) return;
+
+  const placement = store.get(tiersKey(day), {});
+  const dismissedSet = new Set(dismissed);
+  const atBase = revealedCount <= Math.min(REROLL_BASE_VISIBLE, total);
+  // Gate only the first pull; subsequent pulls are free.
+  if (atBase && countRanked(items, placement, revealedCount, dismissedSet) < REROLL_UNLOCK_MIN) return;
+
+  // Skip (dismiss) every revealed item that isn't ranked into a tier.
+  const newlyDismissed = [];
+  items.forEach((item, i) => {
+    if (i >= revealedCount || dismissedSet.has(item.id)) return;
+    if (!TIER_LABELS.includes(placement[item.id])) {
+      newlyDismissed.push(item.id);
+      delete placement[item.id]; // drop any stale "pool" entry from the saved board
+    }
+  });
+  store.set(tiersKey(day), placement);
+
+  const nextCount = nextRevealStop(revealedCount, total);
+  store.set(rerollKey(day), { revealedCount: nextCount, dismissed: [...dismissed, ...newlyDismissed] });
+
+  renderTierList();
+  markFreshChips(items, revealedCount, nextCount);
+  const added = nextCount - revealedCount;
+  toast(`${added} new item${added === 1 ? "" : "s"} to rank`);
+}
+
+// Flash the chips revealed by the latest pull (indices [from, to)) so the new
+// items are easy to spot landing in the pool.
+function markFreshChips(items, from, to) {
+  for (let i = from; i < to; i++) {
+    const chip = $(`#pool .chip[data-id="${CSS.escape(items[i].id)}"]`);
+    chip?.classList.add("chip--fresh");
+  }
 }
 
 // ---- Submit (publish the board to the global feed) --------------------------
@@ -1142,6 +1290,22 @@ async function submitTierList() {
 function openSubmitDialog() {
   const dialog = $("#submit-dialog");
   if (!dialog || dialog.open) return;
+
+  // The board is full, but if rerolls remain the player can keep going for more
+  // items — call that out so submitting now doesn't feel like the only option.
+  const hint = $("#submit-dialog-reroll");
+  if (hint) {
+    const { day, items } = state.today;
+    const total = items.length;
+    const { revealedCount } = getRerollState(day, total);
+    const rerollsLeft = !state.readOnly && revealedCount < total;
+    hint.hidden = !rerollsLeft;
+    if (rerollsLeft) {
+      hint.textContent =
+        `Want more to rank? You can still reroll!`;
+    }
+  }
+
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
 }
