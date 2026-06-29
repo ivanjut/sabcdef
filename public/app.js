@@ -1211,7 +1211,10 @@ let submitPromptArmed = true;
 //   • "is-submitted" — board matches the last submit: grey out + disable;
 //   • otherwise       — clickable, no pulse (mid-edit, or after a correction).
 // When `promptOnComplete` is set (i.e. a user just placed a chip), filling the
-// board also pops the "ready to submit?" dialog — once, until the board changes.
+// board also pops the "ready to submit?" dialog — but only at two milestones:
+// the base set fully ranked (with the reroll caveat) and the final reveal fully
+// ranked. Clearing an intermediate reroll batch (pulls still remaining) leaves it
+// to the user to hit Submit. The "is-ready" pulse still shows on every fill.
 function updateSubmitAttention({ promptOnComplete = false } = {}) {
   const btn = $("#submit-btn");
   if (!btn || state.readOnly) return;
@@ -1225,8 +1228,19 @@ function updateSubmitAttention({ promptOnComplete = false } = {}) {
   // when there's nothing new to submit, and re-enable once the board changes.
   if (!submitInFlight) btn.disabled = submitted;
 
-  if (!ready) submitPromptArmed = true;
-  else if (promptOnComplete && submitPromptArmed) {
+  if (!ready) {
+    submitPromptArmed = true;
+    return;
+  }
+
+  // At a milestone when no rerolls have happened yet (base set) or none remain
+  // (final reveal) — not in between, while batches are still being pulled.
+  const total = state.today.items.length;
+  const { revealedCount } = getRerollState(state.today.day, total);
+  const atMilestone =
+    revealedCount <= Math.min(REROLL_BASE_VISIBLE, total) || revealedCount >= total;
+
+  if (promptOnComplete && submitPromptArmed && atMilestone) {
     submitPromptArmed = false;
     openSubmitDialog();
   }
