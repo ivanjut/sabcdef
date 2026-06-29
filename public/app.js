@@ -870,6 +870,9 @@ function initSortable() {
       // a few px of finger tolerance so a tap isn't mistaken for a drag.
       touchStartThreshold: 5,
       onSort: saveTierPlacements,
+      // Drop the entrance animation the moment a chip is grabbed, so a still
+      // running (or replay-prone) transform can't fight the drag tracking.
+      onChoose: (evt) => evt.item.classList.remove("chip--fresh"),
       onStart: closeMenuPopover,
       onEnd: () => {
         lastDragEndAt = Date.now();
@@ -1168,11 +1171,16 @@ function doReroll() {
 }
 
 // Flash the chips revealed by the latest pull (indices [from, to)) so the new
-// items are easy to spot landing in the pool.
+// items are easy to spot landing in the pool. The class is removed as soon as
+// the entrance animation ends: it animates `transform`, and leaving it on would
+// let the animation replay when SortableJS reparents the chip on drop, fighting
+// the drag's own transform.
 function markFreshChips(items, from, to) {
   for (let i = from; i < to; i++) {
     const chip = $(`#pool .chip[data-id="${CSS.escape(items[i].id)}"]`);
-    chip?.classList.add("chip--fresh");
+    if (!chip) continue;
+    chip.classList.add("chip--fresh");
+    chip.addEventListener("animationend", () => chip.classList.remove("chip--fresh"), { once: true });
   }
 }
 
