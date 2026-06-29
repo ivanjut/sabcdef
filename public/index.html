@@ -109,6 +109,15 @@
           <button id="submit-btn" class="btn btn-primary submit-btn" type="button">Submit</button>
         </div>
         <div id="pool" class="pool tier-dropzone" data-tier="pool"></div>
+        <!-- Anchored to the pool's bottom-right corner (see .reroll-btn). -->
+        <button id="reroll-btn" class="btn reroll-btn" type="button" hidden aria-label="Reroll unranked items">
+          <svg class="reroll-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          <span>Reroll</span>
+        </button>
       </div>
     </section>
 
@@ -199,6 +208,7 @@
     <p class="profile-dialog-sub">
       You've ranked every item. Submit your tier list, or keep editing.
     </p>
+    <p id="submit-dialog-reroll" class="submit-dialog-reroll" hidden></p>
     <div class="profile-dialog-actions">
       <button id="submit-dialog-cancel" class="btn btn-ghost" type="button">Continue editing</button>
       <button id="submit-dialog-confirm" class="btn btn-primary" type="button">Submit</button>

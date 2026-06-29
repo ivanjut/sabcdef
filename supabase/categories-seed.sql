@@ -186,6 +186,8 @@ insert into public.category_items (day, position, item_id, name, emoji) values
   ('2026-06-29', 13, 'mma', 'MMA', '🥋'),
   ('2026-06-29', 14, 'table-tennis', 'Table tennis', '🏸'),
   ('2026-06-29', 15, 'badminton', 'Badminton', '🤸'),
+  ('2026-06-29', 16, 'lacrosse', 'Lacrosse', '🥍'),
+  ('2026-06-29', 17, 'american-football', 'American football', '🏈'),
   ('2026-06-30', 0, 'instagram', 'Instagram', '📸'),
   ('2026-06-30', 1, 'tiktok', 'TikTok', '🎵'),
   ('2026-06-30', 2, 'youtube', 'YouTube', '▶️'),

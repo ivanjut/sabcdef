@@ -19,6 +19,8 @@
     { "id": "hockey", "name": "Hockey", "emoji": "🏒" },
     { "id": "mma", "name": "MMA", "emoji": "🥋" },
     { "id": "table-tennis", "name": "Table tennis", "emoji": "🏸" },
-    { "id": "badminton", "name": "Badminton", "emoji": "🤸" }
+    { "id": "badminton", "name": "Badminton", "emoji": "🤸" },
+    { "id": "lacrosse", "name": "Lacrosse", "emoji": "🥍" },
+    { "id": "american-football", "name": "American football", "emoji": "🏈" }
   ]
 }

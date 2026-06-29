@@ -8,6 +8,10 @@
   --accent: #6c8cff;
   --accent-press: #5878f0;
   --danger: #ff6b6b;
+  /* Reroll's "available" colour — a warm amber, distinct from the blue accent so
+     an unlocked reroll stands out. Reads on both themes; uses dark text on fill. */
+  --reroll: #f5a524;
+  --reroll-press: #e0921a;
   --header-bg: rgba(15, 17, 21, 0.85);
   --radius: 12px;
   --pad: 14px;
@@ -292,7 +296,7 @@ body.preview-mode .next-category { display: none; }
 .chip.sortable-drag { box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
 
 /* ---- Pool ---- */
-.pool-wrap { margin-top: 12px; }
+.pool-wrap { margin-top: 12px; position: relative; }
 .pool-head {
   display: flex;
   align-items: center;
@@ -343,6 +347,82 @@ body.preview-mode .submit-btn { display: none; }
   border-radius: var(--radius);
   background: var(--bg-elev);
   min-height: 72px;
+}
+/* Reserve a strip at the bottom so chips never sit under the corner Reroll
+   button. Only when a reroll is actually available (toggled in app.js), so
+   short categories without rerolls keep a tight pool. */
+.pool-wrap.has-reroll .pool { padding-bottom: 48px; }
+
+/* The Reroll button is anchored to the bottom-right corner of the pool box. */
+.reroll-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+}
+.reroll-icon {
+  display: block;
+  flex: 0 0 auto;
+  transition: transform 0.4s ease;
+}
+/* `display: inline-flex` above would otherwise beat the UA [hidden] rule, so the
+   button never hid once all items were revealed — make `hidden` win again. */
+.reroll-btn[hidden] { display: none; }
+body.preview-mode .reroll-btn { display: none; }
+
+/* Unlocked: filled amber so it clearly stands out and invites a click. The icon
+   spins on hover and a soft glow pulses to draw the eye. */
+.reroll-btn:not(:disabled) {
+  background: var(--reroll);
+  border-color: var(--reroll);
+  color: #1b1f27;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--reroll) 40%, transparent);
+  animation: reroll-glow 2.2s ease-in-out infinite;
+}
+.reroll-btn:not(:disabled):hover { filter: brightness(1.06); }
+.reroll-btn:not(:disabled):active { background: var(--reroll-press); }
+.reroll-btn:not(:disabled):hover .reroll-icon { transform: rotate(-180deg); }
+@keyframes reroll-glow {
+  0%, 100% { box-shadow: 0 2px 10px color-mix(in srgb, var(--reroll) 35%, transparent); }
+  50%      { box-shadow: 0 2px 16px color-mix(in srgb, var(--reroll) 70%, transparent); }
+}
+
+/* Locked until enough of the base set is ranked — muted, flat, clearly inert. */
+.reroll-btn:disabled,
+.reroll-btn.is-locked {
+  background: var(--bg-elev-2);
+  border-color: var(--border);
+  color: var(--text-dim);
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  animation: none;
+  filter: none;
+}
+.reroll-btn:disabled:hover,
+.reroll-btn.is-locked:hover { filter: none; }
+.reroll-btn:disabled:active,
+.reroll-btn.is-locked:active { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reroll-icon { transition: none; }
+  .reroll-btn:not(:disabled) { animation: none; }
+  .reroll-btn:not(:disabled):hover .reroll-icon { transform: none; }
+}
+
+/* Slot-machine flash on chips revealed by a reroll pull. */
+.chip--fresh { animation: chip-fresh 0.45s ease-out; }
+@keyframes chip-fresh {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chip--fresh { animation: none; }
 }
 
 /* ---- Buttons ---- */
@@ -924,6 +1004,19 @@ body.preview-mode .submit-btn { display: none; }
 #submit-dialog { padding: 20px; }
 .profile-dialog-title { margin: 0 0 6px; font-size: 1.25rem; line-height: 1.2; }
 .profile-dialog-sub { margin: 0 0 18px; color: var(--text-dim); font-size: 0.88rem; }
+/* Reroll callout in the "Ready to submit?" dialog — amber-tinted to tie it to
+   the Reroll button, shown only when the player still has a reroll left. */
+#submit-dialog .profile-dialog-sub { margin-bottom: 10px; }
+.submit-dialog-reroll {
+  margin: 0 0 18px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--text);
+  background: color-mix(in srgb, var(--reroll) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--reroll) 38%, transparent);
+}
 .field { display: block; margin-bottom: 14px; }
 .field-label {
   display: block;
