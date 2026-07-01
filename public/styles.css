@@ -1281,9 +1281,13 @@ body.preview-mode .reroll-btn { display: none; }
   width: min(560px, calc(100vw - 32px));
   /* Cap to the *visible* viewport — dvh accounts for mobile browser chrome (URL
      bar, toolbars), so the modal never runs off-screen and clips the close
-     button. A flex column pins the header while the body scrolls in what's left. */
-  max-height: calc(100vh - 32px);
-  max-height: calc(100dvh - 32px);
+     button. A flex column pins the header while the body scrolls in what's left.
+     Reserve the top safe-area inset on both sides so a full-height modal stays
+     centred *below* the notch / status bar instead of sliding under it
+     (viewport-fit=cover extends the viewport into the safe areas). env() is 0
+     where there's no notch, so desktop is unaffected. */
+  max-height: calc(100vh - 2 * env(safe-area-inset-top) - 32px);
+  max-height: calc(100dvh - 2 * env(safe-area-inset-top) - 32px);
   flex-direction: column;
   padding: 0;
   border: 1px solid var(--border);
