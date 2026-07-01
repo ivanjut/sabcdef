@@ -2328,6 +2328,9 @@ function wireYesterdayDialog() {
   const btn = $("#yesterday-btn");
   if (!dialog || !btn) return;
   btn.addEventListener("click", () => openYesterdayDialog());
+  // A second entry point at the very bottom of the page, for people who've
+  // scrolled all the way through today's discussion.
+  $("#yesterday-footer-link")?.addEventListener("click", () => openYesterdayDialog());
   $("#yesterday-dialog-close")?.addEventListener("click", closeYesterdayDialog);
   // A click on the backdrop reports the dialog itself as the target.
   dialog.addEventListener("click", (e) => {

@@ -939,6 +939,19 @@ body.preview-mode .reroll-btn { display: none; }
   font-size: 0.8rem;
   text-align: center;
 }
+.app-footer .wrap + .wrap { margin-top: 8px; }
+.footer-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-dim);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+.footer-link:hover { color: var(--text); }
 
 /* ---- Larger screens ---- */
 @media (min-width: 600px) {
@@ -1201,7 +1214,12 @@ body.preview-mode .reroll-btn { display: none; }
 /* ---- Tier list / rankings dialogs (a commenter's saved tiers) ---- */
 .ranking-dialog {
   width: min(560px, calc(100vw - 32px));
-  max-height: calc(100vh - 64px);
+  /* Cap to the *visible* viewport — dvh accounts for mobile browser chrome (URL
+     bar, toolbars), so the modal never runs off-screen and clips the close
+     button. A flex column pins the header while the body scrolls in what's left. */
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  flex-direction: column;
   padding: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1210,11 +1228,19 @@ body.preview-mode .reroll-btn { display: none; }
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
   overflow: hidden;
 }
+/* Only lay the dialog out as a flex column while it's actually open. Putting
+   `display` on the base rule would override the UA's `dialog:not([open])` hide
+   rule (author styles outrank UA styles), leaving the closed modal rendered
+   inline at the bottom of the page. */
+.ranking-dialog[open] {
+  display: flex;
+}
 .ranking-dialog::backdrop {
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(2px);
 }
 .ranking-dialog-head {
+  flex: 0 0 auto;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -1246,22 +1272,24 @@ body.preview-mode .reroll-btn { display: none; }
 }
 .ranking-dialog-close:hover { color: var(--text); filter: brightness(1.12); }
 .ranking-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 16px;
   overflow-y: auto;
-  max-height: calc(100vh - 64px - 64px);
 }
 /* Yesterday's modal scrolls the results + the discussion thread together, so the
    thread reads as a continuation rather than a separate, independently-clipped
    panel. The shared container owns the scroll; the inner body no longer does. */
 .yr-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
-  max-height: calc(100vh - 64px - 64px);
   /* Breathing room so the last comment / results row never sits flush against
      the dialog's bottom edge. */
   padding-bottom: 32px;
 }
 .yr-scroll > .ranking-dialog-body {
-  max-height: none;
+  flex: none;
   overflow: visible;
 }
 .yr-forum {
