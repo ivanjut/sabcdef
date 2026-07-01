@@ -261,6 +261,7 @@ async function init() {
   wireYesterdayDialog();
   wireVotesDialog();
   wireSuggestInfo();
+  wireRerollInfo();
   startCountdown();
 
   // First visit (no profile saved on this device): prompt for name + country.
@@ -1322,10 +1323,6 @@ function openSubmitDialog() {
     const { revealedCount } = getRerollState(day, total);
     const rerollsLeft = !state.readOnly && revealedCount < total;
     hint.hidden = !rerollsLeft;
-    if (rerollsLeft) {
-      hint.textContent =
-        `Want more to rank? You can still reroll!`;
-    }
   }
 
   if (typeof dialog.showModal === "function") dialog.showModal();
@@ -1346,6 +1343,12 @@ function wireSubmitDialog() {
   $("#submit-dialog-confirm")?.addEventListener("click", () => {
     closeSubmitDialog();
     submitTierList();
+  });
+  // Reroll straight from the dialog: dismiss it (back to the board) then pull the
+  // next batch, which flashes into the pool for the player to rank.
+  $("#submit-dialog-reroll-btn")?.addEventListener("click", () => {
+    closeSubmitDialog();
+    doReroll();
   });
   // Click on the backdrop dismisses, same as the app's other dialogs.
   dialog.addEventListener("click", (e) => {
@@ -2393,6 +2396,18 @@ function renderTierLists() {
 function wireSuggestInfo() {
   const btn = $("#suggest-info-btn");
   const text = $("#suggest-info-text");
+  if (!btn || !text) return;
+  btn.addEventListener("click", () => {
+    if (infoPopover) closeInfoPopover();
+    else showInfoPopover(btn, text.innerHTML);
+  });
+}
+
+// The Reroll button's ⓘ widget — explains what a reroll does. Mirrors
+// wireSuggestInfo, reusing the same anchored info popover.
+function wireRerollInfo() {
+  const btn = $("#reroll-info-btn");
+  const text = $("#reroll-info-text");
   if (!btn || !text) return;
   btn.addEventListener("click", () => {
     if (infoPopover) closeInfoPopover();

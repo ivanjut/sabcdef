@@ -353,17 +353,30 @@ body.preview-mode .submit-btn { display: none; }
    short categories without rerolls keep a tight pool. */
 .pool-wrap.has-reroll .pool { padding-bottom: 48px; }
 
-/* The Reroll button is anchored to the bottom-right corner of the pool box. */
-.reroll-btn {
+/* The Reroll button + its info widget are anchored to the bottom-right corner
+   of the pool box. */
+.reroll-cluster {
   position: absolute;
   right: 10px;
   bottom: 10px;
   z-index: 1;
   display: inline-flex;
   align-items: center;
+  gap: 8px;
+}
+/* When the reroll button hides (every item revealed, or a read-only preview) the
+   lone info icon has nothing left to explain — hide the whole cluster with it. */
+.reroll-cluster:has(.reroll-btn[hidden]) { display: none; }
+body.preview-mode .reroll-cluster { display: none; }
+.reroll-btn {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
   padding: 7px 12px;
 }
+/* Sits on the pool's surface, so give the info icon a matching backdrop rather
+   than the field's transparent one. */
+.reroll-info-btn { background: var(--bg-elev); }
 .reroll-icon {
   display: block;
   flex: 0 0 auto;
@@ -1021,8 +1034,12 @@ body.preview-mode .reroll-btn { display: none; }
    the Reroll button, shown only when the player still has a reroll left. */
 #submit-dialog .profile-dialog-sub { margin-bottom: 10px; }
 .submit-dialog-reroll {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
   margin: 0 0 18px;
-  padding: 9px 11px;
+  padding: 10px 11px;
   border-radius: 8px;
   font-size: 0.85rem;
   line-height: 1.35;
@@ -1030,6 +1047,25 @@ body.preview-mode .reroll-btn { display: none; }
   background: color-mix(in srgb, var(--reroll) 14%, transparent);
   border: 1px solid color-mix(in srgb, var(--reroll) 38%, transparent);
 }
+/* `display: flex` above would otherwise beat the UA [hidden] rule, keeping the
+   callout visible when there's no reroll left — make `hidden` win again. */
+.submit-dialog-reroll[hidden] { display: none; }
+.submit-dialog-reroll-text { flex: 1 1 140px; }
+/* Amber fill + spinning icon, matching the pool's Reroll button (minus the
+   attention-seeking glow, which would be noisy inside a dialog). */
+.submit-dialog-reroll-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--reroll);
+  border-color: var(--reroll);
+  color: #1b1f27;
+}
+.submit-dialog-reroll-btn:hover { filter: brightness(1.06); }
+.submit-dialog-reroll-btn:active { background: var(--reroll-press); }
+.submit-dialog-reroll-btn:hover .reroll-icon { transform: rotate(-180deg); }
 .field { display: block; margin-bottom: 14px; }
 .field-label {
   display: block;

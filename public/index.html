@@ -109,15 +109,31 @@
           <button id="submit-btn" class="btn btn-primary submit-btn" type="button">Submit</button>
         </div>
         <div id="pool" class="pool tier-dropzone" data-tier="pool"></div>
-        <!-- Anchored to the pool's bottom-right corner (see .reroll-btn). -->
-        <button id="reroll-btn" class="btn reroll-btn" type="button" hidden aria-label="Reroll unranked items">
-          <svg class="reroll-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <polyline points="1 20 1 14 7 14"></polyline>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-          <span>Reroll</span>
-        </button>
+        <!-- Reroll + its info widget, anchored to the pool's bottom-right corner
+             (see .reroll-cluster). -->
+        <div class="reroll-cluster">
+          <button
+            id="reroll-info-btn"
+            class="info-btn reroll-info-btn"
+            type="button"
+            aria-label="What's Reroll?"
+            aria-expanded="false"
+          >i</button>
+          <button id="reroll-btn" class="btn reroll-btn" type="button" hidden aria-label="Reroll unranked items">
+            <svg class="reroll-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Reroll</span>
+          </button>
+        </div>
+        <!-- Source for the info-button popover (see wireRerollInfo in app.js). -->
+        <p id="reroll-info-text" hidden>
+          Reroll swaps the items you haven't placed into a tier for a fresh batch.
+          Rank a few to unlock the first reroll — after that it's free until you've
+          gone through every item.
+        </p>
       </div>
     </section>
 
@@ -211,7 +227,17 @@
     <p class="profile-dialog-sub">
       You've ranked every item. Submit your tier list, or keep editing.
     </p>
-    <p id="submit-dialog-reroll" class="submit-dialog-reroll" hidden></p>
+    <div id="submit-dialog-reroll" class="submit-dialog-reroll" hidden>
+      <span class="submit-dialog-reroll-text">Want more to rank? You can still reroll for a fresh batch.</span>
+      <button id="submit-dialog-reroll-btn" class="btn submit-dialog-reroll-btn" type="button">
+        <svg class="reroll-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+        <span>Reroll</span>
+      </button>
+    </div>
     <div class="profile-dialog-actions">
       <button id="submit-dialog-cancel" class="btn btn-ghost" type="button">Continue editing</button>
       <button id="submit-dialog-confirm" class="btn btn-primary" type="button">Submit</button>
