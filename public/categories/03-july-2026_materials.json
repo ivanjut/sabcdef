@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-03",
+  "name": "Materials",
+  "theme": "Tech",
+  "special_day": "International Plastic Bag Free Day",
+  "items": [
+    { "id": "wood", "name": "Wood", "emoji": "🪵" },
+    { "id": "plastic", "name": "Plastic", "emoji": "♳" },
+    { "id": "leather", "name": "Leather", "emoji": "🟫" },
+    { "id": "steel", "name": "Steel", "emoji": "🔩" },
+    { "id": "glass", "name": "Glass", "emoji": "🪟" },
+    { "id": "gold", "name": "Gold", "emoji": "🥇" },
+    { "id": "cardboard", "name": "Cardboard", "emoji": "📦" },
+    { "id": "stone", "name": "Stone", "emoji": "🗿" },
+    { "id": "wool", "name": "Wool", "emoji": "🧶" },
+    { "id": "rubber", "name": "Rubber", "emoji": "🛞" },
+    { "id": "brick", "name": "Brick", "emoji": "🧱" },
+    { "id": "ceramic", "name": "Ceramic", "emoji": "🏺" },
+    { "id": "denim", "name": "Denim", "emoji": "👖" },
+    { "id": "silk", "name": "Silk", "emoji": "🎗️" },
+    { "id": "bamboo", "name": "Bamboo", "emoji": "🎋" },
+    { "id": "marble", "name": "Marble", "emoji": "⬜" },
+    { "id": "carbon-fibre", "name": "Carbon Fibre", "emoji": "🏎️" },
+    { "id": "latex", "name": "Latex", "emoji": "🧤" }
+  ]
+}

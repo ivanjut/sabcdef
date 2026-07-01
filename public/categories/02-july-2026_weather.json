@@ -1,7 +1,7 @@
 {
-  "date": "2026-07-03",
+  "date": "2026-07-02",
   "name": "Weather",
-  "theme": "Food",
+  "theme": "Nature",
   "special_day": "",
   "items": [
     { "id": "sunny", "name": "Sunny", "emoji": "☀️" },

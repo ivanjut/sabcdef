@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-07",
+  "name": "Movie Genres",
+  "theme": "Screen",
+  "special_day": "",
+  "items": [
+    { "id": "rom-com", "name": "Rom-Com", "emoji": "💕" },
+    { "id": "comedy", "name": "Comedy", "emoji": "😂" },
+    { "id": "musical", "name": "Musical", "emoji": "🎵" },
+    { "id": "superhero", "name": "Superhero", "emoji": "🦸" },
+    { "id": "sci-fi", "name": "Sci-fi", "emoji": "🚀" },
+    { "id": "animation", "name": "Animation", "emoji": "🎨" },
+    { "id": "horror", "name": "Horror", "emoji": "👻" },
+    { "id": "drama", "name": "Drama", "emoji": "🎭" },
+    { "id": "mystery", "name": "Mystery", "emoji": "🔍" },
+    { "id": "heist", "name": "Heist", "emoji": "💰" },
+    { "id": "documentary", "name": "Documentary", "emoji": "🎥" },
+    { "id": "gangster", "name": "Gangster", "emoji": "🎩" },
+    { "id": "fantasy", "name": "Fantasy", "emoji": "🐉" },
+    { "id": "action", "name": "Action", "emoji": "💥" },
+    { "id": "zombie", "name": "Zombie", "emoji": "🧟" },
+    { "id": "sports", "name": "Sports", "emoji": "🏆" },
+    { "id": "thriller", "name": "Thriller", "emoji": "🔪" },
+    { "id": "christmas", "name": "Christmas", "emoji": "🎄" }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-09",
+  "name": "Board Games",
+  "theme": "Play",
+  "special_day": "",
+  "items": [
+    { "id": "chess", "name": "Chess", "emoji": "♟️" },
+    { "id": "monopoly", "name": "Monopoly", "emoji": "🎩" },
+    { "id": "risk", "name": "Risk", "emoji": "🗺️" },
+    { "id": "scrabble", "name": "Scrabble", "emoji": "🔤" },
+    { "id": "buckaroo", "name": "Buckaroo", "emoji": "🐴" },
+    { "id": "guess-who", "name": "Guess Who", "emoji": "👤" },
+    { "id": "checkers-draughts", "name": "Checkers / Draughts", "emoji": "⚫️⚪️" },
+    { "id": "ticket-to-ride", "name": "Ticket to Ride", "emoji": "🚂" },
+    { "id": "operation", "name": "Operation", "emoji": "🩺" },
+    { "id": "pictionary", "name": "Pictionary", "emoji": "✏️" },
+    { "id": "connect-4", "name": "Connect 4", "emoji": "🔴" },
+    { "id": "cards-against-humanity", "name": "Cards Against Humanity", "emoji": "😈" },
+    { "id": "catan", "name": "Catan", "emoji": "🌾" },
+    { "id": "battleship", "name": "Battleship", "emoji": "🚢" },
+    { "id": "jenga", "name": "Jenga", "emoji": "🧱" },
+    { "id": "cluedo-clue", "name": "Cluedo / Clue", "emoji": "🔍" },
+    { "id": "twister", "name": "Twister", "emoji": "🌀" },
+    { "id": "uno", "name": "Uno", "emoji": "🃏" }
+  ]
+}

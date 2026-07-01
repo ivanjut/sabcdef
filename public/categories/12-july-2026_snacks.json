@@ -1,7 +1,7 @@
 {
-  "date": "2026-07-02",
+  "date": "2026-07-12",
   "name": "Snacks",
-  "theme": "Time",
+  "theme": "Food",
   "special_day": "",
   "items": [
     { "id": "crisps-chips", "name": "Crisps / Chips", "emoji": "🥔" },

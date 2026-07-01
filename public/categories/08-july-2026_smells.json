@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-08",
+  "name": "Smells",
+  "theme": "Lifestyle",
+  "special_day": "",
+  "items": [
+    { "id": "bacon", "name": "Bacon", "emoji": "🥓" },
+    { "id": "fresh-bread", "name": "Fresh Bread", "emoji": "🍞" },
+    { "id": "vanilla", "name": "Vanilla", "emoji": "🍦" },
+    { "id": "sea-air", "name": "Sea Air", "emoji": "🌊" },
+    { "id": "roses", "name": "Roses", "emoji": "🌹" },
+    { "id": "lavender", "name": "Lavender", "emoji": "💜" },
+    { "id": "fresh-laundry", "name": "Fresh Laundry", "emoji": "🧺" },
+    { "id": "petrol-gasoline", "name": "Petrol / Gasoline", "emoji": "⛽" },
+    { "id": "chlorine", "name": "Chlorine", "emoji": "🏊" },
+    { "id": "garlic", "name": "Garlic", "emoji": "🧄" },
+    { "id": "fish-market", "name": "Fish Market", "emoji": "🐟" },
+    { "id": "book", "name": "Book", "emoji": "📖" },
+    { "id": "cut-grass", "name": "Cut Grass", "emoji": "🌱" },
+    { "id": "frying-onions", "name": "Frying Onions", "emoji": "🧅" },
+    { "id": "egg", "name": "Egg", "emoji": "🥚" },
+    { "id": "fresh-rain", "name": "Fresh Rain", "emoji": "🌧️" },
+    { "id": "perfume", "name": "Perfume", "emoji": "💐" },
+    { "id": "wet-dog", "name": "Wet Dog", "emoji": "🐕" }
+  ]
+}

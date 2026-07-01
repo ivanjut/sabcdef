@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-10",
+  "name": "Colours",
+  "theme": "Wildcard",
+  "special_day": "",
+  "items": [
+    { "id": "red", "name": "Red", "emoji": "🔴" },
+    { "id": "blue", "name": "Blue", "emoji": "🔵" },
+    { "id": "light-blue", "name": "Light Blue", "emoji": "🐬" },
+    { "id": "yellow", "name": "Yellow", "emoji": "🟡" },
+    { "id": "green", "name": "Green", "emoji": "🟢" },
+    { "id": "brown", "name": "Brown", "emoji": "🟤" },
+    { "id": "beige", "name": "Beige", "emoji": "🟫" },
+    { "id": "maroon", "name": "Maroon", "emoji": "🟥" },
+    { "id": "orange", "name": "Orange", "emoji": "🟠" },
+    { "id": "purple", "name": "Purple", "emoji": "🟣" },
+    { "id": "pink", "name": "Pink", "emoji": "🩷" },
+    { "id": "teal-turquoise", "name": "Teal / Turquoise", "emoji": "🦚" },
+    { "id": "black", "name": "Black", "emoji": "⚫" },
+    { "id": "white", "name": "White", "emoji": "⚪" },
+    { "id": "grey-gray", "name": "Grey / Gray", "emoji": "🩶" },
+    { "id": "magenta", "name": "Magenta", "emoji": "🖨️💜" },
+    { "id": "cyan", "name": "Cyan", "emoji": "🖨️🩵" },
+    { "id": "gold", "name": "Gold", "emoji": "🟨" }
+  ]
+}

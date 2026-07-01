@@ -59,17 +59,18 @@ A
 
 02 Jul
 Thu
-Snacks
-Time
+Weather
+Nature
 A
-🥔 Crisps / Chips, 🍫 Chocolate, 🍿 Popcorn, 🍪 Biscuits / Cookies, 🥚 Boiled Egg, 🧀 Cheese, 🌾 Granola Bar, 🥖 Breadsticks, 🫘 Hummus, 🥜 Nuts, 🥕 Veggie Sticks, ⚪ Rice Cakes, 🍞 Toast, 🍘 Crackers, 🫒 Olives, 🫚 Gingerbread Man, 🥨 Pretzel, 🤏 Crumbs at the bottom of the bag
+☀️ Sunny, 🌧️ Rain, ❄️ Snow, 💧 Drizzle, 🥵 Heatwave, ⚡ Thunderstorm, 🌁 Fog, 💨 Light Wind, 💨💨 Heavy Wind, 💦 Humid, 🧊 Hail, 🥶 Frost, 🌪️ Tornado, 🌫️ Mist, 🌊 Monsoon, 🌀 Hurricane, 🌨️ Sleet, 🌈 Rainbow
 
 03 Jul
 Fri
-Weather
-Food
-A
-☀️ Sunny, 🌧️ Rain, ❄️ Snow, 💧 Drizzle, 🥵 Heatwave, ⚡ Thunderstorm, 🌁 Fog, 💨 Light Wind, 💨💨 Heavy Wind, 💦 Humid, 🧊 Hail, 🥶 Frost, 🌪️ Tornado, 🌫️ Mist, 🌊 Monsoon, 🌀 Hurricane, 🌨️ Sleet, 🌈 Rainbow
+Materials
+Tech
+International Plastic Bag Free Day
+B
+🪵 Wood, ♳ Plastic, 🟫 Leather, 🔩 Steel, 🪟 Glass, 🥇 Gold, 📦 Cardboard, 🗿 Stone, 🧶 Wool, 🛞 Rubber, 🧱 Brick, 🏺 Ceramic, 👖 Denim, 🎗️ Silk, 🎋 Bamboo, ⬜ Marble, 🏎️ Carbon Fibre, 🧤 Latex
 
 04 Jul
 Sat
@@ -91,50 +92,49 @@ Mon
 Transportation
 Places
 A
-✈️ Plane, 🏍️ Motorbike, 🚲 Bicycle, 🚁 Helicopter, ⛵ Boat, 🚕 Taxi / Uber, 🚆 Train, 🐴 Horse, 🚌 Bus, 🚚 Lorry / Truck, 🚗 Car, 🚶 Walking, 🛼 Rollerblades, 🛴 Scooter, 🌊 Jet Ski, 🏎️ Quad bike, 👍 Hitchhiking, 🚀 Jetpack
+✈️ Plane, 🏍️ Motorbike, 🚲 Bicycle, 🚁 Helicopter, ⛵ Boat, 🚕 Taxi / Uber, 🚆 Train, 🐴 Horse, 🚌 Bus, 🚚 Lorry / Truck, 🚗 Car, 🚶 Walking, 🛼 Rollerblades, 🛴 Scooter, 🌊 Jet Ski, 🏎️ Quad Bike, 👍 Hitchhiking, 🚀 Jetpack
 
 07 Jul
 Tue
-Candy Bars
-Food
-World Chocolate Day
-C
-🍫 Snickers, 🍬 KitKat, 🍭 Twix, 🔴 Mars, 🌰 Cadbury Dairy Milk, 🥜 Reese's, 🟤 Toblerone, 🧡 Bounty, 🍪 Milky Way, 🍮 Kinder Bueno, 🟫 Crunch, 📱 Galaxy, 🥛 Wispa, 🟠 Twirl, 🌙 Hershey's, 🦁 Lion
-
-08 Jul
-Wed
-Superheroes
-Screen
-A
-🕷️ Spider-Man, 🦇 Batman, 🦾 Iron Man, 🦸 Superman, ⚡ Wonder Woman, 💚 Hulk, 🛡️ Captain America, 🔨 Thor, 🐆 Black Panther, 🐾 Wolverine, 🗡️ Deadpool, 🔮 Flash, ⛈️ Doctor Strange, 🟥 Storm, 🟦 Daredevil, 🟩 Green Lantern
-
-09 Jul
-Thu
-Comfort Foods
-Food
-A
-🧀 Mac & cheese, 🍜 Ramen, 🥔 Mashed potatoes, 🍲 Grilled cheese, 🍗 Chicken soup, 🍕 Pizza, 🍝 Lasagne, 🥟 Spaghetti bolognese, 🍛 Dumplings, 🐔 Fried chicken, 🥧 Curry, 🍚 Pho, 🐑 Shepherd's pie, 🌭 Risotto, 🟤 Jacket potato, 🟫 Roast dinner
-
-10 Jul
-Fri
-Theme Park Rides
-Play
-C
-🎢 Roller coaster, 🎡 Ferris wheel, 🎠 Carousel, 🚗 Bumper cars, 🛶 Log flume, 🗼 Drop tower, 👻 Ghost train, 🍵 Teacups, 🏴‍☠️ Pirate ship, 🌀 Waltzer, 🚙 Dodgems, 🛝 Helter skelter, 🏎️ Water slide, 🎪 Go-karts, 🏚️ Big dipper, 🎛️ Haunted house
-
-11 Jul
-Sat
-Party Games
-Play
-B
-🎭 Charades, 🪑 Musical chairs, 🫏 Pin the tail, 🍺 Beer pong, 🌀 Twister, 🙈 Hide and seek, 🏃 Tag, 🎁 Pass the parcel, 🗿 Musical statues, 💃 Limbo, 🔍 Scavenger hunt, 🎤 Karaoke, 🎯 Truth or dare, 🙊 Never have I ever, 🍾 Spin the bottle, ✏️ Pictionary
-
-12 Jul
-Sun
 Movie Genres
 Screen
 A
-💥 Action, 😂 Comedy, 👻 Horror, 🚀 Sci-fi, 🎭 Drama, 🔪 Thriller, 💕 Rom-com, 🎥 Documentary, 🎨 Animation, 🐉 Fantasy, 🤠 Western, 🎵 Musical, 🕵️ Noir, 🎬 War, 🔍 Mystery, 💰 Heist
+💕 Rom-Com, 😂 Comedy, 🎵 Musical, 🦸 Superhero, 🚀 Sci-fi, 🎨 Animation, 👻 Horror, 🎭 Drama, 🔍 Mystery, 💰 Heist, 🎥 Documentary, 🎩 Gangster, 🐉 Fantasy, 💥 Action, 🧟 Zombie, 🏆 Sports, 🔪 Thriller, 🎄 Christmas
+
+08 Jul
+Wed
+Smells
+Lifestyle
+A
+🥓 Bacon, 🍞 Fresh Bread, 🍦 Vanilla, 🌊 Sea Air, 🌹 Roses, 💜 Lavender, 🧺 Fresh Laundry, ⛽ Petrol / Gasoline, 🏊 Chlorine, 🧄 Garlic, 🐟 Fish Market, 📖 Book, 🌱 Cut Grass, 🧅 Frying Onions, 🥚 Egg, 🌧️ Fresh Rain, 💐 Perfume, 🐕 Wet Dog
+
+09 Jul
+Thu
+Board Games
+Play
+A
+♟️ Chess, 🎩 Monopoly, 🗺️ Risk, 🔤 Scrabble, 🐴 Buckaroo, 👤 Guess Who, ⚫️⚪️ Checkers / Draughts, 🚂 Ticket to Ride, 🩺 Operation, ✏️ Pictionary, 🔴 Connect 4, 😈 Cards Against Humanity, 🌾 Catan, 🚢 Battleship, 🧱 Jenga, 🔍 Cluedo / Clue, 🌀 Twister, 🃏 Uno
+
+10 Jul
+Fri
+Colours
+Wildcard
+A
+🔴 Red, 🔵 Blue, 🐬 Light Blue, 🟡 Yellow, 🟢 Green, 🟤 Brown, 🟫 Beige, 🟥 Maroon, 🟠 Orange, 🟣 Purple, 🩷 Pink, 🦚 Teal / Turquoise, ⚫ Black, ⚪ White, 🩶 Grey / Gray, 🖨️💜 Magenta, 🖨️🩵 Cyan, 🟨 Gold
+
+11 Jul
+Sat
+Your Next Vacation
+Places
+A
+🌺 Hawaii, 🌋 Iceland, 🦁 Kenya Safari, ⛰️ Peru (Machu Picchu), 🎰 Las Vegas, 🎢 Disney World, 🛳️ Cruise, 🏙️ Dubai, 🏔️ The Alps, 🏺 Greece, 🗼 Paris, 🌴 The Caribbean, 🗾 Japan, 🍋 Italy (Amalfi), 🐫 Egypt, 🦘 Australia, 🛕 Thailand, 🇦🇶 Antarctica
+
+12 Jul
+Sun
+Snacks
+Food
+A
+🥔 Crisps / Chips, 🍫 Chocolate, 🍿 Popcorn, 🍪 Biscuits / Cookies, 🥚 Boiled Egg, 🧀 Cheese, 🌾 Granola Bar, 🥖 Breadsticks, 🫘 Hummus, 🥜 Nuts, 🥕 Veggie Sticks, ⚪ Rice Cakes, 🍞 Toast, 🍘 Crackers, 🫒 Olives, 🫚 Gingerbread Man, 🥨 Pretzel, 🤏 Crumbs at the bottom of the bag
 
 13 Jul
 Mon

@@ -1,0 +1,26 @@
+{
+  "date": "2026-07-11",
+  "name": "Your Next Vacation",
+  "theme": "Places",
+  "special_day": "",
+  "items": [
+    { "id": "hawaii", "name": "Hawaii", "emoji": "🌺" },
+    { "id": "iceland", "name": "Iceland", "emoji": "🌋" },
+    { "id": "kenya-safari", "name": "Kenya Safari", "emoji": "🦁" },
+    { "id": "peru-machu-picchu", "name": "Peru (Machu Picchu)", "emoji": "⛰️" },
+    { "id": "las-vegas", "name": "Las Vegas", "emoji": "🎰" },
+    { "id": "disney-world", "name": "Disney World", "emoji": "🎢" },
+    { "id": "cruise", "name": "Cruise", "emoji": "🛳️" },
+    { "id": "dubai", "name": "Dubai", "emoji": "🏙️" },
+    { "id": "the-alps", "name": "The Alps", "emoji": "🏔️" },
+    { "id": "greece", "name": "Greece", "emoji": "🏺" },
+    { "id": "paris", "name": "Paris", "emoji": "🗼" },
+    { "id": "the-caribbean", "name": "The Caribbean", "emoji": "🌴" },
+    { "id": "japan", "name": "Japan", "emoji": "🗾" },
+    { "id": "italy-amalfi", "name": "Italy (Amalfi)", "emoji": "🍋" },
+    { "id": "egypt", "name": "Egypt", "emoji": "🐫" },
+    { "id": "australia", "name": "Australia", "emoji": "🦘" },
+    { "id": "thailand", "name": "Thailand", "emoji": "🛕" },
+    { "id": "antarctica", "name": "Antarctica", "emoji": "🇦🇶" }
+  ]
+}
