@@ -8,6 +8,7 @@
   --accent: #6c8cff;
   --accent-press: #5878f0;
   --danger: #ff6b6b;
+  --success: #3fb950;
   /* Reroll's "available" colour — a warm amber, distinct from the blue accent so
      an unlocked reroll stands out. Reads on both themes; uses dark text on fill. */
   --reroll: #f5a524;
@@ -41,6 +42,7 @@
   --accent: #4f6ef7;
   --accent-press: #3f5ae0;
   --danger: #d92d20;
+  --success: #1a7f37;
   --header-bg: rgba(246, 247, 249, 0.85);
 }
 
@@ -55,6 +57,7 @@
     --accent: #4f6ef7;
     --accent-press: #3f5ae0;
     --danger: #d92d20;
+    --success: #1a7f37;
     --header-bg: rgba(246, 247, 249, 0.85);
   }
 }
@@ -579,9 +582,22 @@ body.preview-mode .reroll-btn { display: none; }
   border-radius: 6px;
 }
 .vote-btn:hover { background: var(--bg-elev-2); color: var(--text); }
-.vote-btn.up.is-active { color: var(--tier-S); }
-.vote-btn.down.is-active { color: var(--accent); }
-.score { font-size: 0.85rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.vote-btn.up.is-active { color: var(--success); }
+.vote-btn.down.is-active { color: var(--danger); }
+/* The score doubles as a button: click it to see who upvoted / downvoted. */
+.score {
+  border: 0;
+  background: transparent;
+  padding: 1px 5px;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  cursor: pointer;
+}
+.score:hover { background: var(--bg-elev-2); }
 .comment-body { flex: 1; min-width: 0; }
 .comment-meta {
   display: flex;
@@ -806,6 +822,19 @@ body.preview-mode .reroll-btn { display: none; }
   color: #15171c;
 }
 .vote-time { flex: 0 0 auto; color: var(--text-dim); font-size: 0.76rem; }
+
+/* ---- Who-voted dialog (comment up/down votes) ---- */
+.cv-groups { display: flex; flex-direction: column; gap: 20px; }
+.cv-group .vote-log-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+.cv-arrow { font-size: 0.9rem; line-height: 1; }
+.cv-arrow.up { color: var(--success); }
+.cv-arrow.down { color: var(--danger); }
+.cv-empty { margin: 8px 0 0; }
 
 /* ---- Yesterday's results (breakdown below the average board) ---- */
 .yr-section-title {

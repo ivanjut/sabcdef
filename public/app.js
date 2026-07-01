@@ -260,6 +260,7 @@ async function init() {
   wireTierListDialog();
   wireYesterdayDialog();
   wireVotesDialog();
+  wireCommentVotesDialog();
   wireSuggestInfo();
   wireRerollInfo();
   startCountdown();
@@ -1798,7 +1799,7 @@ function renderNode(forum, node, votes, depth) {
   el.innerHTML = `
     <div class="votes">
       <button class="vote-btn up ${myVote === 1 ? "is-active" : ""}" data-dir="up" aria-label="Upvote">▲</button>
-      <span class="score">${node.score}</span>
+      <button class="score" type="button" data-action="score" aria-label="See who voted" title="See who voted">${node.score}</button>
       <button class="vote-btn down ${myVote === -1 ? "is-active" : ""}" data-dir="down" aria-label="Downvote">▼</button>
     </div>
     <div class="comment-body">
@@ -1815,6 +1816,7 @@ function renderNode(forum, node, votes, depth) {
 
   el.querySelector(".vote-btn.up").addEventListener("click", () => vote(forum, node.id, 1));
   el.querySelector(".vote-btn.down").addEventListener("click", () => vote(forum, node.id, -1));
+  el.querySelector('[data-action="score"]')?.addEventListener("click", () => openCommentVotesDialog(forum, node));
   el.querySelector('[data-action="reply"]').addEventListener("click", () => toggleReplyForm(forum, el, node.id));
   el.querySelector('[data-action="tierlist"]')?.addEventListener("click", () => openTierListDialog(forum, node));
   el.querySelector('[data-action="react"]')?.addEventListener("click", (e) => openReactionPicker(forum, e.currentTarget, node));
@@ -2621,6 +2623,87 @@ function wireVotesDialog() {
   });
 }
 
+// ---- Who-voted dialog (comment up/down votes) -------------------------------
+// Clicking a comment's score opens this: who upvoted and who downvoted, the way
+// Slack/iMessage list who reacted. Votes are attributed server-side (see
+// comment_votes + cast_comment_vote), so we fetch them on demand for the one
+// comment rather than bulk-loading every comment's voters up front.
+
+async function openCommentVotesDialog(forum, node) {
+  const dialog = $("#comment-votes-dialog");
+  if (!dialog) return;
+
+  $("#comment-votes-title").textContent = "Votes";
+  $("#comment-votes-sub").textContent = "Loading…";
+  $("#comment-votes-body").innerHTML = `<p class="empty">Loading…</p>`;
+
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+
+  if (!isConfigured) {
+    $("#comment-votes-sub").textContent = "";
+    $("#comment-votes-body").innerHTML = `<p class="empty">Voting is offline.</p>`;
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("comment_votes")
+    .select("voter_id,dir,author,country,created_at")
+    .eq("comment_id", node.id);
+
+  // The dialog may have been dismissed while the fetch was in flight.
+  if (!dialog.open) return;
+
+  if (error) {
+    $("#comment-votes-sub").textContent = "";
+    $("#comment-votes-body").innerHTML = `<p class="empty">Couldn't load votes.</p>`;
+    return;
+  }
+  renderCommentVotes(data || []);
+}
+
+function renderCommentVotes(rows) {
+  const ups = rows.filter((r) => r.dir === 1);
+  const downs = rows.filter((r) => r.dir === -1);
+  const byNewest = (a, b) =>
+    String(b.created_at || "").localeCompare(String(a.created_at || ""));
+
+  const rowHtml = (r) => `
+    <div class="vote-log-row">
+      <span class="vote-voter">${flagPrefix(r.country)}${escapeHtml(r.author || "anon")}</span>
+      <span class="vote-time">${r.created_at ? timeAgo(r.created_at) : ""}</span>
+    </div>`;
+
+  const group = (label, cls, arrow, list) => `
+    <div class="cv-group">
+      <h3 class="vote-log-title"><span class="cv-arrow ${cls}">${arrow}</span> ${label} · ${list.length}</h3>
+      ${list.length ? list.slice().sort(byNewest).map(rowHtml).join("") : `<p class="empty cv-empty">No ${label.toLowerCase()} yet.</p>`}
+    </div>`;
+
+  $("#comment-votes-sub").textContent = `${ups.length} up · ${downs.length} down`;
+  $("#comment-votes-body").innerHTML = `
+    <div class="cv-groups">
+      ${group("Upvotes", "up", "▲", ups)}
+      ${group("Downvotes", "down", "▼", downs)}
+    </div>`;
+}
+
+function closeCommentVotesDialog() {
+  const dialog = $("#comment-votes-dialog");
+  if (!dialog) return;
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+}
+
+function wireCommentVotesDialog() {
+  const dialog = $("#comment-votes-dialog");
+  if (!dialog) return;
+  $("#comment-votes-close")?.addEventListener("click", closeCommentVotesDialog);
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) closeCommentVotesDialog();
+  });
+}
+
 function toggleReplyForm(forum, commentEl, parentId) {
   const existing = commentEl.querySelector(":scope > .comment-body > .reply-form");
   if (existing) {
@@ -2675,8 +2758,21 @@ async function vote(forum, id, dir) {
   if (next === 0) delete votes[id];
   store.set(votesKey, votes);
 
-  // vote_comment(c_id, delta) is a controlled RPC that returns the new score.
-  const { data, error } = await supabase.rpc("vote_comment", { c_id: id, delta });
+  // Attribute the vote so the who-voted dialog can show who cast it (mirrors how
+  // suggestion reactions carry the author + country).
+  const profile = getProfile() || {};
+  const name = (profile.name || "").trim().slice(0, 32) || "anon";
+  const country = profile.country || null;
+
+  // cast_comment_vote records this device's vote (name/country), computes the
+  // score delta server-side from the prior vote, and returns the new score.
+  const { data, error } = await supabase.rpc("cast_comment_vote", {
+    c_id: id,
+    voter: getVoterId(),
+    new_dir: next,
+    a: name,
+    ctry: country
+  });
   if (error) {
     toast(error.message);
     await loadComments(forum); // resync on failure
@@ -2745,6 +2841,18 @@ async function postComment(forum, { parentId = null, body }) {
   const votes = store.get(votesKey, {});
   votes[data.id] = 1;
   store.set(votesKey, votes);
+
+  // Record that implicit upvote so the author appears in the who-voted dialog.
+  // Best-effort and non-blocking — the score already includes it, so a miss only
+  // means the author isn't listed, not a wrong count.
+  supabase
+    .rpc("seed_comment_author_vote", {
+      c_id: data.id,
+      voter: getVoterId(),
+      a: name,
+      ctry: country
+    })
+    .then(null, () => {});
 
   // Remember it's ours so we can offer the delete menu on this device.
   markMine(data.id);

@@ -180,8 +180,10 @@ begin
            device_id = null,
            deleted   = true
      where id = c_id;
-    -- A deleted suggestion keeps no tier reactions behind its tombstone.
+    -- A deleted suggestion keeps no tier reactions behind its tombstone, and a
+    -- deleted comment keeps no up/down vote attribution.
     delete from public.suggestion_reactions where comment_id = c_id;
+    delete from public.comment_votes where comment_id = c_id;
     return 'tombstoned';
   end if;
 
@@ -320,6 +322,151 @@ $$;
 grant select on public.suggestion_reactions to anon, authenticated;
 grant execute on function public.react_suggestion(bigint, text, text, text, text) to anon, authenticated;
 grant execute on function public.unreact_suggestion(bigint, text) to anon, authenticated;
+
+-- ── Comment up/down vote attribution ──────────────────────────────────────────
+-- comments.score is a fast net total, but it doesn't record WHO voted. This table
+-- does: one row per (comment, voter), holding the direction (+1/-1) plus the
+-- voter's author + country, so "who upvoted / downvoted" can be shown the way
+-- Slack shows reactions. The aggregate score stays on comments.score (kept in sync
+-- by cast_comment_vote below), so sorting/reads are unchanged; this table is only
+-- consulted when someone opens the who-voted dialog. Same anonymous, client-
+-- generated voter_id as suggestion_reactions. NOTE: only votes cast after this
+-- table exists are recorded, so a comment's score may exceed the votes listed here
+-- (older, pre-migration votes were never attributed).
+create table if not exists public.comment_votes (
+  id          bigint      generated always as identity primary key,
+  comment_id  bigint      not null references public.comments(id) on delete cascade,
+  voter_id    text        not null,
+  dir         smallint    not null,                 -- +1 up, -1 down
+  author      text        not null default 'anon',
+  country     text,
+  created_at  timestamptz not null default now(),
+  constraint comment_vote_dir_valid    check (dir in (-1, 1)),
+  constraint comment_vote_voter_len    check (char_length(voter_id) between 1 and 64),
+  constraint comment_vote_author_len   check (char_length(author) <= 32),
+  constraint comment_vote_country_len  check (country is null or char_length(country) <= 2),
+  unique (comment_id, voter_id)
+);
+
+create index if not exists comment_votes_comment_idx
+  on public.comment_votes (comment_id);
+
+-- Read-only to clients; all writes go through the SECURITY DEFINER functions below
+-- (anon has no direct insert/update/delete), same as suggestion_reactions.
+alter table public.comment_votes enable row level security;
+
+drop policy if exists "read comment_votes" on public.comment_votes;
+create policy "read comment_votes" on public.comment_votes
+  for select
+  using (true);
+
+-- Cast, change, or withdraw the caller's up/down vote on a comment, and keep the
+-- cached comments.score in sync in the same call. new_dir is +1 (up), -1 (down),
+-- or 0 (withdraw); the delta applied to score is computed from the caller's prior
+-- vote, so the client can't inflate it. Returns the new score. Replaces the older
+-- vote_comment(c_id, delta), which stays defined for backward-compat but is unused.
+create or replace function public.cast_comment_vote(
+  c_id bigint, voter text, new_dir integer, a text, ctry text
+)
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v         text := left(voter, 64);
+  old_dir   integer;
+  delta     integer;
+  new_score integer;
+begin
+  if new_dir not in (-1, 0, 1) then
+    raise exception 'invalid direction %', new_dir;
+  end if;
+  if v is null or char_length(v) = 0 then
+    raise exception 'missing voter';
+  end if;
+
+  select dir into old_dir
+    from public.comment_votes
+   where comment_id = c_id and voter_id = v;
+  old_dir := coalesce(old_dir, 0);
+
+  delta := new_dir - old_dir;
+  if delta = 0 then
+    -- No change (e.g. re-casting the same direction) — return the score as-is.
+    select score into new_score from public.comments where id = c_id;
+    if new_score is null then
+      raise exception 'comment % not found', c_id;
+    end if;
+    return new_score;
+  end if;
+
+  if new_dir = 0 then
+    delete from public.comment_votes where comment_id = c_id and voter_id = v;
+  else
+    insert into public.comment_votes (comment_id, voter_id, dir, author, country)
+    values (
+      c_id, v, new_dir,
+      left(coalesce(nullif(a, ''), 'anon'), 32),
+      nullif(left(coalesce(ctry, ''), 2), '')
+    )
+    on conflict (comment_id, voter_id)
+    do update set dir        = excluded.dir,
+                  author     = excluded.author,
+                  country    = excluded.country,
+                  created_at = now();
+  end if;
+
+  update public.comments
+     set score = score + delta
+   where id = c_id
+  returning score into new_score;
+
+  if new_score is null then
+    raise exception 'comment % not found', c_id;
+  end if;
+
+  return new_score;
+end;
+$$;
+
+-- Record the poster's implicit self-upvote (comments start at score 1) so the
+-- author shows up in the who-voted dialog. Deliberately does NOT touch score — the
+-- +1 is already baked into the default — and only the poster (matching device id)
+-- may seed their own row, so it can't be used to fake someone else's vote.
+create or replace function public.seed_comment_author_vote(
+  c_id bigint, voter text, a text, ctry text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v text := left(voter, 64);
+begin
+  if v is null or char_length(v) = 0 then
+    return;
+  end if;
+  if not exists (
+    select 1 from public.comments where id = c_id and device_id = v
+  ) then
+    return;   -- not the poster (or comment gone) — no-op
+  end if;
+
+  insert into public.comment_votes (comment_id, voter_id, dir, author, country)
+  values (
+    c_id, v, 1,
+    left(coalesce(nullif(a, ''), 'anon'), 32),
+    nullif(left(coalesce(ctry, ''), 2), '')
+  )
+  on conflict (comment_id, voter_id) do nothing;
+end;
+$$;
+
+grant select on public.comment_votes to anon, authenticated;
+grant execute on function public.cast_comment_vote(bigint, text, integer, text, text) to anon, authenticated;
+grant execute on function public.seed_comment_author_vote(bigint, text, text, text) to anon, authenticated;
 
 -- ── Tier lists (the global feed + shareable links) ────────────────────────────
 -- A player's whole board for a day, persisted via the "Submit" button (and when

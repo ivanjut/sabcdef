@@ -451,6 +451,19 @@
     <div id="votes-dialog-body" class="ranking-dialog-body"></div>
   </dialog>
 
+  <!-- Who-voted dialog: who upvoted / downvoted a comment (opened by clicking a
+       comment's score). Populated in app.js from the comment_votes table. -->
+  <dialog id="comment-votes-dialog" class="ranking-dialog">
+    <div class="ranking-dialog-head">
+      <div>
+        <h2 id="comment-votes-title" class="ranking-dialog-title">Votes</h2>
+        <p id="comment-votes-sub" class="ranking-dialog-sub"></p>
+      </div>
+      <button id="comment-votes-close" class="ranking-dialog-close" type="button" aria-label="Close">✕</button>
+    </div>
+    <div id="comment-votes-body" class="ranking-dialog-body"></div>
+  </dialog>
+
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <script src="app.js" type="module"></script>
 </body>
